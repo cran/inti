@@ -1,0 +1,75 @@
+---
+title: "Introduction to inti"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to inti}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+library(inti)
+library(knitr)
+
+knitr::opts_chunk$set(
+    fig.align = "center" # Center images in the export file
+  , out.width = "98%" # Figure width in html
+  , echo = TRUE # Avoid print code in the export file
+  , message = FALSE # Avoid print messages in the export file
+  , warning = FALSE # Avoid print messages in the export file
+  , collapse = TRUE
+  , comment = "#>"
+  )
+
+options(
+    OutDec= "." # Use "." instead of "," in the decimal values
+  , scipen = 99 # Avoid use "6e-04"
+  , knitr.kable.NA = "" # NA values will appear as empty cell
+  , knitr.table.format = "pipe" # Format for export tables
+  , citr.use_betterbiblatex = FALSE # For zotero addin 
+  ) 
+```
+
+The package `inti` has been developed to provide tools used in plant science and experimental designs. The package also include shiny apps for design experiments, interactive analysis and technical writing.
+
+# Shiny apps
+
+```{=html}
+<div id=footer style="width:100%; margin:auto;">
+
+<div style="display:inline-block; width:24%">
+<p style="text-align:center">
+<a target="_blank" href="https://flavjack.shinyapps.io/tarpuy/"><img src="https://flavjack.github.io/inti/reference/figures/tarpuy.png" style="height:70px" title="tarpuy"></a>
+<span style="display:block;"><small>Tarpuy</small></span>
+</p></div>
+
+<div style="display:inline-block; width:24%">
+<p style="text-align:center">
+<a target="_blank" href="https://flavjack.shinyapps.io/rticles/"><img src="https://flavjack.github.io/inti/reference/figures/quipo.png" style="height:70px" title="rticles"></a>
+<span style="display:block;"><small>Rticles</small></span>
+</p></div>
+
+
+<div style="display:inline-block; width:24%">
+<p style="text-align:center">
+<a target="_blank" href="https://flavjack.shinyapps.io/yupanapro/"><img src="https://flavjack.github.io/inti/reference/figures/yupana.png" style="height:70px" title="yupana"></a>
+<span style="display:block;"><small>Yupana</small></span>
+</p></div>
+
+<div style="display:inline-block; width:24%">
+<p style="text-align:center">
+<a target="_blank" href="https://flavjack.github.io/inti/"><img src="https://pkgdown.r-lib.org/reference/figures/logo.png" style="height:70px" title="inti" alt="inti"></a>
+<span style="display:block;"><small>Project</small></span>
+</p></div>
+
+</div>
+```
+
+The shiny apps are based in the function developed in the package. 
+
+**Yupana:** data analysis and graphics for experimental designs.
+
+**Tarpuy:** ease way to deploy fieldbook experimental plans.
+
+**Rticles:** Template for technical documents using Rmarkdown.
+
