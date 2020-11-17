@@ -4,99 +4,114 @@
 #'
 #' @param data Data frame with the figures information. See details.
 #' @param figure Name or path of the figure.
-#' @param caption Manual figure caption (default = NULL).
-#' @param notes Manual figure notes (default = NULL).
-#' @param label Label for start the footnote (default = "Source:").
-#' @param table Columns in the table (default = c("figures", "caption", "notes",
-#'   "url")).
-#'
+#' @param caption Manual figure caption (default = NA).
+#' @param notes Manual figure notes (default = NA).
+#' @param label Label for start the footnote (default = NA).
+#' 
 #' @details
 #'
-#' The data frame should contain 4 columns specified in \code{table}:
-#'
-#' 1. \code{figures}.
-#'
-#' 2. \code{caption}.
-#'
-#' 3. \code{notes}.
-#'
-#' 4. \code{url} or \code{url}.
-#'
-#' If you don't use a a data frame you provide the information manually.
+#' The data frame information result from `info_figure` output.
 #'
 #' @return Figure with caption and notes
 #' 
 #' @export
-#'   
+#' 
+#' @examples 
+#' 
+#' library(inti)
+#' 
+#' fig <- info_figure(caption = "caption test."
+#'                    , notes = "note test."
+#'                    , label = "_Source:_"
+#'                    , url = "https://devblackops.io/images/testing.jpg"
+#'                    , path = "man/figures/logo.png"
+#'                    )
+#' 
+#' # use this in r chunk `fig.caption = fig$caption`                   
+#'                    
+#' fig %>%  include_figure()
+#' 
 
 include_figure <- function(data = NULL
-                           , figure
-                           , caption = NULL
-                           , notes = NULL
-                           , label = "Source:"
-                           , table = c("figures", "caption", "notes", "url")
-                           ){
+                         , figure
+                         , caption = NA
+                         , notes = NA
+                         , label = NA
+                         ){
+  
+  # data <- finfo
+  
+  data <- data %>% pluck(1)
+  
+  first_col <- names(data[1]) %>% as.symbol()
+  col_list <- data[[first_col]]
+  col_capt <- c("{caption}", "{title}", "{titulo}")
+  col_note <- c("{notes}", "{note}", "{nota}", "{notas}")
+  col_url <- c("{url}", "{link}")
+  col_path <- c("{path}", "{dir}")
+  
 
-  if(!is.null(data)) {
-
-    fig_list <- as.symbol(table[1])
-    cap_list <- as.symbol(table[2])
-    not_list <- as.symbol(table[3])
-    url_list <- as.symbol(table[4])
-
-    title <- data %>%
-      filter({{fig_list}} %in% {{figure}}) %>%
-      select({{cap_list}}) %>%
-      as_vector()
-
+  if(!is.null(data)){
+    
+    col_math <- col_list %in% col_capt
+    col_cap <- col_list[col_math == TRUE]
+    
+    caption <- data %>%
+      filter( {{first_col}} %in% {{col_cap}} ) %>%
+      purrr::pluck(2)
+    
+    col_math <- col_list %in% col_note
+    col_note <- col_list[col_math == TRUE]
+    
     notes <- data %>%
-      filter({{fig_list}} %in% {{figure}}) %>%
-      select({{not_list}}) %>%
-      as_vector()
-
+      filter( {{first_col}} %in% {{col_note}} ) %>%
+      purrr::pluck(2)
+    
+    col_math <- col_list %in% col_url
+    col_url <- col_list[col_math == TRUE]
+    
+    url <- data %>%
+      filter( {{first_col}} %in% {{col_url}} ) %>%
+      purrr::pluck(2)
+    
+    col_math <- col_list %in% col_path
+    col_path <- col_list[col_math == TRUE]
+    
     path <- data %>%
-      filter({{fig_list}} %in% {{figure}}) %>%
-      select({{url_list}}) %>%
-      as_vector()
-
-    img <- path %>% knitr::include_graphics()
-
-    if (is.na(notes)) {
-
-      cap <- title
-
-    } else {
-
-      cap <- paste(title, {{label}}, "", notes)
-
-    }
-
-  } else if (is.null(data)) {
-
-      img <- figure %>% knitr::include_graphics()
-
-      if (is.null(caption) & is.null(notes)) {
-
-        cap <- ""
-
-      } else if (!is.null(caption) & !is.null(notes)){
-
-        cap <- paste(caption, {{label}}, "", notes)
-
-      } else if (!is.null(caption) & is.null(notes)){
-
-        cap <- caption
-
-      } else if (is.null(caption) & !is.null(notes)){
-
-        message("You should include a caption")
-
-        cap <- paste("", {{label}}, "", notes)
-
-      }
-
+      filter( {{first_col}} %in% {{col_path}} ) %>%
+      purrr::pluck(2)
+    
   }
-
-  list(figure = img, caption = cap)
-
+  
+  if ( is.na(notes) ) { 
+    
+    cap <- caption
+    
+  } else if (!is.na(notes)) {
+      
+    cap <- paste(caption, label, notes)
+    
+  }
+  
+    if ( !is.na(path) && !is.na(url) && file.exists(path) ) {
+      
+      img_path <- path 
+      
+    } else if ( !is.na(url) ) {
+      
+      img_path <- url
+    
+    } else {
+      
+      stop("Cannot find the file")
+      
+    }
+  
+  img <- img_path %>% knitr::include_graphics()
+  
+# result ------------------------------------------------------------------
+  
+  img
+  
 }
+

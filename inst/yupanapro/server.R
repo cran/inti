@@ -1,11 +1,19 @@
-# yupanapro----------------------------------------------------------------
+# -------------------------------------------------------------------------
+# yupana ------------------------------------------------------------------
+# -------------------------------------------------------------------------
+#> open https://flavjack.github.io/inti/
+#> open https://flavjack.shinyapps.io/yupanapro/
+#> author .: Flavio Lozano-Isla (lozanoisla.com)
+#> date .: 2020-10-25
 # -------------------------------------------------------------------------
 
-# open https://flavjack.shinyapps.io/yupanapro/
-# open http://localhost:1221/
-
+# -------------------------------------------------------------------------
 # packages ----------------------------------------------------------------
 # -------------------------------------------------------------------------
+
+#> devtools::install_github("flavjack/inti")
+
+if (file.exists("setup.R")) { source("setup.R") }
 
 library(shiny)
 library(inti)
@@ -13,17 +21,23 @@ library(metathis)
 library(tidyverse)
 library(googlesheets4)
 library(googleAuthR)
-library(bootstraplib)
+library(bslib)
 library(shinydashboard)
 library(ggpubr)
 library(FactoMineR)
 library(corrplot)
+library(BiocManager)
 
-options("googleAuthR.scopes.selected" = c("https://www.googleapis.com/auth/spreadsheets"))
+options(repos = BiocManager::repositories())
+options("googleAuthR.scopes.selected" = c("https://www.googleapis.com/auth/spreadsheets"
+                                          , "https://www.googleapis.com/auth/userinfo.email"
+                                          ))
 options(gargle_oob_default = TRUE)
 options(shiny.port = 1221)
-gar_set_client(web_json = "www/cloud.json")
 
+if (file.exists("www/cloud.json")) gar_set_client(web_json = "www/cloud.json")
+
+# -------------------------------------------------------------------------
 # app ---------------------------------------------------------------------
 # -------------------------------------------------------------------------
 
@@ -41,12 +55,28 @@ observe({
 
 })
 
-# auth --------------------------------------------------------------------
+# longin vs local ---------------------------------------------------------
 
-  gar_shiny_auth(session)
+  access_token <<- moduleServer(id = "js_token"
+                                , module = googleAuth_js)
+  
+  output$login <- renderUI({
+    
+    if (file.exists("www/cloud.json")) {
 
-  access_token <- callModule(googleAuth_js, "js_token")
-
+      googleAuth_jsUI("js_token"
+                      , login_text = "LogIn"
+                      , logout_text = "LogOut"
+                      )
+      
+    } else {
+      
+      actionButton("do_something", "Local", class = "btn-success")
+      
+    }
+      
+  })
+  
   gs <- reactive({
 
     if(Sys.getenv('SHINY_PORT') == "") {
@@ -68,7 +98,7 @@ observe({
     as_sheets_id( fieldbook_url() )
 
   })
-
+  
 # -------------------------------------------------------------------------
 
   fieldbook_url <- reactive({
@@ -140,35 +170,34 @@ observe({
   })
 
 # -------------------------------------------------------------------------
-
+  
   fieldbook <- reactive({
 
     if ( input$fieldbook_gsheet %in% sheet_names(gs()) ) {
 
       gs() %>%
-        range_read( input$fieldbook_gsheet )
+        range_read( input$fieldbook_gsheet ) %>% 
+        as.data.frame()
 
     } else { fieldbook <- NULL }
 
   })
-
+  
   refresh <- reactive({ list(input$fbsm_refresh, input$mvr_refresh) })
 
-  # make var reactive!
-  fbsmrvar <- NULL
-  makeReactiveBinding("fbsmrvar")
+  fbsmrvar <- eventReactive( refresh(), {
+    
+      validate( need( input$fieldbook_url, "LogIn and create or insert a url" ) )
 
-  observeEvent( refresh(), {
+      if ( input$fbsmrvars_gsheet %in% sheet_names(gs()) ) {
 
-    validate( need( input$fieldbook_url, "LogIn and create or insert a url" ) )
+        fbsmrvar <- gs() %>%
+          range_read( input$fbsmrvars_gsheet ) %>%
+          as.data.frame()
 
-    if ( input$fbsmrvars_gsheet %in% sheet_names(gs()) ) {
-
-      fbsmrvar <<- gs() %>%
-        range_read( input$fbsmrvars_gsheet )
-
-    } else { fbsmrvar <<- NULL }
-
+      } else { fbsmrvar <- NULL }
+    
+    
   })
 
 # Yupana: Fieldbook -------------------------------------------------------
@@ -505,9 +534,9 @@ observe({
 
   output$rpt_variable <- renderUI({
 
-    if ( !is.null( fbsmrvar ) ) {
+    if ( !is.null( fbsmrvar() ) ) {
 
-      rpt_variable_names <- fbsmrvar %>%
+      rpt_variable_names <- fbsmrvar() %>%
         filter(!type %in% c("factor", "factores", "factors")) %>%
         select(variables) %>%
         deframe()
@@ -521,14 +550,32 @@ observe({
     } else { print ("Insert fieldbook summary") }
 
   })
+  
+
+  # -------------------------------------------------------------------------
+  
+  output$sheet_export <- renderUI({
+    
+    validate( need( input$rpt_variable, "Choose your variable") )
+    
+    # sheet <- input$rpt_variable %>% as.vector()
+    
+    textInput(inputId = "sheet_export"
+            , label = "Sheet export"
+            , value = input$rpt_variable
+            )
+    
+    })
+
+  
 
   # -------------------------------------------------------------------------
 
   output$rpt_dotplot_groups <- renderUI({
 
-    if ( !is.null( fbsmrvar ) ) {
+    if ( !is.null( fbsmrvar() ) ) {
 
-      rpt_dotplot_groups_names <- fbsmrvar %>%
+      rpt_dotplot_groups_names <- fbsmrvar() %>%
         filter(type %in% c("factor", "factores", "factors")) %>%
         select(variables) %>%
         deframe()
@@ -549,10 +596,10 @@ observe({
 
     validate( need( input$rpt_variable, "Choose your variable") )
 
-    if ( !is.null( fieldbook() ) & !is.null( fbsmrvar ) )  {
+    if ( !is.null( fieldbook() ) & !is.null( fbsmrvar() ) )  {
 
       rslt <- fieldbook_report(data = fieldbook()
-                               , fb_smr = fbsmrvar
+                               , fb_smr = fbsmrvar()
                                , variable = input$rpt_variable
                                , dotplot_groups = input$rpt_dotplot_groups
                                , model_diag = FALSE
@@ -583,18 +630,34 @@ observe({
   })
 
   # -------------------------------------------------------------------------
+  
+  output$rpt_digits <- renderUI({
+    
+    validate( need( input$rpt_variable, "Choose your variable") )
+    
+    numericInput(inputId = "rpt_digits"
+                 , label = "Table digits"
+                 , value = 2
+                 , step = 1
+                 , min = 0
+                 , max = 6
+    )
+  })
+  
+  # -------------------------------------------------------------------------
 
   mean_comp <- reactive({
 
     validate( need( input$rpt_variable, "Choose your variable") )
 
-    if ( !is.null( fieldbook() ) & !is.null( fbsmrvar ) )  {
+    if ( !is.null( fieldbook() ) & !is.null( fbsmrvar() ) )  {
 
       mc <- mean_comparison(data = fieldbook()
-                            , fb_smr = fbsmrvar
+                            , fb_smr = fbsmrvar()
                             , variable = input$rpt_variable
                             , graph_opts = T
-      )
+                            , digits = input$rpt_digits
+                            )
     }
 
   })
@@ -603,7 +666,7 @@ observe({
 
     mc <- mean_comp()$comparison %>%
       select(!c("{colors}", "{arguments}", "{values}")) %>%
-      inti::web_table()
+      inti::web_table(digits = input$rpt_digits)
 
   })
 
@@ -618,17 +681,20 @@ observe({
   # export meancomparison table ---------------------------------------------
 
   observeEvent(input$export_mctab, {
+    
+    sheet_export <- input$sheet_export %>% gsub("[[:space:]]", "_", .)
 
-    if ( !input$rpt_variable %in% sheet_names(gs()) ) {
+    if ( !sheet_export %in% sheet_names(gs()) ) {
 
-      sheet_add(ss = gs(), sheet = input$rpt_variable)
+      sheet_add( ss = gs(), sheet = sheet_export )
 
-      mean_comp()$comparison %>% sheet_write(ss = gs(), sheet = input$rpt_variable)
+      mean_comp()$comparison %>% 
+        sheet_write(ss = gs(), sheet = sheet_export )
 
     } else { print ("sheet already exist") }
 
   })
-
+  
   # -------------------------------------------------------------------------
 
   output$rpt_preview <- renderUI({
@@ -725,19 +791,24 @@ observe({
   })
 
   # -------------------------------------------------------------------------
+  
+  sheet_grp <- eventReactive(input$graph_refresh, {
+    
+    fbinfo <- c(input$fieldbook_gsheet, input$fbsmrvars_gsheet)
+    
+    gs() %>% sheet_names() %>% setdiff(., fbinfo)
+    
+    })
 
   output$graph_sheets <- renderUI({
 
-    sheet_names <- sheet_names(gs())
-    sheet_exclude <- c(input$fieldbook_gsheet, input$fbsmrvars_gsheet)
-    sheet_names <- sheet_names[!(sheet_names %in% sheet_exclude)]
-
     selectInput(inputId = "graph_sheets"
                 , label = "Graph sheet"
-                , choices = c(sheet_names)
-    )
-
-  })
+                , choices = c("choose" = ""
+                              , sheet_grp()
+                              )
+                )
+    })
 
   # -------------------------------------------------------------------------
 
@@ -758,21 +829,20 @@ observe({
 
   # -------------------------------------------------------------------------
 
-  plotgr <- NULL
-  makeReactiveBinding("plotgr")
-
-  observeEvent(input$graph_create, {
-
+  plotgr <- eventReactive(input$graph_create, {
+    
+    validate( need( input$graph_sheets, "Refresh a choose a sheet") )
+    
     if ( input$graph_sheets %in% sheet_names(gs()) ) {
-
-      plot_table <- gs() %>%
+      
+      plottb <<- gs() %>%
         range_read( input$graph_sheets )
-
-    }
-
-    plotgr <<- plot_smr(plot_table)
-
-  })
+      
+    } else {"Choose a summary table"}
+    
+    plot_smr(plottb) 
+    
+    })
 
   # -------------------------------------------------------------------------
 
@@ -785,7 +855,7 @@ observe({
     outfile <- tempfile(fileext = ".png")
 
     png(outfile, width = ancho, height = alto, units = "cm", res = dpi)
-    print(plotgr)
+    print(plotgr())
     dev.off()
 
     list(src = outfile)
@@ -836,9 +906,9 @@ observe({
 
   output$mvr_facts <- renderUI({
 
-    if ( !is.null( fieldbook() ) & !is.null( fbsmrvar ) ) {
+    if ( !is.null( fieldbook() ) & !is.null( fbsmrvar() ) ) {
 
-      mvr_variable_names <- fbsmrvar %>%
+      mvr_variable_names <- fbsmrvar() %>%
         filter(type %in% c("factor", "factores", "factors")) %>%
         select(variables) %>%
         deframe()
@@ -875,7 +945,7 @@ observe({
   mvr <- reactive({
 
     mvr <- fieldbook_mvr(data = fieldbook()
-                         , fb_smr = fbsmrvar
+                         , fb_smr = fbsmrvar()
                          , summary_by = input$mvr_facts
                          , groups = input$mvr_groups
     )

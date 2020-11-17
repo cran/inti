@@ -5,11 +5,11 @@
 \title{Table with footnotes}
 \usage{
 include_table(
-  data,
-  caption = NULL,
-  notes = NULL,
-  label = "Note:",
-  notation = "alphabet"
+  data = NULL,
+  caption = NA,
+  notes = NA,
+  label = NA,
+  notation = "none"
 )
 }
 \arguments{
@@ -17,12 +17,12 @@ include_table(
 
 \item{caption}{Table caption (default = NULL). See details.}
 
-\item{notes}{Footnotes for the table (default = NULL). See details.}
+\item{notes}{Footnotes for the table (default = NA). See details.}
 
-\item{label}{Label for start the footnote (default = "Note:").}
+\item{label}{Label for start the footnote (default = NA).}
 
 \item{notation}{Notation for the symbols and footnotes (default =
-"alphabet"). See details.}
+"none"). See details.}
 }
 \value{
 Table with caption and footnotes
@@ -39,25 +39,20 @@ symbol using \code{{hypen}} in your table. \code{notation} could be use:
 }
 \examples{
 
-
-library(googlesheets4)
 library(inti)
 
-if (gs4_has_token()) {
-
-url <- paste0("https://docs.google.com/spreadsheets/d/"
-              , "1ilw0NHT7mihaM-3U48KzkuMt927xe8ukX6rNuIw2fT0/edit#gid=1157916926")
-
-# browseURL(url)
-gs <- as_sheets_id(url)
-
-table <- gs \%>\%
-    range_read("footnotes")
-
-table \%>\% inti::include_table(label = "_Nota:_"
-                              , notation = "num"
+tab <- data.frame(
+x = rep_len(1, 5)
+, y = rep_len(3, 5)
+, z = rep_len("c", 5)
 )
 
-}
+info <- tab \%>\% 
+info_table(
+  caption = "Figure caption"
+  , notes = "test note"
+  )
+
+info \%>\% inti::include_table()
 
 }

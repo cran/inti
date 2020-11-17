@@ -9,14 +9,15 @@
 #'
 #' @details
 #'
-#' Compute and plot information for multivariate analysis.
+#' Compute and plot information for multivariate analysis (PCA, HCPC and
+#' correlation).
 #'
 #' @return result and plots
 #'
 #' @import dplyr
 #' @importFrom FactoMineR HCPC PCA
 #' @importFrom tibble column_to_rownames
-#' 
+#'
 #' @export
 #'
 #' @examples
@@ -24,11 +25,11 @@
 #' library(inti)
 #' library(googlesheets4)
 #' library(FactoMineR)
-#' 
+#'
 #' if (gs4_has_token()) {
 #'
 #' url <- paste0("https://docs.google.com/spreadsheets/d/"
-#'               , "15r7ZwcZZHbEgltlF6gSFvCTFA-CFzVBWwg3mFlRyKPs/edit#gid=172957346")
+#'               , "15r7ZwcZZHbEgltlF6gSFvCTFA-CFzVBWwg3mFlRyKPs")
 #' # browseURL(url)
 #' gs <- as_sheets_id(url)
 #'
@@ -46,9 +47,12 @@
 #'                      , choix = "ind"
 #'                      , habillage = mvr$param$groups_n
 #'                      , invisible = "quali"
-#' )
-#'
-#' FactoMineR::plot.HCPC(mvr$hcpc)
+#'                      )
+#' 
+#' FactoMineR::plot.HCPC(mvr$hcpc
+#'                       , choice = "map"
+#'                       , draw.tree = F
+#'                       )
 #'
 #' }
 #' 
@@ -66,34 +70,32 @@ fieldbook_mvr <- function(data
 
   factor_list <- fb_smr %>%
     filter(.data$type %in% "factor") %>%
-    select(where(~!all(is.na(.))))
-
-  factor_opt <- factor_list %>%
-    select(!.data$type) %>%
-    deframe()
+    select(where(~!all(is.na(.)))) %>% 
+    filter(levels > 0)
 
   vars_num <- fb_smr %>%
-    filter(.data$type %in% "numeric")
+    filter(.data$type %in% "numeric") %>% 
+    filter(levels > 0) 
 
   vars_cha <- fb_smr %>%
-    filter(.data$type %in% "character")
+    filter(.data$type %in% "character") %>% 
+    filter(levels > 0) 
 
   fb <- data %>%
     select(where(~!all(is.na(.)))) %>%
-    mutate(across( factor_list[["variables"]], as.character)) %>%
+    mutate(across( factor_list[["variables"]], as.factor)) %>%
+    mutate(across( vars_cha[["variables"]], as.factor)) %>%
     mutate(across( vars_num[["variables"]], as.numeric)) %>%
-    mutate(across( vars_cha[["variables"]], as.character)) %>%
     select({{summary_by}}, vars_num[["variables"]]) %>%
     group_by( across( {{summary_by}} )) %>%
     summarize(across(everything(),  ~ mean(., na.rm = TRUE) )) %>%
     unite("rnames", {{summary_by}} , sep = "_", remove = F) %>%
-    column_to_rownames("rnames")
+    column_to_rownames("rnames") 
 
 # parameters --------------------------------------------------------------
 # -------------------------------------------------------------------------
 
 quali_ncol <- which(names(fb) %in% {{summary_by}})
-
 groups_ncol <- which(names(fb) %in% {{groups}})
 
 par <- list(quali = summary_by
@@ -105,36 +107,39 @@ par <- list(quali = summary_by
 # pca ---------------------------------------------------------------------
 # -------------------------------------------------------------------------
 
-  pca_info <- fb %>%
-    PCA(X = .
-        , scale.unit = T
-        , quali.sup = quali_ncol
-        , graph = FALSE
-        )
+pca_info <- fb %>%
+  select(where(~ length(unique(.)) > 1)) %>%  # drop variables with variation
+  PCA(X = .
+    , scale.unit = T
+    , quali.sup = quali_ncol
+    , graph = FALSE
+    )
 
 # hcpc --------------------------------------------------------------------
 # -------------------------------------------------------------------------
 
-  clt_info <- pca_info %>%
-    HCPC(res = .
-         , nb.clust = -1
-         , graph = FALSE
-         )
+clt_info <- HCPC(pca_info
+                 , nb.clust=-1
+                 , graph = FALSE
+                 )
 
 # Correlation -------------------------------------------------------------
 # -------------------------------------------------------------------------
 
-cor <- fb %>%
+cor <- fb %>% 
   select(where(is.numeric)) %>%
-  correlation(method = "pearson")
+  select(where(~ length(unique(.)) > 1)) %>% # drop variables without variation
+  agricolae::correlation(method = "pearson")
 
 # results -----------------------------------------------------------------
 # -------------------------------------------------------------------------
 
-  multvr = list(pca = pca_info
-                , hcpc = clt_info
-                , corr = cor
-                , data = fb
-                , param = par)
+  multvr = list(
+    pca = pca_info
+    , hcpc = clt_info
+    , corr = cor
+    , data = fb
+    , param = par
+    )
 
 }

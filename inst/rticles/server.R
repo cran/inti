@@ -1,19 +1,32 @@
+# -------------------------------------------------------------------------
 # rticles -----------------------------------------------------------------
 # -------------------------------------------------------------------------
+#> open https://flavjack.github.io/inti/
+#> open https://flavjack.shinyapps.io/rticles/
+#> author .: Flavio Lozano-Isla (lozanoisla.com)
+#> date .: 2020-11-14
+# -------------------------------------------------------------------------
 
-# https://flavjack.shinyapps.io/rticles/
-
+# -------------------------------------------------------------------------
 # packages ----------------------------------------------------------------
 # -------------------------------------------------------------------------
 
+#> devtools::install_github("flavjack/inti")
+
+if (file.exists("setup.R")) { source("setup.R") }
+
+library(inti)
 library(shiny)
 library(miniUI)
 library(shinyFiles)
 library(utils)
 library(fs)
 library(metathis)
-library(inti)
+library(BiocManager)
 
+options(repos = BiocManager::repositories())
+
+# -------------------------------------------------------------------------
 # update template ---------------------------------------------------------
 # -------------------------------------------------------------------------
 
@@ -21,12 +34,13 @@ if (FALSE) {
   
   unlink("inst/rticles/template", recursive = T)
   dir.create("inst/rticles/template")
-  inti::rticles(path = "inst/rticles/template", type = "book")
+  inti::create_rticles(path = "inst/rticles/template", type = "book")
   file.rename(from = "inst/rticles/template/rticles.Rproj"
               , to = "inst/rticles/template/rticles.proj")
   
   }
 
+# -------------------------------------------------------------------------
 # app ---------------------------------------------------------------------
 # -------------------------------------------------------------------------
 
@@ -126,12 +140,13 @@ shinyServer(function(input, output, session) {
 
   observeEvent(input$create, {
 
-    inti::rticles(path = path()
-                  , type = input$type
-                  , name = input$name
-                  , project = project()
-                  , server = server()
-                  )
+    inti::create_rticles(
+      path = path()
+      , type = input$type
+      , name = input$name
+      , project = project()
+      , server = server()
+      )
     })
 
 # download data -----------------------------------------------------------
@@ -147,11 +162,12 @@ shinyServer(function(input, output, session) {
 
     content = function(content) {
 
-      filelist <- inti:::rticles(type = input$type
-                                 , name = input$name
-                                 , project = project()
-                                 , server = server()
-                                 )
+      filelist <- inti:::create_rticles(
+        type = input$type
+        , name = input$name
+        , project = project()
+        , server = server()
+        )
 
       zip::zipr(zipfile = content, files = filelist)
 

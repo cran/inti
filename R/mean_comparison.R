@@ -11,6 +11,7 @@
 #' @param test_comp Significance level for the analysis (default = 0.05).
 #' @param sig_level Significance level for the analysis (default = 0.05).
 #' @param graph_opts Include option in the table for graphs (default = FALSE).
+#' @param digits Number of digits in the table.
 #'
 #' @details
 #'
@@ -34,25 +35,28 @@
 #' if (gs4_has_token()) {
 #'
 #' url <- paste0("https://docs.google.com/spreadsheets/d/"
-#'               , "15r7ZwcZZHbEgltlF6gSFvCTFA-CFzVBWwg3mFlRyKPs/edit#gid=1414357945")
+#'               , "15r7ZwcZZHbEgltlF6gSFvCTFA-CFzVBWwg3mFlRyKPs")
 #' # browseURL(url)
 #' gs <- as_sheets_id(url)
 #'
 #' (data <- gs %>%
-#'     range_read("fb"))
+#'      range_read("fb"))
 #'
-#' (fb_smr <- gs %>%
-#'   range_read("fbsm"))
+#' fbsm <- fieldbook_summary(data
+#'                  , last_factor = "genotype"
+#'                  , model_facts = "treat*genotype"
+#'                  , comp_facts = "treat:genotype"
+#'                  ) 
 #'
 #' mc <- mean_comparison(data
-#'                      , fb_smr = fb_smr
-#'                      , variable = "BIOMDW"
+#'                      , fb_smr = fbsm
+#'                      , variable = "HI"
 #'                      , graph_opts = TRUE
 #'                      )
 #'
 #' table <- mc$comparison
 #'
-#' table %>% sheet_write(ss = gs, sheet = "plot")
+#' # fbsm %>% sheet_write(ss = gs, sheet = "fbsm")
 #'
 #' }
 #' 
@@ -65,6 +69,7 @@ mean_comparison <- function(data
                             , test_comp = "SNK"
                             , sig_level = 0.05
                             , graph_opts = FALSE
+                            , digits = 2
                             ) {
 
   where <- NULL
@@ -77,14 +82,20 @@ mean_comparison <- function(data
     select(where(~!all(is.na(.))))
 
   factor_opt <- factor_list %>%
-    select(!.data$type) %>%
+    select(.data$variables, .data$levels) %>%
     deframe()
 
   vars_num <- fb_smr %>%
-    filter(.data$type %in% "numeric")
+    filter(.data$type %in% "numeric") %>% 
+    filter(levels > 0)
 
   vars_cat <- fb_smr %>%
-    filter(.data$type %in% "character")
+    filter(.data$type %in% "character") %>% 
+    filter(levels > 0)
+  
+  labels <- fb_smr %>% 
+    select(.data$variables, .data$plot_label) %>% 
+    deframe()
 
   fb <- data %>%
     select(where(~!all(is.na(.)))) %>%
@@ -110,7 +121,7 @@ mean_comparison <- function(data
 
     test_comp <- arguments %>%
       select({{test_comp_name}}) %>%
-      pluck(1)
+      purrr::pluck(1)
 
   }
 
@@ -137,7 +148,7 @@ mean_comparison <- function(data
 
     model_facts <- arguments %>%
       select({{model_facts_name}}) %>%
-      pluck(1)
+      purrr::pluck(1)
 
   }
 
@@ -151,7 +162,7 @@ mean_comparison <- function(data
 
     comp_facts <- arguments %>%
       select({{comp_facts_name}}) %>%
-      pluck(1)
+      purrr::pluck(1)
 
   }
 
@@ -165,7 +176,7 @@ mean_comparison <- function(data
 
     sig_level <- arguments %>%
       select({{sig_level_name}}) %>%
-      pluck(1)
+      purrr::pluck(1)
   }
 
   # anova -------------------------------------------------------------------
@@ -186,7 +197,7 @@ mean_comparison <- function(data
   # -------------------------------------------------------------------------
 
   comp_facts <- strsplit(comp_facts, ":") %>%
-    pluck(1) %>%
+    purrr::pluck(1) %>%
     gsub(" ", "", ., fixed = TRUE)
 
   mean_comparison <- function(model_aov
@@ -197,7 +208,7 @@ mean_comparison <- function(data
 
     if (test_comp == "SNK"){
 
-      mc <- SNK.test(
+      mc <- agricolae::SNK.test(
         y = model_aov
         , trt = comp_facts
         , alpha = sig_level
@@ -205,7 +216,7 @@ mean_comparison <- function(data
 
     } else if (test_comp == "HSD") {
 
-      mc <- HSD.test(
+      mc <- agricolae::HSD.test(
         y = model_aov
         , trt = comp_facts
         , alpha = sig_level
@@ -213,7 +224,7 @@ mean_comparison <- function(data
 
     } else if (test_comp == "DUNCAN") {
 
-      mc <- duncan.test(
+      mc <- agricolae::duncan.test(
         y = model_aov
         , trt = comp_facts
         , alpha = sig_level
@@ -221,8 +232,8 @@ mean_comparison <- function(data
     }
 
     tb_mc <- merge(
-      mc %>% pluck("means") %>% rownames_to_column("treatments")
-      ,  mc %>% pluck("groups") %>% rownames_to_column("treatments")
+      mc %>% purrr::pluck("means") %>% rownames_to_column("treatments")
+      ,  mc %>% purrr::pluck("groups") %>% rownames_to_column("treatments")
       , all = TRUE) %>%
       rename_with(tolower, !c(.data$treatments, {{variable}})) %>%
       arrange(desc( {{variable}} )) %>%
@@ -238,7 +249,7 @@ mean_comparison <- function(data
     }
 
     smr_stat <- mc %>%
-      pluck("statistics") %>%
+      purrr::pluck("statistics") %>%
       dplyr::mutate(variable =  {{variable}}, .before = "MSerror") %>%
       merge(mc$parameters, .) %>%
       select({{variable}}, everything())
@@ -318,14 +329,18 @@ mean_comparison <- function(data
   }
 
   if ( graph_opts == TRUE ) {
-
+    
+    xlab <- labels[ x ] %>% as.vector()
+    ylab <- labels[ {{variable}} ] %>% as.vector()
+    glab <- labels[ groups ] %>% as.vector()
+    
     graph_opts <- c(type = "bar"
                    , x = x
                    , y = {{variable}}
                    , groups = groups
-                   , xlab = x
-                   , ylab = {{variable}}
-                   , glab = groups
+                   , xlab = xlab
+                   , ylab = ylab
+                   , glab = glab
                    , limits = limits
                    , brakes = brakes
                    , sig = "sig"
@@ -338,7 +353,7 @@ mean_comparison <- function(data
       merge(colors, ., by = 0, all = TRUE) %>%
       mutate(across(.data$Row.names, as.numeric)) %>%
       arrange(.data$Row.names) %>%
-      select(-.data$Row.names)
+      select(!.data$Row.names)
 
     comparison[["table"]]  <- merge( comparison[["table"]]
                                      , opts_table
@@ -347,7 +362,8 @@ mean_comparison <- function(data
                                      )  %>%
       mutate(across(.data$Row.names, as.numeric)) %>%
       arrange(.data$Row.names) %>%
-      select(-.data$Row.names)
+      select(!.data$Row.names) %>% 
+      mutate(across(where(is.numeric), ~round(., digits))) #!
 
   }
 

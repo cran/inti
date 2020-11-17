@@ -1,23 +1,36 @@
+# -------------------------------------------------------------------------
 # rticles -----------------------------------------------------------------
 # -------------------------------------------------------------------------
+#> open https://flavjack.github.io/inti/
+#> open https://flavjack.shinyapps.io/rticles/
+#> author .: Flavio Lozano-Isla (lozanoisla.com)
+#> date .: 2020-11-14
+# -------------------------------------------------------------------------
 
-# https://flavjack.shinyapps.io/rticles/
-
+# -------------------------------------------------------------------------
 # packages ----------------------------------------------------------------
 # -------------------------------------------------------------------------
 
+#> devtools::install_github("flavjack/inti")
+
+if (file.exists("setup.R")) { source("setup.R") }
+
+library(inti)
 library(shiny)
 library(miniUI)
 library(shinyFiles)
 library(utils)
 library(fs)
 library(metathis)
-library(inti)
+library(BiocManager)
 
+options(repos = BiocManager::repositories())
+
+# -------------------------------------------------------------------------
 # app ---------------------------------------------------------------------
 # -------------------------------------------------------------------------
 
-fluidPage(title = "Rticles",
+fluidPage(title = "Rticles • app",
 
     tags$head(HTML('<link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">')),
     tags$head(HTML('<style>* {font-size: 100%; font-family: Roboto Mono;}</style>')),
@@ -39,25 +52,21 @@ fluidPage(title = "Rticles",
              br(),
 
              HTML('
-
             <div id=footer style="width:100%; margin:auto;">
-
             <div style="display:inline-block; width:100%">
             <p style="text-align:center">
-            <a target="_blank" href="https://lozanoisla.com/">
-            <img src="https://flavjack.github.io/inti/reference/figures/quipo4c.png" style="height:55px" title="flozano"></a>
-            <span style="display:block;"><small>lozanoisla.com</small></span>
+            <a target="_blank" href="https://flavjack.github.io/inti/index.html">
+            <img src="https://flavjack.github.io/inti/reference/figures/biologia.png" style="height:50px" title="flozano"></a>
+            <span style="display:block;"><small>project</small></span>
             </p></div>
-
             </div>
-
                   ')
 
              ),
 
       column(3,
 
-             HTML('<h1><a target="_blank" href="https://flavjack.shinyapps.io/rticles/">Rticles</a></h1>'),
+             HTML('<h1><a target="_blank" href="https://inkaverse.com/">Rticles</a></h1>'),
 
              br(),
 

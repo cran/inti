@@ -1,11 +1,19 @@
+# -------------------------------------------------------------------------
 # tarpuy ------------------------------------------------------------------
 # -------------------------------------------------------------------------
+#> open https://flavjack.github.io/inti/
+#> open https://flavjack.shinyapps.io/tarpuy/
+#> author .: Flavio Lozano-Isla (lozanoisla.com)
+#> date .: 2020-11-14
+# -------------------------------------------------------------------------
 
-# open https://flavjack.shinyapps.io/tarpuy/
-# open http://localhost:1221/
-
+# -------------------------------------------------------------------------
 # packages ----------------------------------------------------------------
 # -------------------------------------------------------------------------
+
+#> devtools::install_github("flavjack/inti")
+
+if (file.exists("setup.R")) { source("setup.R") }
 
 library(shiny)
 library(inti)
@@ -13,36 +21,45 @@ library(metathis)
 library(tidyverse)
 library(googlesheets4)
 library(googleAuthR)
-library(bootstraplib)
+library(googleID)
+library(bslib)
 library(shinydashboard)
 library(stringi)
+library(BiocManager)
 
-options("googleAuthR.scopes.selected" = c("https://www.googleapis.com/auth/spreadsheets"))
+options(repos = BiocManager::repositories())
+options("googleAuthR.scopes.selected" = c("https://www.googleapis.com/auth/spreadsheets"
+                                          , "https://www.googleapis.com/auth/userinfo.email"
+                                          ))
 options(gargle_oob_default = TRUE)
 options(shiny.port = 1221)
-gar_set_client(web_json = "www/cloud.json")
 
+if (file.exists("www/cloud.json")) gar_set_client(web_json = "www/cloud.json")
+
+# -------------------------------------------------------------------------
 # app ---------------------------------------------------------------------
 # -------------------------------------------------------------------------
 
-bs_theme_new(version = "4+3", bootswatch = NULL)
-
-navbarPage(title = HTML('<h3><strong><a target="_blank" href="https://flavjack.shinyapps.io/tarpuy/">Tarpuy</a></strong></h3>')
-           , windowTitle = "Tarpuy"
+navbarPage(title = HTML('<h3><strong><a target="_blank" href="https://inkaverse.com/">Tarpuy</a></strong></h3>')
+           , windowTitle = "Tarpuy • app"
            , position = "fixed-top"
-           , theme = "bootstrap_sandstone.css"
            , selected = "Intro"
+           , theme = "bootstrap_sandstone.css"  #!
+           , 
 
-           , includeCSS("www/custom.css"),
+# -------------------------------------------------------------------------
+# Yupana Info -------------------------------------------------------------
+# -------------------------------------------------------------------------
 
-           tabPanel("",
-
-                    bootstrap(), # allow use the new bootstrap
-
-                    tags$head(includeHTML(("www/analytics.html"))),
-                    tags$head(tags$link(rel="shortcut icon"
-                                        , href="https://flavjack.github.io/inti/reference/figures/tarpuy.png")),
-
+           tabPanel("Intro"
+                    
+                    , bs_theme_dependencies("flatly") #!
+                    
+                    , includeCSS("www/custom.css")
+                    , tags$head(includeHTML(("www/analytics.html")))
+                    , tags$head(tags$link(rel="shortcut icon"
+                                          , href="https://flavjack.github.io/inti/reference/figures/tarpuy.png")),
+                    
                     meta() %>%
                       meta_social(
                         title = "Tarpuy",
@@ -50,15 +67,8 @@ navbarPage(title = HTML('<h3><strong><a target="_blank" href="https://flavjack.s
                         url = "https://flavjack.shinyapps.io/tarpuy/",
                         image = "https://flavjack.github.io/inti/reference/figures/tarpuy.png",
                         image_alt = "inkaverse.com"
-                      )
-
-           ),
-
-           # Yupana Info -------------------------------------------------------------
-           # -------------------------------------------------------------------------
-
-           tabPanel("Intro",
-
+                        ),
+                    
                     fluidRow(
 
                       column(width = 1,
@@ -67,9 +77,9 @@ navbarPage(title = HTML('<h3><strong><a target="_blank" href="https://flavjack.s
             <div id=footer style="width:100%; margin:auto;">
             <div style="display:inline-block; width:100%">
             <p style="text-align:center">
-            <a target="_blank" href="https://lozanoisla.com/">
-            <img src="https://flavjack.github.io/inti/reference/figures/quipo4c.png" style="height:50px" title="flozano"></a>
-            <span style="display:block;"><small>lozanoisla.com</small></span>
+            <a target="_blank" href="https://flavjack.github.io/inti/index.html">
+            <img src="https://flavjack.github.io/inti/reference/figures/biologia.png" style="height:50px" title="flozano"></a>
+            <span style="display:block;"><small>project</small></span>
             </p></div>
             </div>
                   ')
@@ -121,15 +131,14 @@ navbarPage(title = HTML('<h3><strong><a target="_blank" href="https://flavjack.s
                       column(width = 7,
 
                              fluidRow(
-
+                               
                                box(title = div(h4(icon("key")), align = "right")
                                    , width = 1,
 
                                    div(
-                                     googleAuth_jsUI("js_token"
-                                                     , login_text = "LogIn"
-                                                     , logout_text = "LogOut"
-                                                     )
+                                     
+                                     uiOutput("login")
+                                     
                                      , align = "center")
 
                                ),
@@ -251,7 +260,7 @@ navbarPage(title = HTML('<h3><strong><a target="_blank" href="https://flavjack.s
                                    <li>Introduce el nombre de la hoja donde donde se creará/cargará la información.
                                    <li>Debes dar los permisos para editar las hojas haciendo “LOG IN”;
                                    ya que la app requiere los permisos correspondientes para leer y exportar la información generada.
-                                   Más información en la politicas de privacidad: <a href="https://inkaverse.com/policy/">https://inkaverse.com/policy/</a>
+                                   Más información en la politicas de privacidad: <a href="https://inkaverse.com/articles/policy"> https://inkaverse.com/articles/policy</a>
                                    <li>Cuando des los permisos el botón de "LOG IN" cambiará a color rojo “LOG OUT”.
                                    Lo que te permitirá interactuar con tu información y analizar tus datos.
                                    <li>Cualquier problema o sugerencia puedes escribir en el rastreador de problemas.
@@ -319,23 +328,6 @@ navbarPage(title = HTML('<h3><strong><a target="_blank" href="https://flavjack.s
                              <a target="_blank" href="https://flavjack.shinyapps.io/yupanapro/">
                              <img src="https://flavjack.github.io/inti/reference/figures/yupana.png" style="height:80px" title="yupana"></a>
                              <span style="display:block;"><small>Yupana</small></span>
-                             </p></div>
-
-                             </div>
-
-                                   '),
-
-                              br(),
-
-                              HTML('
-
-                             <div id=footer style="width:100%; margin:auto;">
-
-                             <div style="display:inline-block; width:100%">
-                             <p style="text-align:center">
-                             <a target="_blank" href="https://www.quipolab.com/">
-                             <img src="https://flavjack.github.io/inti/reference/figures/quipo.png" style="height:70px" title="quipo"></a>
-                             <span style="display:block;"><small>quipolab</small></span>
                              </p></div>
 
                              </div>

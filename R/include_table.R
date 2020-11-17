@@ -4,10 +4,10 @@
 #'
 #' @param data Data frame.
 #' @param caption Table caption (default = NULL). See details.
-#' @param notes Footnotes for the table (default = NULL). See details.
-#' @param label Label for start the footnote (default = "Note:").
+#' @param notes Footnotes for the table (default = NA). See details.
+#' @param label Label for start the footnote (default = NA).
 #' @param notation Notation for the symbols and footnotes (default =
-#'   "alphabet"). See details.
+#'   "none"). See details.
 #'
 #' @details
 #'
@@ -22,77 +22,129 @@
 #' @export
 #'
 #' @examples
-#'
-#'
-#' library(googlesheets4)
-#' library(inti)
 #' 
-#' if (gs4_has_token()) {
+#' library(inti)
 #'
-#' url <- paste0("https://docs.google.com/spreadsheets/d/"
-#'               , "1ilw0NHT7mihaM-3U48KzkuMt927xe8ukX6rNuIw2fT0/edit#gid=1157916926")
-#'
-#' # browseURL(url)
-#' gs <- as_sheets_id(url)
-#'
-#' table <- gs %>%
-#'     range_read("footnotes")
-#'
-#' table %>% inti::include_table(label = "_Nota:_"
-#'                               , notation = "num"
+#' tab <- data.frame(
+#' x = rep_len(1, 5)
+#' , y = rep_len(3, 5)
+#' , z = rep_len("c", 5)
 #' )
 #'
-#' }
+#' info <- tab %>% 
+#' info_table(
+#'   caption = "Figure caption"
+#'   , notes = "test note"
+#'   )
+#'
+#' info %>% inti::include_table()
 #'
 
-include_table <- function(data
-                        , caption = NULL
-                        , notes = NULL
-                        , label = "Note:"
-                        , notation = "alphabet"
-) {
+include_table <- function(data = NULL
+                        , caption = NA
+                        , notes = NA
+                        , label = NA
+                        , notation = "none"
+                        ) {
 
-  # data <- table
+  # data <- info
+  
+  if ( exists(c("info", "table"), data) ) {
 
-  first_col <- names(data[1]) %>% as.symbol()
-  col_list <- data[[first_col]]
+    info <- data %>% pluck(1) 
+    table <-  data %>% pluck(2)
+    
+  } else {
+    
+    info <- data 
+    
+  }
+  
   col_capt <- c("{caption}", "{title}", "{titulo}")
   col_note <- c("{notes}", "{note}", "{nota}", "{notas}")
+  col_label <- c("{label}", "{etiqueta}")
+  col_notation <- c("{notation}", "{tipo}")
+  first_col <- names(info[1]) %>% as.symbol()
+  col_list <- info[[first_col]]
 
-  if(is.null(caption)){
+  if(!is.null(data)){
+    
+    info <- info %>% 
+      mutate(across(1:2, as.character))
 
     col_math <- col_list %in% col_capt
     col_cap <- col_list[col_math == TRUE]
 
-    caption <- data %>%
+    caption <- info %>%
       filter( {{first_col}} %in% {{col_cap}} ) %>%
       pluck(2)
-
-  }
-
-  if(is.null(notes)){
-
+    
     col_math <- col_list %in% col_note
     col_note <- col_list[col_math == TRUE]
-
-    if ( length(col_note) == 0 ) {
-
-      note <- NULL
-
-    } else {
-
-      notes <- data %>%
+    
+    if (length(col_note) > 0) {
+      
+      notes <- info %>%
         filter( {{first_col}}  == {{col_note}} ) %>%
-        pluck(2) %>%
-        as_vector()
-
-    }
-
+        pluck(2) 
+      
+    } else {notes <- NA}
+    
+    col_math <- col_list %in% col_label
+    col_label <- col_list[col_math == TRUE]
+    
+    if (length(col_label) > 0) {
+      
+      label <- info %>%
+        filter( {{first_col}}  == {{col_label}} ) %>%
+        pluck(2) 
+      
+    } else {label <- NA}
+    
+    col_math <- col_list %in% col_notation
+    col_notation <- col_list[col_math == TRUE]
+    
+    if (length(col_notation) > 0) {
+      
+      notation <- info %>%
+        filter( {{first_col}}  == {{col_notation}} ) %>%
+        pluck(2) 
+      
+    } else {notation <- notation}
+    
   }
+  
+  if ( exists(c("info", "table"), data) ) {
+    
+    table <- data %>% pluck(2) 
+    
+  } else {
+    
+    ncol <- names(data)[1] %>% as.name()
+    
+    table <- data %>% 
+      filter( !{{ncol}} %in% c(col_cap, col_note, col_label, col_notation))
+    
+  }
+  
 
-  data %>%
-    filter( !{{first_col}}  %in% c( {{col_capt}}, {{col_note}} ) ) %>%
-    knitr::kable(caption = caption, format = "pipe") %>%
-    inti::footnotes(notes = notes, label = label, notation = notation)
+  if (is.na(notes)) {
+    
+    ftab <- table %>% 
+      knitr::kable(caption = caption, format = "pipe")
+    
+  } else {
+    
+    if(is.na(label)) { label <- ""}
+    
+    ftab <- table %>% 
+      knitr::kable(caption = caption, format = "pipe") %>% 
+      inti::footnotes(notes = notes, label = label, notation = notation)
+    
+  }
+  
+# result ------------------------------------------------------------------
+
+return(ftab)
 
 }

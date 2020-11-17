@@ -10,25 +10,11 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<meta name="author" content="Maria Belen Kistner" />
-<meta name="author" content="Flavio Lozano-Isla" />
+<meta name="author" content="Maria Belen Kistner &amp; Flavio Lozano-Isla" />
 
 
 <title>Broad-sense heritability in plant breeding</title>
 
-<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
-// be compatible with the behavior of Pandoc < 2.8).
-document.addEventListener('DOMContentLoaded', function(e) {
-  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
-  var i, h, a;
-  for (i = 0; i < hs.length; i++) {
-    h = hs[i];
-    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
-    a = h.attributes;
-    while (a.length > 0) h.removeAttribute(a[0].name);
-  }
-});
-</script>
 <script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
 // v0.0.1
 // Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
@@ -45,22 +31,71 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 </script>
+<style type="text/css">
+a.anchor-section {margin-left: 10px; visibility: hidden; color: inherit;}
+a.anchor-section::before {content: '#';}
+.hasAnchor:hover a.anchor-section {visibility: visible;}
+</style>
+<script>// Anchor sections v1.0 written by Atsushi Yasumoto on Oct 3rd, 2020.
+document.addEventListener('DOMContentLoaded', function() {
+  // Do nothing if AnchorJS is used
+  if (typeof window.anchors === 'object' && anchors.hasOwnProperty('hasAnchorJSLink')) {
+    return;
+  }
+
+  const h = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+
+  // Do nothing if sections are already anchored
+  if (Array.from(h).some(x => x.classList.contains('hasAnchor'))) {
+    return null;
+  }
+
+  // Use section id when pandoc runs with --section-divs
+  const section_id = function(x) {
+    return ((x.classList.contains('section') || (x.tagName === 'SECTION'))
+            ? x.id : '');
+  };
+
+  // Add anchors
+  h.forEach(function(x) {
+    const id = x.id || section_id(x.parentElement);
+    if (id === '') {
+      return null;
+    }
+    let anchor = document.createElement('a');
+    anchor.href = '#' + id;
+    anchor.classList = ['anchor-section'];
+    x.classList.add('hasAnchor');
+    x.appendChild(anchor);
+  });
+});
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
 
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css" data-origin="pandoc">
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+code.sourceCode { white-space: pre-wrap; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -80,7 +115,7 @@ pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-le
 div.sourceCode
   {   }
 @media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -330,8 +365,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 <h1 class="title toc-ignore">Broad-sense heritability in plant breeding</h1>
-<h4 class="author">Maria Belen Kistner</h4>
-<h4 class="author">Flavio Lozano-Isla</h4>
+<h4 class="author">Maria Belen Kistner &amp; Flavio Lozano-Isla</h4>
 
 
 
@@ -345,8 +379,11 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </ol>
 <div id="breeders-equation" class="section level2">
 <h2>Breeder´s equation</h2>
-<p><span class="math display">\[\Delta G=H^2S\]</span></p>
-<p>Where: - <span class="math inline">\(\Delta G\)</span> is the genetic gain - <span class="math inline">\(S\)</span> is the mean phenotypic value of the selected genotypes, expressed as a deviation from the population mean.</p>
+<p><span class="math display">\[\Delta G=H^2S\]</span> Where:</p>
+<ul>
+<li><span class="math inline">\(\Delta G\)</span> is the genetic gain</li>
+<li><span class="math inline">\(S\)</span> is the mean phenotypic value of the selected genotypes, expressed as a deviation from the population mean.</li>
+</ul>
 </div>
 </div>
 <div id="usual-problems" class="section level1">
@@ -356,9 +393,9 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <div id="how-calculate-the-heritability" class="section level1">
 <h1>How calculate the Heritability?</h1>
 <p>According <span class="citation">Schmidt et al. (<a href="#ref-schmidt2019Heritability" role="doc-biblioref">2019</a><a href="#ref-schmidt2019Heritability" role="doc-biblioref">a</a>)</span>, the variance components could be calculated in two ways:</p>
-<div id="firts-usuall-approach" class="section level2">
-<h2>Firts: usuall approach</h2>
-<p>In MET experiments, enviroments denotes a year-by-location interaction. This approach assumes a single variance for genotype-by-environment interactions (GxE), even when multiple locations were tested across multiple years.</p>
+<div id="two-stages-approach" class="section level2">
+<h2>1) Two stages approach</h2>
+<p>For the two stage approach, in the first stage each experiment is analyzed individually according their experiment design (Lattice, CRBD, etc) <span class="citation">(Zystro et al., <a href="#ref-zystro2018Alternative" role="doc-biblioref">2018</a>)</span>. And for the second stage environments are denotes a year-by-location interaction. This approach assumes a single variance for genotype-by-environment interactions (GxE), even when multiple locations were tested across multiple years.</p>
 <div id="model" class="section level3">
 <h3>Model</h3>
 <p><span class="math display">\[y_{ikt}=\mu\ +\ G_i+E_t+GxE_{it}+\varepsilon_{ikt}\]</span></p>
@@ -368,9 +405,9 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <p><span class="math display">\[\sigma_p^2=\sigma_g^2+\frac{\sigma_{g\cdot e}^2}{n_e}+\frac{\sigma_{\varepsilon}^2}{n_e\cdot n_r}\]</span></p>
 </div>
 </div>
-<div id="second-latter-approach" class="section level2">
-<h2>Second: latter approach</h2>
-<p>The environmental effects via separate year, and location main and interaction effects.</p>
+<div id="one-stage-approach" class="section level2">
+<h2>2) One stage approach</h2>
+<p>For the one stage approach only one model is used for the MET analysis. The environmental effects are included via separate year, and location main interaction effects.</p>
 <p><span class="math display">\[y_{ikt}=\mu+G_i+Y_m+E_q+YxE_{mq}+GxY_{im}+GxE_{iq}+GxYxE_{imq}+\varepsilon_{ikmq}\]</span></p>
 <div id="phenotypic-variance-1" class="section level3">
 <h3>Phenotypic variance</h3>
@@ -378,8 +415,8 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </div>
 </div>
 </div>
-<div id="differentes-heritability-calculation" class="section level1">
-<h1>Differentes heritability calculation</h1>
+<div id="differentes-heritability-calculations" class="section level1">
+<h1>Differentes heritability calculations</h1>
 <table>
 <caption>Differentes heritability calculation</caption>
 <colgroup>
@@ -403,31 +440,29 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </tbody>
 </table>
 </div>
-<div id="heritability-implemented-in-the-package" class="section level1">
-<h1>Heritability implemented in the package</h1>
+<div id="heritability-function-in-the-package" class="section level1">
+<h1>Heritability function in the package</h1>
 <p>For calculate the standard heritability in MET experiments the number of location and replication should be include manually in the function <code>H2cal()</code>. In the case of difference number of replication in each experiments, take the maximum value (often done in practice) <span class="citation">(Schmidt et al., <a href="#ref-schmidt2019Estimating" role="doc-biblioref">2019</a><a href="#ref-schmidt2019Estimating" role="doc-biblioref">b</a>)</span>.</p>
 <p>For remove the outliers the function implemented is the Method 4 used for <span class="citation">Bernal-Vasquez et al. (<a href="#ref-bernal-vasquez2016Outliera" role="doc-biblioref">2016</a>)</span>: Bonferroni-Holm using re-scaled MAD for standardizing residuals (BH-MADR).</p>
 <div id="load-packages" class="section level2">
 <h2>Load packages</h2>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a></span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">library</span>(inti)</span>
-<span id="cb1-3"><a href="#cb1-3"></a><span class="kw">library</span>(agridat)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">library</span>(inti)</span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">library</span>(agridat)</span></code></pre></div>
 </div>
 <div id="h2cal-function" class="section level2">
 <h2>H2cal function</h2>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a></span>
-<span id="cb2-2"><a href="#cb2-2"></a> dt &lt;-<span class="st"> </span>john.alpha</span>
-<span id="cb2-3"><a href="#cb2-3"></a> hr &lt;-<span class="st"> </span><span class="kw">H2cal</span>(<span class="dt">data =</span> dt</span>
-<span id="cb2-4"><a href="#cb2-4"></a>            , <span class="dt">trait =</span> <span class="st">&quot;yield&quot;</span></span>
-<span id="cb2-5"><a href="#cb2-5"></a>            , <span class="dt">gen.name =</span> <span class="st">&quot;gen&quot;</span></span>
-<span id="cb2-6"><a href="#cb2-6"></a>            , <span class="dt">rep.n =</span> <span class="dv">3</span></span>
-<span id="cb2-7"><a href="#cb2-7"></a>            , <span class="dt">fix.model =</span> <span class="st">&quot;rep + (1|rep:block) + gen&quot;</span></span>
-<span id="cb2-8"><a href="#cb2-8"></a>            , <span class="dt">ran.model =</span> <span class="st">&quot;rep + (1|rep:block) + (1|gen)&quot;</span></span>
-<span id="cb2-9"><a href="#cb2-9"></a>            , <span class="dt">emmeans =</span> <span class="ot">TRUE</span></span>
-<span id="cb2-10"><a href="#cb2-10"></a>            , <span class="dt">plot_diag =</span> <span class="ot">TRUE</span></span>
-<span id="cb2-11"><a href="#cb2-11"></a>            , <span class="dt">plot_dots =</span> <span class="st">&quot;rep&quot;</span></span>
-<span id="cb2-12"><a href="#cb2-12"></a>            , <span class="dt">outliers.rm =</span> <span class="ot">FALSE</span></span>
-<span id="cb2-13"><a href="#cb2-13"></a>            )</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a> dt &lt;-<span class="st"> </span>john.alpha</span>
+<span id="cb2-2"><a href="#cb2-2"></a> hr &lt;-<span class="st"> </span><span class="kw">H2cal</span>(<span class="dt">data =</span> dt</span>
+<span id="cb2-3"><a href="#cb2-3"></a>            , <span class="dt">trait =</span> <span class="st">&quot;yield&quot;</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a>            , <span class="dt">gen.name =</span> <span class="st">&quot;gen&quot;</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a>            , <span class="dt">rep.n =</span> <span class="dv">3</span></span>
+<span id="cb2-6"><a href="#cb2-6"></a>            , <span class="dt">fix.model =</span> <span class="st">&quot;rep + (1|rep:block) + gen&quot;</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a>            , <span class="dt">ran.model =</span> <span class="st">&quot;rep + (1|rep:block) + (1|gen)&quot;</span></span>
+<span id="cb2-8"><a href="#cb2-8"></a>            , <span class="dt">emmeans =</span> <span class="ot">TRUE</span></span>
+<span id="cb2-9"><a href="#cb2-9"></a>            , <span class="dt">plot_diag =</span> <span class="ot">TRUE</span></span>
+<span id="cb2-10"><a href="#cb2-10"></a>            , <span class="dt">plot_dots =</span> <span class="st">&quot;rep&quot;</span></span>
+<span id="cb2-11"><a href="#cb2-11"></a>            , <span class="dt">outliers.rm =</span> <span class="ot">FALSE</span></span>
+<span id="cb2-12"><a href="#cb2-12"></a>            )</span></code></pre></div>
 <p><img src="data:image/png;base64,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" width="98%" style="display: block; margin: auto;" /></p>
 </div>
 <div id="model-information" class="section level2">
@@ -464,9 +499,9 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </div>
 <div id="variance-component" class="section level2">
 <h2>Variance component</h2>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>hr<span class="op">$</span>tabsmr <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">kable</span>(<span class="dt">caption =</span> <span class="st">&quot;Variance component table.&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>hr<span class="op">$</span>tabsmr <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">kable</span>(<span class="dt">caption =</span> <span class="st">&quot;Variance component table&quot;</span>)</span></code></pre></div>
 <table>
-<caption>Variance component table.</caption>
+<caption>Variance component table</caption>
 <colgroup>
 <col width="7%"></col>
 <col width="3%"></col>
@@ -529,9 +564,9 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </div>
 <div id="best-linear-unbiased-predictors-blups" class="section level2">
 <h2>Best Linear Unbiased Predictors (BLUPs)</h2>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>hr<span class="op">$</span>blups <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">kable</span>(<span class="dt">caption =</span> <span class="st">&quot;BLUPs.&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>hr<span class="op">$</span>blups <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">kable</span>(<span class="dt">caption =</span> <span class="st">&quot;BLUPs&quot;</span>)</span></code></pre></div>
 <table>
-<caption>BLUPs.</caption>
+<caption>BLUPs</caption>
 <thead>
 <tr class="header">
 <th align="left">gen</th>
@@ -640,9 +675,9 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </div>
 <div id="best-linear-unbiased-estimators-blues" class="section level2">
 <h2>Best Linear Unbiased Estimators (BLUEs)</h2>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>hr<span class="op">$</span>blues <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">kable</span>(<span class="dt">caption =</span> <span class="st">&quot;BLUEs.&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>hr<span class="op">$</span>blues <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">kable</span>(<span class="dt">caption =</span> <span class="st">&quot;BLUEs&quot;</span>)</span></code></pre></div>
 <table>
-<caption>BLUEs.</caption>
+<caption>BLUEs</caption>
 <thead>
 <tr class="header">
 <th align="left">gen</th>
@@ -852,18 +887,21 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </div>
 <div id="references" class="section level1">
 <h1>References</h1>
-<div id="refs" class="references hanging-indent">
+<div id="refs">
 <div id="ref-bernal-vasquez2016Outliera">
 <p>Bernal-Vasquez, A.-M., H.-F. Utz, and H.-P. Piepho. 2016. Outlier detection methods for generalized lattices: A case study on the transition from ANOVA to REML. Theoretical and Applied Genetics 129(4): 787–804. doi: <a href="https://doi.org/10.1007/s00122-016-2666-6">10.1007/s00122-016-2666-6</a>.</p>
 </div>
 <div id="ref-falconer2005Introduction">
-<p>Falconer, D.S., and T.F. Mackay. 2005. Introduction to quantitative genetics (Pearson Prentice Hall, editor). Fourth. [Amsterdam, The Netherlands: Elsevier Science Publishers (Biomedical …, Upper Saddle River, NJ.</p>
+<p>Falconer, D.S., and T.F. Mackay. 2005. Introduction to quantitative genetics (Pearson Prentice Hall, editor). Fourth.</p>
 </div>
 <div id="ref-schmidt2019Heritability">
 <p>Schmidt, P., J. Hartung, J. Bennewitz, and H.-P. Piepho. 2019a. Heritability in Plant Breeding on a Genotype-Difference Basis. Genetics 212(4): 991–1008. doi: <a href="https://doi.org/10.1534/genetics.119.302134">10.1534/genetics.119.302134</a>.</p>
 </div>
 <div id="ref-schmidt2019Estimating">
 <p>Schmidt, P., J. Hartung, J. Rath, and H.-P. Piepho. 2019b. Estimating Broad-Sense Heritability with Unbalanced Data from Agricultural Cultivar Trials. Crop Science 59(2): 525–536. doi: <a href="https://doi.org/10.2135/cropsci2018.06.0376">10.2135/cropsci2018.06.0376</a>.</p>
+</div>
+<div id="ref-zystro2018Alternative">
+<p>Zystro, J., M. Colley, and J. Dawson. 2018. Alternative Experimental Designs for Plant Breeding. Plant Breeding Reviews. John Wiley &amp; Sons, Ltd. pp. 87–117</p>
 </div>
 </div>
 </div>

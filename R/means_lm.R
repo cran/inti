@@ -62,16 +62,6 @@ means_lm <- function(data
   if (!is.null(plot_groups)) { plot_groups <- as.name(plot_groups) }
   if(is.null(sep)){sep = " + "}
 
-  # Varible
-
-  if (anova == TRUE || plot_diag == TRUE) {
-
-    print(paste("##>-----------------------------------------"))
-    print(paste("##>", trait))
-    print(paste("##>-----------------------------------------"))
-
-  }
-
   # Model
 
   model <- as.formula(paste(trait, model, sep = " ~ "))
@@ -178,7 +168,7 @@ means_lm <- function(data
 
   smr_stat <- mc %>%
     pluck("statistics") %>%
-    dplyr::mutate(trait =  print(as.character(trait))) %>%
+    dplyr::mutate(trait =  as.character(trait)) %>%
     select(trait, dplyr::everything())
 
   # Results

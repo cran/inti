@@ -12,7 +12,8 @@ mean_comparison(
   comp_facts,
   test_comp = "SNK",
   sig_level = 0.05,
-  graph_opts = FALSE
+  graph_opts = FALSE,
+  digits = 2
 )
 }
 \arguments{
@@ -32,6 +33,8 @@ mean_comparison(
 \item{sig_level}{Significance level for the analysis (default = 0.05).}
 
 \item{graph_opts}{Include option in the table for graphs (default = FALSE).}
+
+\item{digits}{Number of digits in the table.}
 }
 \value{
 data frame
@@ -51,25 +54,28 @@ library(googlesheets4)
 if (gs4_has_token()) {
 
 url <- paste0("https://docs.google.com/spreadsheets/d/"
-              , "15r7ZwcZZHbEgltlF6gSFvCTFA-CFzVBWwg3mFlRyKPs/edit#gid=1414357945")
+              , "15r7ZwcZZHbEgltlF6gSFvCTFA-CFzVBWwg3mFlRyKPs")
 # browseURL(url)
 gs <- as_sheets_id(url)
 
 (data <- gs \%>\%
-    range_read("fb"))
+     range_read("fb"))
 
-(fb_smr <- gs \%>\%
-  range_read("fbsm"))
+fbsm <- fieldbook_summary(data
+                 , last_factor = "genotype"
+                 , model_facts = "treat*genotype"
+                 , comp_facts = "treat:genotype"
+                 ) 
 
 mc <- mean_comparison(data
-                     , fb_smr = fb_smr
-                     , variable = "BIOMDW"
+                     , fb_smr = fbsm
+                     , variable = "HI"
                      , graph_opts = TRUE
                      )
 
 table <- mc$comparison
 
-table \%>\% sheet_write(ss = gs, sheet = "plot")
+# fbsm \%>\% sheet_write(ss = gs, sheet = "fbsm")
 
 }
 

@@ -29,13 +29,10 @@ tibble(
   kable(caption = "Differentes heritability calculation")
 
 ## ----pkgs---------------------------------------------------------------------
-
 library(inti)
 library(agridat)
 
-
 ## ----fig.width= 7, fig.height=5-----------------------------------------------
-
  dt <- john.alpha
  hr <- H2cal(data = dt
             , trait = "yield"
@@ -48,19 +45,18 @@ library(agridat)
             , plot_dots = "rep"
             , outliers.rm = FALSE
             )
- 
 
 ## -----------------------------------------------------------------------------
 hr$model %>% summary()
 
 ## -----------------------------------------------------------------------------
-hr$tabsmr %>% kable(caption = "Variance component table.")
+hr$tabsmr %>% kable(caption = "Variance component table")
 
 ## -----------------------------------------------------------------------------
-hr$blups %>% kable(caption = "BLUPs.")
+hr$blups %>% kable(caption = "BLUPs")
 
 ## -----------------------------------------------------------------------------
-hr$blues %>% kable(caption = "BLUEs.")
+hr$blues %>% kable(caption = "BLUEs")
 
 ## ----references, echo=FALSE---------------------------------------------------
 if(!file.exists("files/pkgs.bib")){write_bib(c(.packages()),'files/pkgs.bib')}
