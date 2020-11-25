@@ -4,7 +4,7 @@
 #> open https://flavjack.github.io/inti/
 #> open https://flavjack.shinyapps.io/yupanapro/
 #> author .: Flavio Lozano-Isla (lozanoisla.com)
-#> date .: 2020-11-13
+#> date .: 2020-11-18
 # -------------------------------------------------------------------------
 
 # -------------------------------------------------------------------------
@@ -26,12 +26,11 @@ library(shinydashboard)
 library(ggpubr)
 library(FactoMineR)
 library(corrplot)
-library(BiocManager)
 
-options(repos = BiocManager::repositories())
 options("googleAuthR.scopes.selected" = c("https://www.googleapis.com/auth/spreadsheets"
                                           , "https://www.googleapis.com/auth/userinfo.email"
                                           ))
+
 options(gargle_oob_default = TRUE)
 options(shiny.port = 1221)
 

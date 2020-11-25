@@ -1,3 +1,12 @@
+# Version 0.1.2
+
+## Major changes
+
+- *Package* 
+  - Exclude package `multtest` from the depends
+  - CRAN error: `include_table`
+  - Search engine in the web page
+
 # Version 0.1.1
 
 ## Major changes

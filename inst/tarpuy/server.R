@@ -4,7 +4,7 @@
 #> open https://flavjack.github.io/inti/
 #> open https://flavjack.shinyapps.io/tarpuy/
 #> author .: Flavio Lozano-Isla (lozanoisla.com)
-#> date .: 2020-11-14
+#> date .: 2020-11-18
 # -------------------------------------------------------------------------
 
 # -------------------------------------------------------------------------
@@ -24,9 +24,7 @@ library(googleAuthR)
 library(bslib)
 library(shinydashboard)
 library(stringi)
-library(BiocManager)
 
-options(repos = BiocManager::repositories())
 options("googleAuthR.scopes.selected" = c("https://www.googleapis.com/auth/spreadsheets"
                                           , "https://www.googleapis.com/auth/userinfo.email"
                                           ))
@@ -59,8 +57,8 @@ shinyServer(function(input, output, session) {
   
   # longin vs local ---------------------------------------------------------
   
-  access_token <- callModule(googleAuth_js, "js_token")
-  
+  access_token <- moduleServer(id = "js_token"
+                               , module = googleAuth_js)
 
   output$login <- renderUI({
     
@@ -546,6 +544,8 @@ shinyServer(function(input, output, session) {
       range_read( input$gsheet_fb ) %>% names()
 
   })
+  
+  if (file.exists("www/analytics.r")) { source("www/analytics.r", local = T) }
 
   output$sketch_options <- renderUI({
 

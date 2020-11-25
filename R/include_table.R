@@ -31,13 +31,13 @@
 #' , z = rep_len("c", 5)
 #' )
 #'
-#' info <- tab %>% 
+#' table <- tab %>% 
 #' info_table(
 #'   caption = "Figure caption"
 #'   , notes = "test note"
 #'   )
 #'
-#' info %>% inti::include_table()
+#' table %>% inti::include_table()
 #'
 
 include_table <- function(data = NULL
@@ -47,12 +47,12 @@ include_table <- function(data = NULL
                         , notation = "none"
                         ) {
 
-  # data <- info
+  # data <- table
   
-  if ( exists(c("info", "table"), data) ) {
+  if ( exists("info", data) && exists("table", data) ) {
 
-    info <- data %>% pluck(1) 
-    table <-  data %>% pluck(2)
+    info <- data %>% purrr::pluck(1) 
+    table <-  data %>% purrr::pluck(2)
     
   } else {
     
@@ -77,7 +77,7 @@ include_table <- function(data = NULL
 
     caption <- info %>%
       filter( {{first_col}} %in% {{col_cap}} ) %>%
-      pluck(2)
+      purrr::pluck(2)
     
     col_math <- col_list %in% col_note
     col_note <- col_list[col_math == TRUE]
@@ -86,7 +86,7 @@ include_table <- function(data = NULL
       
       notes <- info %>%
         filter( {{first_col}}  == {{col_note}} ) %>%
-        pluck(2) 
+        purrr::pluck(2) 
       
     } else {notes <- NA}
     
@@ -97,7 +97,7 @@ include_table <- function(data = NULL
       
       label <- info %>%
         filter( {{first_col}}  == {{col_label}} ) %>%
-        pluck(2) 
+        purrr::pluck(2) 
       
     } else {label <- NA}
     
@@ -114,9 +114,9 @@ include_table <- function(data = NULL
     
   }
   
-  if ( exists(c("info", "table"), data) ) {
+  if ( exists("info", data) && exists("table", data) ) {
     
-    table <- data %>% pluck(2) 
+    table <- data %>% purrr::pluck(2) 
     
   } else {
     
