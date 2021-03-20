@@ -43,7 +43,7 @@ library(agridat)
             , emmeans = TRUE
             , plot_diag = TRUE
             , plot_dots = "rep"
-            , outliers.rm = FALSE
+            , outliers.rm = TRUE
             )
 
 ## -----------------------------------------------------------------------------
@@ -57,6 +57,12 @@ hr$blups %>% kable(caption = "BLUPs")
 
 ## -----------------------------------------------------------------------------
 hr$blues %>% kable(caption = "BLUEs")
+
+## -----------------------------------------------------------------------------
+hr$outliers$random %>% kable(caption = "Outliers random model")
+
+## -----------------------------------------------------------------------------
+hr$outliers$fixed %>% kable(caption = "Outliers fixed model")
 
 ## ----references, echo=FALSE---------------------------------------------------
 if(!file.exists("files/pkgs.bib")){write_bib(c(.packages()),'files/pkgs.bib')}

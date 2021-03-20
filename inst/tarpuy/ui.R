@@ -4,7 +4,7 @@
 #> open https://flavjack.github.io/inti/
 #> open https://flavjack.shinyapps.io/tarpuy/
 #> author .: Flavio Lozano-Isla (lozanoisla.com)
-#> date .: 2020-11-18
+#> date .: 2021-03-12
 # -------------------------------------------------------------------------
 
 # -------------------------------------------------------------------------
@@ -13,25 +13,16 @@
 
 #> devtools::install_github("flavjack/inti")
 
-if (file.exists("setup.R")) { source("setup.R") }
-
-library(shiny)
-library(inti)
-library(metathis)
-library(tidyverse)
-library(googlesheets4)
-library(googleAuthR)
-library(bslib)
-library(shinydashboard)
-library(stringi)
+source("pkgs.R")
 
 options("googleAuthR.scopes.selected" = c("https://www.googleapis.com/auth/spreadsheets"
                                           , "https://www.googleapis.com/auth/userinfo.email"
                                           ))
+
 options(gargle_oob_default = TRUE)
 options(shiny.port = 1221)
 
-if (file.exists("www/cloud.json")) gar_set_client(web_json = "www/cloud.json")
+if (file.exists("www/cloud.json")) gar_set_client(web_json = "www/cloud.json", activate = "web")
 
 # -------------------------------------------------------------------------
 # app ---------------------------------------------------------------------
@@ -93,7 +84,7 @@ navbarPage(title = HTML('<h3><strong><a target="_blank" href="https://inkaverse.
 
                                  HTML('
                                  <p>
-                                 Tarpuy es una plataforma interactiva para la el planeamiento de experimentos (PLEX).
+                                 Tarpuy es una plataforma interactiva para el planeamiento de experimentos (PLEX).
                                  Está desarrollada con la finalidad de promover las buenas prácticas en la colecta, análisis y manipulación de datos.
                                  Tarpuy tiene el objetivo de "continuidad" entre el uso de la aplicación y el software estadístico R.
                                  Tarpuy está basada en el paquete <strong><em>inti</em></strong>:
@@ -601,11 +592,9 @@ navbarPage(title = HTML('<h3><strong><a target="_blank" href="https://inkaverse.
                                           , value = 0
                                           , min = 0
                              )
-
-
+                             
+                             )
                       )
-
-                    )
 
 # Tarpuy fb  --------------------------------------------------------------
 # -------------------------------------------------------------------------
@@ -650,6 +639,12 @@ navbarPage(title = HTML('<h3><strong><a target="_blank" href="https://inkaverse.
                                           , value = 0
                                           , min = 0
                                           ),
+                             
+                             textInput(inputId = "design_qr"
+                                       , label = "QR label"
+                                       , placeholder = "QR prefix"
+                                       , value = "FB"
+                             ),
 
                              actionButton(inputId = "export_design"
                                           , label = "Generate"

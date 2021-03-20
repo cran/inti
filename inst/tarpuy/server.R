@@ -4,7 +4,7 @@
 #> open https://flavjack.github.io/inti/
 #> open https://flavjack.shinyapps.io/tarpuy/
 #> author .: Flavio Lozano-Isla (lozanoisla.com)
-#> date .: 2020-11-18
+#> date .: 2021-03-12
 # -------------------------------------------------------------------------
 
 # -------------------------------------------------------------------------
@@ -13,25 +13,16 @@
 
 #> devtools::install_github("flavjack/inti")
 
-if (file.exists("setup.R")) { source("setup.R") }
-
-library(shiny)
-library(inti)
-library(metathis)
-library(tidyverse)
-library(googlesheets4)
-library(googleAuthR)
-library(bslib)
-library(shinydashboard)
-library(stringi)
+source("pkgs.R")
 
 options("googleAuthR.scopes.selected" = c("https://www.googleapis.com/auth/spreadsheets"
                                           , "https://www.googleapis.com/auth/userinfo.email"
                                           ))
+
 options(gargle_oob_default = TRUE)
 options(shiny.port = 1221)
 
-if (file.exists("www/cloud.json")) gar_set_client(web_json = "www/cloud.json")
+if (file.exists("www/cloud.json")) gar_set_client(web_json = "www/cloud.json", activate = "web")
 
 # -------------------------------------------------------------------------
 # app ---------------------------------------------------------------------
@@ -234,20 +225,12 @@ shinyServer(function(input, output, session) {
   # -------------------------------------------------------------------------
 
   plex <- reactive({
-
-    if( input$plex_fieldbook == "" &
-        input$plex_location != "" & !is.na(input$plex_dates[1]) & input$plex_about != "") {
-
-      fbname <- paste(strsplit(input$plex_location, ",") %>% unlist() %>% pluck(1)
-                      , as.character(input$plex_dates[1])
-                      , input$plex_about
-                      , sep = " "
-      ) %>%
-        stringi::stri_trans_general("Latin-ASCII") %>%
-
-        str_to_upper()
-
-      } else ( fbname <- input$plex_fieldbook )
+    
+    if( input$plex_fieldbook == "" ) {
+      
+      fbname <- NULL
+      
+    } else { fbname <- input$plex_fieldbook }
 
     plex <- fieldbook_plex(data = NULL
                            , idea = input$plex_idea
@@ -274,7 +257,7 @@ shinyServer(function(input, output, session) {
                            , rep = input$plex_rep
                            , serie = input$plex_serie
                            , seed = input$plex_seed
-    )
+                           )
 
   })
 
@@ -460,6 +443,7 @@ shinyServer(function(input, output, session) {
           , rep = input$design_rep
           , serie = input$design_serie
           , seed = input$design_seed
+          , qr = input$design_qr
         ) %>%
         inti::fieldbook_varlist( variables )
 

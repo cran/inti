@@ -9,7 +9,9 @@
 #' Tarpuy allow to create experimental designs under an interactive app.
 #'
 #' @return Shiny app
-#'
+#' 
+#' @importFrom shiny runApp dialogViewer runGadget
+#' 
 #' @examples
 #' 
 #' if(interactive()){
@@ -17,8 +19,6 @@
 #'  inti::tarpuy()
 #'
 #' }
-#' 
-#' @importFrom shiny runApp dialogViewer runGadget
 #' 
 #' @export
 
@@ -33,7 +33,7 @@ tarpuy <- function(dependencies = FALSE) {
   
   if (dependencies == TRUE ) {
     
-    source("https://raw.githubusercontent.com/Flavjack/inti/master/inst/tarpuy/setup.r")
+    source("https://raw.githubusercontent.com/Flavjack/inti/master/inst/tarpuy/setup.R")
     
   }
   

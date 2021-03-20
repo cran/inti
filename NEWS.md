@@ -1,3 +1,22 @@
+# Version 0.1.3
+
+## Major changes
+
+- *Rticles*
+  - update bootstrap
+  - include code section
+
+- *Yupana & Tarpuy*
+  - google auth verification
+  
+- *Tarpuy*
+  - Include QR code in fieldbook
+  
+- *Apps*
+  - bslib dependence install from CRAN
+  - Include video for local installation
+  - Suppress messages for load apps
+
 # Version 0.1.2
 
 ## Major changes

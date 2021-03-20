@@ -4,7 +4,7 @@
 #> open https://flavjack.github.io/inti/
 #> open https://flavjack.shinyapps.io/yupanapro/
 #> author .: Flavio Lozano-Isla (lozanoisla.com)
-#> date .: 2020-11-18
+#> date .: 2021-03-12
 # -------------------------------------------------------------------------
 
 # -------------------------------------------------------------------------
@@ -13,19 +13,7 @@
 
 #> devtools::install_github("flavjack/inti")
 
-if (file.exists("setup.R")) { source("setup.R") }
-
-library(shiny)
-library(inti)
-library(metathis)
-library(tidyverse)
-library(googlesheets4)
-library(googleAuthR)
-library(bslib)
-library(shinydashboard)
-library(ggpubr)
-library(FactoMineR)
-library(corrplot)
+source("pkgs.R")
 
 options("googleAuthR.scopes.selected" = c("https://www.googleapis.com/auth/spreadsheets"
                                           , "https://www.googleapis.com/auth/userinfo.email"
@@ -34,7 +22,7 @@ options("googleAuthR.scopes.selected" = c("https://www.googleapis.com/auth/sprea
 options(gargle_oob_default = TRUE)
 options(shiny.port = 1221)
 
-if (file.exists("www/cloud.json")) gar_set_client(web_json = "www/cloud.json")
+if (file.exists("www/cloud.json")) gar_set_client(web_json = "www/cloud.json", activate = "web")
 
 # -------------------------------------------------------------------------
 # app ---------------------------------------------------------------------
