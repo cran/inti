@@ -1,3 +1,42 @@
+# Version 0.2.0
+
+Changes incompatible with the old versions.
+Arguments changed in the syntax for `fbsm` and `graphics`.
+
+## Major changes
+
+- *Yupana*
+  - Delete error messages in console when run the app
+  - Change dependency: `ggpubr` --> `cowplot`
+  - Multivariate analysis need factor levels n>2 
+  - Allows copy the `Statistics` table
+
+- *Yupana*
+  - Delete error messages in console when run the app
+  - fix dates in experiments
+
+- *Rticles*
+  - update code for unzip `Articul8` files
+  
+- *Package* 
+  - ´mean_comparison´ update
+    - No remove the treatments column
+    - Allows plot 3 factors comparison `facet_grid()`
+    - New arguments for plot: xlimits, xrotation, dimension, opt
+    - Delete redundant arguments; limits, brakes
+    - Suggest use "*" instead of ":"
+    - Include additional layers to the plot. e.i. `coord_flip()`
+    - Save plot dimensions in the exported sheet
+  - `web_table` fix resize table in web
+  
+## Bug fixes
+
+- *Yupana & Tarpuy*
+  - add `pkgs.R` file to load dependencies in apps
+
+- *Tarpuy*
+  - fix auto-install packages in `inti::tarpuy(T)`
+
 # Version 0.1.3
 
 ## Major changes
@@ -15,7 +54,7 @@
 - *Apps*
   - bslib dependence install from CRAN
   - Include video for local installation
-  - Suppress messages for load apps
+  - Suppress messages when load apps
 
 # Version 0.1.2
 
