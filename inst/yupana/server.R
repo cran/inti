@@ -4,7 +4,7 @@
 #> open https://flavjack.github.io/inti/
 #> open https://flavjack.shinyapps.io/yupanapro/
 #> author .: Flavio Lozano-Isla (lozanoisla.com)
-#> date .: 2021-04-21
+#> date .: 2021-04-24
 # -------------------------------------------------------------------------
 
 # -------------------------------------------------------------------------
@@ -14,6 +14,9 @@
 #> devtools::install_github("flavjack/inti")
 
 source("pkgs.R")
+
+# -------------------------------------------------------------------------
+# -------------------------------------------------------------------------
 
 options("googleAuthR.scopes.selected" = c("https://www.googleapis.com/auth/spreadsheets"
                                           , "https://www.googleapis.com/auth/userinfo.email"
@@ -599,7 +602,8 @@ observe({
 
     mc <- mean_comp()$comparison %>%
       select(!c("{colors}", "{arguments}", "{values}")) %>%
-      inti::web_table(digits = input$rpt_digits)
+      inti::web_table(digits = input$rpt_digits
+                      , file_name = input$rpt_variable)
 
   })
 
