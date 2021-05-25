@@ -1,7 +1,5 @@
 ## ----setup, include=FALSE-----------------------------------------------------
-source("http://lozanoisla.com/lectures/setup.r")
-library(gsheet)
-library(dplyr)
+source("http://inkaverse.com/docs.r")
 
 ## -----------------------------------------------------------------------------
 url <- "https://docs.google.com/spreadsheets/d/1nLP-dH9-dsVMXgsU7Z02EbgWvMIBKG5IYVRHAJCN-Z0/edit#gid=0"

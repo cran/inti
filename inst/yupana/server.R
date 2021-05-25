@@ -4,7 +4,7 @@
 #> open https://flavjack.github.io/inti/
 #> open https://flavjack.shinyapps.io/yupanapro/
 #> author .: Flavio Lozano-Isla (lozanoisla.com)
-#> date .: 2021-04-24
+#> date .: 2021-05-24
 # -------------------------------------------------------------------------
 
 # -------------------------------------------------------------------------
@@ -13,7 +13,7 @@
 
 #> devtools::install_github("flavjack/inti")
 
-source("pkgs.R")
+suppressPackageStartupMessages({source("pkgs.R")})
 
 # -------------------------------------------------------------------------
 # -------------------------------------------------------------------------
@@ -45,6 +45,10 @@ observe({
   }
 
 })
+  
+# auth --------------------------------------------------------------------
+
+  gar_shiny_auth(session)
 
 # longin vs local ---------------------------------------------------------
 
@@ -92,6 +96,9 @@ observe({
 
   })
   
+if(file.exists("www/analytics.r")) {source("www/analytics.r", local = T)}
+  
+  
 # -------------------------------------------------------------------------
 
   fieldbook_url <- reactive({
@@ -104,6 +111,22 @@ observe({
 
     }
 
+  })
+  
+  
+  output$fieldbook_gsheet <- renderUI({
+    
+    validate(need(fieldbook_url(), "LogIn and insert a url") )
+    
+    info <- gs4_get(gs())
+    
+    names <- info$sheets$name 
+    
+    selectInput(inputId = "fieldbook_gsheet"
+                , label = NULL
+                , choices = c("choose" = ""
+                              , names)
+    )
   })
 
 # open url ----------------------------------------------------------------
@@ -126,6 +149,7 @@ observe({
                  , label = "Open"
                  , class = "btn btn-success"
                  , onclick = open
+                 , width = "100%"
     )
 
   })
@@ -147,50 +171,155 @@ observe({
   })
 
 # -------------------------------------------------------------------------
-
-  fbsm_url <- reactive({
-
-    info <- gs4_get(gs())
-
-    url <- info$spreadsheet_url
-
-    id <- info$sheets %>%
-      filter(name == input$fbsmrvars_gsheet) %>%
-      pluck("id")
-
-    fbsm_url  <- paste(url, id, sep = "#gid=")
-
-  })
-
-# -------------------------------------------------------------------------
   
   fieldbook <- reactive({
+    
+    validate(need(input$fieldbook_gsheet, "Choose you fb sheet"))
+    
+    gs() %>%
+      range_read(input$fieldbook_gsheet)
+    
+    })
+  
 
-    if ( input$fieldbook_gsheet %in% sheet_names(gs()) ) {
+# -------------------------------------------------------------------------
 
-      gs() %>%
-        range_read( input$fieldbook_gsheet ) %>% 
-        as.data.frame()
-
-    } else { fieldbook <- NULL }
-
+  output$fb_last_factor <- renderUI({
+    
+    validate(need(fieldbook(), "LogIn and insert a url") )
+    
+    names <- fieldbook() %>% names()
+    
+    selectInput(inputId = "fb_last_factor"
+                , label = NULL
+                , choices = c("choose" = ""
+                              , names)
+    )
   })
   
-  refresh <- reactive({ list(input$fbsm_refresh, input$mvr_refresh) })
-
-  fbsmrvar <- eventReactive( refresh(), {
+  
+# Yupana: Exploratory -----------------------------------------------------
+# -------------------------------------------------------------------------
+  
+  output$raw_response <- renderUI({
     
-      validate( need( input$fieldbook_url, "LogIn and create or insert a url" ) )
-
-      if ( input$fbsmrvars_gsheet %in% sheet_names(gs()) ) {
-
-        fbsmrvar <- gs() %>%
-          range_read( input$fbsmrvars_gsheet ) %>%
-          as.data.frame()
-
-      } else { fbsmrvar <- NULL }
+    validate(need(fieldbook(), "LogIn and create or insert a url"))
+    
+    variable_names <- fieldbook() %>%
+      names()
+    
+    selectInput(
+      inputId = "raw_y"
+      , label = "Response variable"
+      , choices = c("choose" = ""
+                    , variable_names)
+    )
     
   })
+  
+  output$raw_x <- renderUI({
+    
+    validate(need(fieldbook(), "LogIn and create or insert a url"))
+    
+    factor_names <- fieldbook() %>%
+      names()
+    
+    selectInput(
+      inputId = "raw_x"
+      , label = "Axis X"
+      , choices = c("choose" = ""
+                    , factor_names)
+    )
+    
+  })
+  
+  output$raw_group <- renderUI({
+    
+    validate(need(fieldbook(), "LogIn and create or insert a url"))
+    
+    factor_names <- fieldbook() %>%
+      names()
+    
+    selectInput(
+      inputId = "raw_group"
+      , label = "Grouped"
+      , choices = c("choose" = ""
+                    , factor_names)
+    )
+    
+  })
+  
+  plotraw <- reactive({
+    
+    validate(need(fieldbook(), "LogIn and create or insert a url"))
+    validate(need(input$raw_x, "Choose your parameters"))
+    validate(need(input$raw_y, "Choose your parameters"))
+    
+    raw_xrotation <- input$raw_xrotation %>% 
+      strsplit(., "[*]") %>% 
+      pluck(1) %>% as.numeric()
+    
+    raw_ylimits <- input$raw_ylimits %>% 
+      strsplit(., "[*]") %>% 
+      pluck(1) %>% as.numeric()
+    
+    raw_gtext <- input$raw_gtext %>% 
+      strsplit(., ",") %>% 
+      pluck(1) %>% as.character()
+    
+    raw_xtext <- input$raw_xtext %>% 
+      strsplit(., ",") %>% 
+      pluck(1) %>% as.character()
+    
+    fieldbook() %>% 
+      plot_raw(type = "boxplot"
+               , x = if(input$raw_x == "") NULL else input$raw_x
+               , y = if(input$raw_y == "") NULL else input$raw_y
+               , group = if(input$raw_group == "") NULL else input$raw_group
+               , xlab = if(input$raw_xlab == "") NULL else input$raw_xlab
+               , ylab = if(input$raw_ylab == "") NULL else input$raw_ylab
+               , glab = if(input$raw_glab == "") NULL else input$raw_glab
+               , ylimits = if(input$raw_ylimits == "") NULL else raw_ylimits
+               , xrotation = if(input$raw_xrotation == "") NULL else raw_xrotation
+               , legend = input$raw_legend
+               , color = if(input$raw_color == "yes") TRUE else FALSE
+               , opt = if(input$raw_opt == "") NULL else input$raw_opt
+               , xtext = if(input$raw_xtext == "") NULL else raw_xtext
+               , gtext = if(input$raw_gtext == "") NULL else raw_gtext
+               )
+    })
+  
+  output$plotraw <- renderImage({
+    
+    validate(need(fieldbook(), "LogIn and create or insert a url"))
+
+    dim <- input$raw_dimension %>% 
+      strsplit(., "[*]") %>% 
+      pluck(1) %>% as.numeric()
+    
+    if(!is.na(dim[1])) { ancho <- dim[1] } else {ancho <- input$graph_width}
+    if(!is.na(dim[2])) { alto <- dim[2] } else {alto <- input$graph_height}
+    if(!is.na(dim[3])) { dpi <- dim[3] } else {dpi <- input$graph_dpi}
+    
+    outfile <- tempfile(fileext = ".png")
+    
+    png(outfile, width = ancho, height = alto, units = "cm", res = dpi)
+    print(plotraw())
+    dev.off()
+    
+    list(src = outfile)
+    
+  }, deleteFile = TRUE)
+  
+# ------------------------------------------------------------------------- 
+  
+  output$plot_raw <- renderUI({
+    
+    validate(need(plotraw(), "Choose your parameters"))
+
+    tagList( div(imageOutput("plotraw"), align = "center") ) 
+    
+    })
 
 # Yupana: Fieldbook -------------------------------------------------------
 # -------------------------------------------------------------------------
@@ -202,117 +331,7 @@ observe({
 
   })
 
-  # summary module ----------------------------------------------------------
-
-  output$last_factor <- renderUI({
-
-    if ( !is.null(fieldbook()) ) {
-
-      fieldbook_names <- fieldbook() %>%
-        names()
-
-      selectInput(inputId = "last_factor"
-                  , label = "Last factor"
-                  , choices = c("choose" = ""
-                                , fieldbook_names)
-      )
-
-    } else { print ("Insert sheet name") }
-
-  })
-
-  # -------------------------------------------------------------------------
-
-  output$comp_facts <- renderUI({
-    
-    validate( need( fieldbook(), "LogIn and insert a url" ) )
-    validate( need( input$last_factor, "Insert last factor" ) )
-
-    if ( !is.null( fieldbook() ) && input$last_factor != ""  ) {
-
-      fieldbook_fctr_names <- fieldbook() %>%
-        select( 1:input$last_factor ) %>%
-        names()
-
-      selectInput(inputId = "comp_facts"
-                  , label = "Comparison factors"
-                  , multiple = TRUE
-                  , choices = c("choose" = ""
-                                , fieldbook_fctr_names)
-      )
-
-    } else { print("Insert last factor") }
-
-  })
-
-  # -------------------------------------------------------------------------
-
-  output$fb_smr <- renderUI({
-
-    tagList(
-
-      uiOutput("last_factor"),
-
-      textInput(inputId = "model_facts"
-                , label = "Model factors"
-                , value = ""
-                , placeholder = "block + factor1*factor2"
-      ),
-
-      uiOutput("comp_facts"),
-
-      selectInput(inputId = "test_comp"
-                  , label = "Mean comparison test"
-                  , choices = c("SNK", "TUKEY", "DUNCAN")
-      ),
-
-      numericInput(inputId = "sig_level"
-                   , label = "Significance level"
-                   , value = 0.05
-                   , step = 0.01
-                   , min = 0
-      ),
-
-      actionButton(inputId = "fbsmr_generate"
-                   , label = "Generate"
-                   , class = "btn btn-warning"
-      )
-
-    )
-
-  })
-
-  # -------------------------------------------------------------------------
-
-  observeEvent(input$fbsmr_generate, {
-
-    validate( need( input$fieldbook_url, "LogIn and insert a url" ) )
-
-    if ( !is.null( fieldbook() ) && input$last_factor != "" )  {
-
-      fbsmr <- fieldbook_summary(data = fieldbook()
-                                 , last_factor = input$last_factor
-                                 , model_facts = input$model_facts
-                                 , comp_facts = paste0(input$comp_facts
-                                                       , collapse = "*")
-                                 , test_comp = input$test_comp
-                                 , sig_level = input$sig_level
-      )
-
-      if ( !input$fbsmrvars_gsheet %in% sheet_names(gs()) ) {
-
-        sheet_add(ss = gs(), .after = input$fieldbook_gsheet
-                  , sheet = input$fbsmrvars_gsheet)
-
-        fbsmr %>% sheet_write(ss = gs(), sheet = input$fbsmrvars_gsheet)
-
-      } else { print ("sheet already exist") }
-
-    }
-
-  })
-
-  # reshape module ----------------------------------------------------------
+# reshape module ----------------------------------------------------------
 
   output$last_factor_rs <- renderUI({
 
@@ -392,7 +411,7 @@ observe({
 
   })
 
-  # -------------------------------------------------------------------------
+# -------------------------------------------------------------------------
 
   output$fb_rsp <- renderUI({
 
@@ -434,14 +453,14 @@ observe({
 
     if ( !is.null( fieldbook() ) && input$last_factor_rs != "" )  {
 
-      fbrs <- fieldbook_reshape(data = fieldbook()
-                                , last_factor = input$last_factor_rs
-                                , sep = input$fbrs_sep
-                                , new_colname = input$fbrs_newcol
-                                , from_var = input$from_var_rs
-                                , to_var = input$to_var_rs
-                                , exc_factors = input$exc_fact_rs
-      )
+      fbrs <- yupana_reshape(data = fieldbook()
+                            , last_factor = input$last_factor_rs
+                            , sep = input$fbrs_sep
+                            , new_colname = input$fbrs_newcol
+                            , from_var = input$from_var_rs
+                            , to_var = input$to_var_rs
+                            , exc_factors = input$exc_fact_rs
+                             )
 
       if ( !"fbrs" %in% sheet_names(gs()) ) {
 
@@ -455,196 +474,152 @@ observe({
 
   })
 
-  # modules linked ----------------------------------------------------------
+# modules linked ----------------------------------------------------------
 
-  output$fb_modules <- renderUI({
-
-    if ( input$fb_preview_opt == "Summary" ) {
-
-      uiOutput("fb_smr")
-
-    } else if ( input$fb_preview_opt == "Reshape" ) {
-
-      uiOutput("fb_rsp")
-
-    }
-
-  })
-
-  # Yupana: Analysis --------------------------------------------------------
-  # -------------------------------------------------------------------------
-
-  output$rpt_variable <- renderUI({
-
-    if ( !is.null( fbsmrvar() ) ) {
-
-      rpt_variable_names <- fbsmrvar() %>%
-        filter(!type %in% c("factor", "factores", "factors")) %>%
-        select(variables) %>%
-        deframe()
-
-      selectInput(inputId = "rpt_variable"
-                  , label = "Variable"
-                  , choices = c("choose" = ""
-                                , rpt_variable_names)
-      )
-
-    } else { print ("Insert fieldbook summary") }
-
-  })
+  output$fb_modules <- renderUI({ uiOutput("fb_rsp") })
   
 
-  # -------------------------------------------------------------------------
+# Yupana: Analysis --------------------------------------------------------
+# -------------------------------------------------------------------------
   
-  output$sheet_export <- renderUI({
+  output$analysis_last_factor <- renderUI({
     
-    validate( need( input$rpt_variable, "Choose your variable") )
+    validate(need(fieldbook(), "LogIn and insert a url") )
     
-    textInput(inputId = "sheet_export"
-            , label = "Sheet export"
-            , value = input$rpt_variable
-            )
+    names <- fieldbook() %>% names()
     
+    selectInput(inputId = "analysis_last_factor"
+                , label = "Last factor"
+                , selected = input$fb_last_factor
+                , choices = c("choose" = ""
+                              , names)
+                )
     })
-
-  if (file.exists("www/analytics.r")) { source("www/analytics.r", local = T) }
-
-  # -------------------------------------------------------------------------
-
-  output$rpt_dotplot_groups <- renderUI({
-
-    if ( !is.null( fbsmrvar() ) ) {
-
-      rpt_dotplot_groups_names <- fbsmrvar() %>%
-        filter(type %in% c("factor", "factores", "factors")) %>%
-        select(variables) %>%
-        deframe()
-
-      selectInput(inputId = "rpt_dotplot_groups"
-                  , label = "Dotplot"
-                  , choices = c("choose" = ""
-                                , rpt_dotplot_groups_names)
-      )
-
-    } else { print ("Insert fieldbook summary") }
-
-  })
-
-  # -------------------------------------------------------------------------
-
-  report <- reactive({
-
-    validate( need( input$rpt_variable, "Choose your variable") )
-
-    if ( !is.null( fieldbook() ) & !is.null( fbsmrvar() ) )  {
-
-      rslt <- fieldbook_report(data = fieldbook()
-                               , fb_smr = fbsmrvar()
-                               , variable = input$rpt_variable
-                               , dotplot_groups = input$rpt_dotplot_groups
-                               , model_diag = FALSE
-      )
-    }
-
-  })
-
-  output$anova <- renderPrint({ anova(report()$anova) })
   
-  output$dfreq <- renderPlot({
+  output$analysis_response <- renderUI({
     
-    diag <- report()$diagplot 
-    plot_grid(plotlist = diag, ncol = 2)
-
-  })
-
-  output$dotplot <- renderPlot({
-
-    validate( need( input$rpt_dotplot_groups, "Choose your groups") )
-
-    report()$dotplot
-
-  })
-
-  # -------------------------------------------------------------------------
-  
-  output$rpt_digits <- renderUI({
+    validate(need(input$analysis_last_factor, "Select your last factor") )
     
-    validate( need( input$rpt_variable, "Choose your variable") )
+    names <- fieldbook() %>% 
+      select(!1:input$analysis_last_factor) %>% 
+      names()
     
-    numericInput(inputId = "rpt_digits"
-                 , label = "Table digits"
-                 , value = 2
-                 , step = 1
-                 , min = 0
-                 , max = 6
+    selectInput(inputId = "analysis_response"
+                , label = "Response variable"
+                , choices = c("choose" = ""
+                              , names)
     )
   })
   
+  output$analysis_comparison <- renderUI({
+    
+    validate(need(input$analysis_last_factor, "Select your last factor") )
+    
+    names <- fieldbook() %>% 
+      select(1:input$analysis_last_factor) %>% 
+      names()
+    
+    selectInput(inputId = "analysis_comparison"
+                , label = "Factor comparison"
+                , multiple = TRUE
+                , choices = c("choose" = ""
+                              , names)
+                )
+    })
+  
+  output$analysis_model_factors <- renderUI({
+    
+    textInput(
+      inputId = "analysis_model_factors"
+      , label = "Model factors"
+      , value = input$fb_model_factors
+      , placeholder = "e.g. block + factor1*factor2"
+      , width = "100%"
+        
+        )
+    
+    })
+  
+  observe({
+    
+    comparison <- input$analysis_comparison %>% 
+      paste(., collapse = " + ")
+    
+    if( input$fb_model_factors == "" ) {
+      
+      updateTextInput(session
+                      , inputId = "analysis_model_factors"
+                      , value = comparison)
+    } 
+
+    
+  })
+  
+# results -----------------------------------------------------------------
+# -------------------------------------------------------------------------
+
+  analysis <- reactive({
+    
+    validate(need(input$analysis_response, "Choose your variable"))
+    validate(need(input$analysis_model_factors, "Include your model factors"))
+    validate(need(input$analysis_comparison, "Include your model comparison"))
+    
+    rslt <- yupana_analysis(data = fieldbook()
+                            , response = input$analysis_response
+                            , model_factors = input$analysis_model_factors
+                            , comparison = input$analysis_comparison
+                            , test_comp = input$analysis_test_comparison
+                            , sig_level = input$analysis_sig_level
+                            , plot_dist = "boxplot"
+                            , plot_diag = TRUE
+                            , digits = input$analysis_digits
+                            )
+    })
+  
   # -------------------------------------------------------------------------
 
-  mean_comp <- reactive({
+  output$anova <- renderPrint({ anova(analysis()$anova) })
+  
+  output$plotdiag <- renderPlot({
+    
+    diag <- analysis()$plotdiag 
+    plot_grid(plotlist = diag, ncol = 2)
+    
+    })
 
-    validate( need( input$rpt_variable, "Choose your variable") )
+  output$plotdist <- renderPlot({ analysis()$plotdist })
 
-    if ( !is.null( fieldbook() ) & !is.null( fbsmrvar() ) )  {
+  # -------------------------------------------------------------------------
 
-      mc <- mean_comparison(data = fieldbook()
-                            , fb_smr = fbsmrvar()
-                            , variable = input$rpt_variable
-                            , graph_opts = T
-                            , digits = input$rpt_digits
-                            )
-    }
+  output$meancomp <- DT::renderDataTable(server = FALSE, {
 
-  })
+      inti::web_table(data = analysis()$meancomp
+                      , digits = input$analysis_digits
+                      , file_name = input$analysis_response
+                      )
+    
+    })
 
-  output$mc_table <- DT::renderDataTable(server = FALSE, {
+  output$smrstats <- DT::renderDataTable(server = FALSE, {
 
-    mc <- mean_comp()$comparison %>%
-      select(!c("{colors}", "{arguments}", "{values}")) %>%
-      inti::web_table(digits = input$rpt_digits
-                      , file_name = input$rpt_variable)
-
-  })
-
-  output$mc_stats <- DT::renderDataTable(server = FALSE, {
-
-    mc <- mean_comp()$stats %>%
-      select(!c(name.t, MSerror, Df)) %>%
-      select(!intersect(names(.), c("StudentizedRange", "MSD"))) %>%
+    mc <- analysis()$stats %>%
       inti::web_table(buttons = "copy")
 
   })
 
-  # export meancomparison table ---------------------------------------------
 
-  observeEvent(input$export_mctab, {
-    
-    sheet_export <- input$sheet_export %>% gsub("[[:space:]]", "_", .)
-
-    if ( !sheet_export %in% sheet_names(gs()) ) {
-
-      sheet_add( ss = gs(), sheet = sheet_export )
-
-      mean_comp()$comparison %>% 
-        sheet_write(ss = gs(), sheet = sheet_export )
-
-    } else { print ("sheet already exist") }
-
-  })
-  
   # -------------------------------------------------------------------------
 
-  output$rpt_preview <- renderUI({
+  output$analysis_preview <- renderUI({
     
-    if ( input$rpt_preview_opt == "Gsheet" ) {
+    if ( input$analysis_preview_opt == "Gsheet" ) {
 
-      tags$iframe(src = fbsm_url(),
+      tags$iframe(src = fb_url(),
                   style="height:580px; width:100%; scrolling=no")
+      
+      } else if ( input$analysis_preview_opt == "Model" ) {
 
-    } else if ( input$rpt_preview_opt == "Model" & !is.null(input$rpt_variable) ) {
-
-      validate( need( input$rpt_variable, "Choose your variable") )
+      validate( need( input$analysis_model_factors, "Choose your variable") )
       
       tagList(
 
@@ -660,7 +635,7 @@ observe({
 
                  HTML('<h4><strong>Statistics</strong></h4>'),
 
-                 DT::dataTableOutput("mc_stats")
+                 DT::dataTableOutput("smrstats")
 
           ),
 
@@ -668,213 +643,747 @@ observe({
 
                  HTML('<h4><strong>Mean Comparison</strong></h4>'),
 
-                 DT::dataTableOutput("mc_table"),
-
-                 br(),
-
-                 actionButton(inputId = "export_mctab"
-                              , label = "Export table"
-                              , class = "btn btn-warning"
+                 DT::dataTableOutput("meancomp")
+                 
                  )
           )
-        )
       )
 
-    } else if ( input$rpt_preview_opt == "Plots" & !is.null(input$rpt_variable) ) {
+    } else if ( input$analysis_preview_opt == "Diagnostic" ) {
 
       tagList(
 
         fluidRow(
 
-          column(width = 6,
+          column(width = 5,
 
                  HTML('<h4><strong>Model Diagnostic</strong></h4>'),
 
-                 plotOutput("dfreq", width =  "auto", height = "500px")
+                 plotOutput("plotdiag", width =  "auto", height = "500px")
 
           ),
 
-          column(width = 6,
+          column(width = 7,
 
                  HTML('<h4><strong>Variable Distribution</strong></h4>'),
 
-                 plotOutput("dotplot", width =  "auto", height = "500px")
+                 plotOutput("plotdist", width =  "auto", height = "500px")
 
           )
         )
       )
+    } 
+    
+  })
+
+# Yupana: Graphics --------------------------------------------------------
+# -------------------------------------------------------------------------
+  
+# load --------------------------------------------------------------------
+# -------------------------------------------------------------------------
+
+observeEvent(input$graph_smr_load, {
+  
+  names <- gs() %>% sheet_names()
+  
+  import <- modalDialog(size = "s", easyClose = T, 
+    
+    title = div(h3("Select your sheet", icon("cloud-upload-alt"))
+                , align = "left"),
+    
+    selectInput(
+      inputId = "smr_load_sheet"
+      , label = NULL
+      , choices = c("choose" = ""
+                    , names)
+      ), 
+    
+    footer = tagList(
+      actionButton("import_sheet", "Import", class = "btn-success")
+      )
+    
+    )
+  
+  showModal(import)
+  
+})
+  
+observeEvent(input$import_sheet, { removeModal() })
+  
+gropt <- NULL
+makeReactiveBinding("gropt")
+
+observeEvent(input$import_sheet, {
+  
+  validate(need(input$smr_load_sheet, "Select your sheet"))
+  
+  mc <- gs() %>% range_read(input$smr_load_sheet)
+  
+  gropt <<- mc %>% yupana_import_smr()
+  
+})
+
+
+observeEvent(input$analysis_response, {
+  
+  gropt <<- NULL
+  
+})
+
+
+grdt <- reactive({
+  
+  if(!is.null(gropt)) {
+
+    list(data = gropt$data
+        , type = gropt$type
+        , y = gropt$y
+        , x = gropt$x
+        , group = gropt$group
+        , xlab = gropt$xlab
+        , ylab = gropt$ylab
+        , glab = gropt$glab
+        , ylimits = if(is.na(gropt$ylimits)) NA else paste(gropt$ylimits, collapse = "*")
+        , xrotation = if(is.na(gropt$xrotation)) NA else paste(gropt$xrotation, collapse = "*")
+        , xtext = if(is.na(gropt$xtext)) NA else paste(gropt$xtext, collapse = ",")
+        , gtext = if(is.na(gropt$gtext)) NA else paste(gropt$gtext, collapse = ",")
+        , legend = gropt$legend
+        , sig = gropt$sig
+        , error = gropt$error
+        , color = if(length(gropt$color) == 0) TRUE else gropt$color
+        , opt = gropt$opt
+        , dimension = gropt$dimension
+        , model = gropt$model
+        , factors = gropt$factors
+        , tabvar = gropt$tabvar
+        , comparison = gropt$comparison
+        , test_comp = gropt$test_comp
+        , sig_level = gropt$sig_level
+        )  
+    
+  } else if (is.null(gropt)) {
+    
+    list(data = analysis()$meancomp
+        , y = analysis()$response
+        , x = analysis()$comparison[1]
+        , group = analysis()$comparison[2]
+        #>
+        , type = NA
+        , xlab = NA 
+        , ylab = NA 
+        , glab = NA 
+        , ylimits = NA 
+        , xrotation = NA 
+        , legend = NA 
+        , error = NA 
+        , color = NA 
+        , opt = NA 
+        , xtext = NA 
+        , gtext = NA 
+        , sig = NA 
+        , dimension = NA 
+        #>
+        , model = analysis()$model
+        , factors = analysis()$factors
+        , tabvar = analysis()$tabvar
+        , comparison = analysis()$comparison
+        , test_comp = input$analysis_test_comparison
+        )
     }
-  })
-
-  # Yupana: Graphics --------------------------------------------------------
-  # -------------------------------------------------------------------------
-
-  sheet_grp <- eventReactive(input$graph_refresh, {
-    
-    fbinfo <- c(input$fieldbook_gsheet, input$fbsmrvars_gsheet)
-    
-    gs() %>% sheet_names() %>% setdiff(., fbinfo)
-    
-    })
-
-  output$graph_sheets <- renderUI({
-
-    selectInput(inputId = "graph_sheets"
-                , label = "Graph sheet"
-                , choices = c("choose" = ""
-                              , sheet_grp()
-                              )
-                )
-    })
-
-  # -------------------------------------------------------------------------
-
-  plot_url <- reactive({
-
-    info <- gs4_get(gs())
-
-    url <- info$spreadsheet_url
-
-    id <- info$sheets %>%
-      filter(name %in% input$graph_sheets) %>%
-      pluck("id")
-
-    plot_url  <- paste(url, id, sep = "#gid=")
-
-  })
-
-  # -------------------------------------------------------------------------
-
   
+})
+
+output$smr_type <- renderUI({ 
   
-  plotdt <- eventReactive(input$graph_create, {
+  grdt <- grdt()
+  
+  opts <- c("bar", "line")
+  selection <- grdt$type
+  
+  selectInput(
+    inputId = "smr_type"
+    , label = "Type"
+    , choices = opts
+    , selected = selection
+    )
+  
+})
+
+output$smr_response <- renderUI({ 
+  
+  grdt <- grdt()
+  
+  opts <- grdt$y
+
+selectInput(
+  inputId = "smr_response"
+  , label = "Response variable"
+  , choices = opts
+  )
+
+})
+
+output$smr_x <- renderUI({ 
+  
+  grdt <- grdt()
+
+  opts <- grdt$factors
+  selection <- grdt$x
+
+selectInput(
+  inputId = "smr_x"
+  , label = "Axis X"
+  , choices = opts
+  , selected = selection
+  )
+
+})
+
+output$smr_group <- renderUI({ 
+  
+  grdt <- grdt()
+  
+  opts <- grdt$factors
+  selection <- grdt$group
+  
+selectInput(
+  inputId = "smr_group"
+  , label = "Grouped"
+  , choices = opts
+  , selected = selection
+  )
+
+})
+
+output$smr_sig <- renderUI({ 
+  
+  grdt <- grdt()
+  
+  opts <- c(grdt$tabvar, "none")
+  
+  if(is.null(gropt)) {
     
-    validate( need( input$graph_sheets, "Refresh and choose a sheet") )
+    selection <- "sig"
     
-    if ( input$graph_sheets %in% sheet_names(gs()) ) {
+  } else {
+    
+    selection <- grdt$sig
+
+  }
+
+selectInput(
+  inputId = "smr_sig"
+  , label = "Significance"
+  , choices = opts
+  , selected = selection
+  )
+
+})
+
+output$smr_error <- renderUI({ 
+  
+  grdt <- grdt()
+  
+  opts <- c("ste", "std", "none")
+  selection <- grdt$error
+  
+  selectInput(
+    inputId = "smr_error"
+    , label = "Error bar"
+    , choices = opts
+    , selected = selection
+    )
+  
+})
+
+output$plot_error <- renderUI({ 
+  
+  grdt <- grdt()
+  
+  opts <- c("top", "bottom", "left", "right", "none")
+  selection <- grdt$error
+  
+  selectInput(
+    inputId = "smr_legend"
+    , label = "Legend"
+    , choices = opts
+    , selected = selection
+  )
+  
+})
+
+output$smr_ylimits <- renderUI({ 
+  
+  grdt <- grdt()
+  
+  selection <- if(is.na(grdt$ylimits)) "" else grdt$ylimits
+  
+  textInput(
+    inputId ="smr_ylimits"
+    , label = "Y limits"
+    , placeholder = "0*100*20"
+    , value = selection
+    )
+  
+})
+
+output$smr_xrotation <- renderUI({ 
+  
+  grdt <- grdt()
+  
+  selection <- if(is.na(grdt$xrotation)) "0*0.5*0.5" else grdt$xrotation
+  
+  textInput(
+    inputId ="smr_xrotation"
+    , label = "X rotation"
+    , placeholder = "angle*h*v"
+    , value = selection
+    )
+  
+})
+
+output$smr_dimension <- renderUI({ 
+  
+  grdt <- grdt()
+  
+  selection <- grdt$dimension
+  
+  selection <- if(is.na(grdt$xrotation)) "20*10*100" else paste(selection, collapse = "*")
+  
+  textInput(
+    inputId = "smr_dimension"
+    , label = "Dimensions (W*H*dpi)"
+    , placeholder = "W*H*dpi"
+    , value = selection
+  )
+  
+})
+
+output$analysis_model <- renderText({ 
+  
+  grdt <- grdt()
+  
+  grdt$model
+  
+})
+
+output$plot_ylab <- renderUI({ 
+  
+  grdt <- grdt()
+  selection <- if(is.na(grdt$ylab)) "" else grdt$ylab
+  
+  textInput(
+    inputId ="smr_ylab"
+    , label = "Y label"
+    , value = selection
+  )
+  
+})
+
+output$plot_xlab <- renderUI({ 
+  
+  grdt <- grdt()
+  selection <- if(is.na(grdt$xlab)) "" else grdt$xlab
+  
+  textInput(
+    inputId ="smr_xlab"
+    , label = "X label"
+    , value = selection
+    )
+  
+})
+
+output$plot_glab <- renderUI({ 
+  
+  grdt <- grdt()
+  selection <- if(is.na(grdt$glab)) "" else grdt$glab
+  
+  textInput(
+    inputId ="smr_glab"
+    , label = "Group label"
+    , value = selection
+  )
+  
+})
+
+output$plot_gtext <- renderUI({ 
+  
+  grdt <- grdt()
+  selection <- if(is.na(grdt$gtext)) "" else grdt$gtext
+  
+  textInput(
+    inputId ="smr_gtext"
+    , label = "Group brake labels (,)"
+    , value = selection
+  )
+  
+})
+
+output$plot_xtext <- renderUI({ 
+  
+  grdt <- grdt()
+  selection <- if(is.na(grdt$xtext)) "" else grdt$xtext
+
+  textInput(
+    inputId ="smr_xtext"
+    , label = "X brake labels (,)"
+    , value = selection
+  )
+  
+})
+
+output$plot_opt <- renderUI({ 
+  
+  grdt <- grdt()
+  
+  groups <- grdt$comparison
+  
+  if(length(groups) == 3) {
+
+    selection <- paste0("facet_grid(. ~", groups[3], ")")
+    
+  } else {
+    
+    selection <- if(is.na(grdt$opt)) "" else grdt$opt
+    
+  }
+  
+  textInput(
+    inputId ="smr_opt"
+    , label = "Opt"
+    , placeholder = "extra layers"
+    , value = selection
+    )
+  
+})
+
+output$plot_color <- renderUI({
+  
+  if(is.null(gropt)) {
+    
+    opts <- c("yes", "no")
+    
+  } else {
+    
+    opts <- c("manual")
+    
+  }
+  
+  selectInput(
+    inputId ="smr_color"
+    , label = "Color"
+    , choices = opts
+    )
+  
+})
+
+
+# plot --------------------------------------------------------------------
+# -------------------------------------------------------------------------
+
+  plotsmr <- reactive({ 
+    
+    grdt <- grdt()
+    
+    ylimits <- if(input$smr_ylimits == "") NULL else {
       
-      plottb <- gs() %>%
-        range_read( input$graph_sheets )
+      input$smr_ylimits %>% 
+        strsplit(., "[*]") %>% 
+        unlist() %>% as.numeric()
       
-    } else {"Choose a summary table"}
+      }
     
+    xrotation <- if(input$smr_xrotation == "") NULL else {
+      
+      input$smr_xrotation %>% 
+        strsplit(., "[*]") %>% 
+        unlist() %>% as.numeric()
+      
+      }
+
+    xlab <- if(input$smr_xlab == "") NULL else input$smr_xlab
+    ylab <- if(input$smr_ylab == "") NULL else input$smr_ylab
+    glab <- if(input$smr_glab == "") NULL else input$smr_glab
+    xtext <- if(input$smr_xtext == "") NULL else input$smr_xtext %>% strsplit(., ",") %>% unlist()
+    gtext <- if(input$smr_gtext == "") NULL else input$smr_gtext %>% strsplit(., ",") %>% unlist()
+    
+    opt <- if(input$smr_opt == "") NULL else input$smr_opt
+    sig <- if(input$smr_sig == "none") NULL else input$smr_sig
+    error <- if(input$smr_error == "none") NULL else input$smr_error
+    
+    color <- if(input$smr_color == "yes") { TRUE
+    } else if (input$smr_color == "no") { FALSE
+    } else if (input$smr_color == "manual"){ grdt$color }
+    
+    plot_smr(data = grdt$data
+             , type = input$smr_type
+             , y = input$smr_response
+             , x = input$smr_x
+             , group = input$smr_group
+             , xlab = xlab
+             , ylab = ylab
+             , glab = glab
+             , ylimits = ylimits
+             , xrotation = xrotation
+             , error = error
+             , sig = sig
+             , legend = input$smr_legend
+             , opt = opt
+             , gtext = gtext 
+             , xtext = xtext
+             , color = color
+             ) 
     })
   
-  plotgr <- reactive({ plot_smr(plotdt()) })
-
-  # -------------------------------------------------------------------------
-
-  output$plotgr <- renderImage({
+# -------------------------------------------------------------------------
+  
+  output$plotsmr <- renderImage({
     
-    validate( need( input$graph_sheets, "Refresh and choose a sheet") )
+    validate(need(plotsmr(), "Choose your parameters") )
     
-    dim <- plotdt() %>% 
-      select('{arguments}',	'{values}') %>% 
-      tibble::deframe() %>% 
-      .["dimensions"] %>% 
+    dim <- input$smr_dimension %>% 
       strsplit(., "[*]") %>% 
-      pluck(1) %>% as.numeric()
+      unlist() %>% as.numeric()
     
     if(!is.na(dim[1])) { ancho <- dim[1] } else {ancho <- input$graph_width}
     if(!is.na(dim[2])) { alto <- dim[2] } else {alto <- input$graph_height}
     if(!is.na(dim[3])) { dpi <- dim[3] } else {dpi <- input$graph_dpi}
     
     outfile <- tempfile(fileext = ".png")
-
+    
     png(outfile, width = ancho, height = alto, units = "cm", res = dpi)
-    print(plotgr())
+    print(plotsmr())
     dev.off()
-
+    
     list(src = outfile)
-
+    
   }, deleteFile = TRUE)
+  
+# -------------------------------------------------------------------------
+  
+  graph_url <- reactive({
 
-  # -------------------------------------------------------------------------
+    sheet_name <- input$graph_smr_name %>% gsub("[[:space:]]", "_", .)
 
-  output$graph_preview <- renderUI({
+    info <- gs4_get(gs())
 
-    if ( input$grp_preview_opt == "Gsheet" ) {
+    url <- info$spreadsheet_url
 
-      tags$iframe(src = plot_url(),
+    id <- info$sheets %>%
+      filter(name %in% sheet_name) %>%
+      pluck("id")
+
+    url_preview <- paste(url, id, sep = "#gid=")
+
+  })
+  
+  
+  
+  output$plot_smr <- renderUI({
+    
+    if ( input$smr_preview_opt == "Gsheet" ) {
+      
+      tags$iframe(src = graph_url(),
                   style="height:580px; width:100%; scrolling=no")
-
-    } else if ( input$grp_preview_opt == "Plots" ) {
-
+      
+    } else if (input$smr_preview_opt == "Plots" ) {
+      
       tagList(
-
-        div(imageOutput("plotgr"), align = "center")
-
+        
+        div(imageOutput("plotsmr"), align = "center")
+        
       )
     }
   })
+  
 
-  # Yupana: Multivariate-----------------------------------------------------
-  # -------------------------------------------------------------------------
+# export graph options ---------------------------------------------
+  
+  output$graph_sheet_save <- renderUI({
+    
+    if(is.null(gropt)) {
+      
+      selection <- input$analysis_response 
+      
+    } else if (!is.null(gropt)) {
+      
+      selection <- input$smr_load_sheet
+        
+    }
+    
+    textInput(inputId = "graph_smr_name"
+              , label = "Sheet export"
+              , value = selection
+              )
+    })
+  
+  graph_save_info <- reactive({
+    
+    # validate(need(grdt(), "Some paremeter are missing") )
 
+    grdt <- grdt()
+    
+    color <- if(input$smr_color == "yes") { TRUE
+    }  else if (input$smr_color == "nos") { FALSE 
+        } else { grdt$color }
+    
+    yupana_export_smr(data = grdt$data
+                      #> reactive
+                     , type = input$smr_type
+                     , xlab = input$smr_xlab
+                     , ylab = input$smr_ylab
+                     , glab = input$smr_glab
+                     , ylimits = input$smr_ylimits
+                     , xrotation = input$smr_xrotation
+                     , xtext = input$smr_xtext
+                     , gtext = input$smr_gtext
+                     , legend = input$smr_legend
+                     , sig = input$smr_sig
+                     , error = input$smr_error
+                     , opt = input$smr_opt
+                     , dimension = input$smr_dimension
+                     #> fixed/reactive
+                     , response = grdt$y
+                     , comparison = grdt$comparison
+                     , model = grdt$model
+                     , test_comp = grdt$test_comp
+                     , sig_level = grdt$sig_level
+                     , color = color
+                     )
+    
+    }) 
+  
+
+  observeEvent(input$graph_smr_save, {
+    
+    validate(need(graph_save_info(), "Some paremeter are missing") )
+    
+    sheet_export <- input$graph_smr_name %>% gsub("[[:space:]]", "_", .)
+    
+    if ( input$graph_smr_overwrite == "no" & !sheet_export %in% sheet_names(gs())) {
+      
+      sheet_add(ss = gs(), sheet = sheet_export)
+      
+      graph_save_info() %>% 
+        sheet_write(ss = gs(), sheet = sheet_export )
+      
+    } else if(input$graph_smr_overwrite == "yes") {
+      
+      # sheet_add(ss = gs(), sheet = sheet_export)
+      
+      graph_save_info() %>% 
+        sheet_write(ss = gs(), sheet = sheet_export )
+      
+    } else {  print ("sheet already exist") }
+  
+    
+  })
+  
+  
+# Yupana: Multivariate-----------------------------------------------------
+# -------------------------------------------------------------------------
+
+  output$mvr_last_factor <- renderUI({
+    
+    validate(need(fieldbook(), "LogIn and insert a url"))
+    
+    last_factor <- fieldbook() %>% names()
+    
+    
+    selectInput(inputId = "mvr_last_factor"
+                , label = "Last Factor"
+                , selected = input$fb_last_factor
+                , choices = c("choose" = ""
+                              , last_factor)
+                )
+    })
+  
   output$mvr_facts <- renderUI({
 
-    if ( !is.null( fieldbook() ) & !is.null( fbsmrvar() ) ) {
+    validate(need(input$mvr_last_factor, "Choose your factors"))
+    
+    mvr_factors <- fieldbook() %>%
+      select(1:input$mvr_last_factor) %>% 
+      names()
 
-      mvr_variable_names <- fbsmrvar() %>%
-        filter(type %in% c("factor", "factores", "factors")) %>%
-        select(variables) %>%
-        deframe()
-
-      selectInput(inputId = "mvr_facts"
+      selectInput(inputId = "mvr_factors"
                   , label = "Factors"
                   , multiple = T
                   , choices = c("choose" = ""
-                                , mvr_variable_names)
+                                , mvr_factors)
       )
-
-    } else { print ("Insert fieldbook summary") }
 
   })
 
-  # -------------------------------------------------------------------------
+# -------------------------------------------------------------------------
 
   output$mvr_groups <- renderUI({
     
-    validate(need(input$mvr_facts, "Insert summary factors"))
-
-    if ( !is.null(input$mvr_facts) ) {
-
-      selectInput(inputId = "mvr_groups"
-                  , label = "Groups"
-                  , choices = c(input$mvr_facts)
-      )
-
-    } else { print ("Insert summary factors") }
-
+    validate(need(input$mvr_factors, "Insert group factor"))
+    
+    selectInput(inputId = "mvr_groups"
+                , label = "Groups"
+                , choices = input$mvr_factors
+                )
+    
+    })
+  
+  
+  output$mvr_variables <- renderUI({
+    
+    validate(need(input$mvr_last_factor, "Insert variables"))
+    
+    mvr_variables <- fieldbook() %>%
+      select(!1:input$mvr_last_factor) %>% 
+      names()
+    
+    selectInput(inputId = "mvr_variables"
+                , label = "Variables"
+                , multiple = TRUE
+                , choices = c("all", mvr_variables)
+    )
+    
   })
 
-  # -------------------------------------------------------------------------
-
+# -------------------------------------------------------------------------
+  
   mvr <- reactive({
     
+    validate(need(input$mvr_variables, "Choose your variables"))
+
     n <- fieldbook() %>%
-      select(input$mvr_facts)  %>% 
-      unlist() %>% 
-      unique() %>% 
-      length()
+      select(input$mvr_factors)  %>% 
+      select(!starts_with("{") | !ends_with("}")) %>% 
+      as.list() %>% 
+      map(discard, is.na) %>% 
+      lengths() %>% 
+      prod()
     
-    validate(need(n>2, "The factors should have more than 2 levels"))
+    validate(need(n > 2, "The factors should have more than 2 levels"))
     
-    mvr <- fieldbook_mvr(data = fieldbook()
-                         , fb_smr = fbsmrvar()
-                         , summary_by = input$mvr_facts
-                         , groups = input$mvr_groups)
+    yupana_mvr(
+      data = fieldbook()
+      , last_factor = input$mvr_last_factor
+      , summary_by = input$mvr_factors
+      , groups = input$mvr_groups
+      , variables = if(input$mvr_variables == "all") NULL else input$mvr_variables
+      )
+    
   })
 
-  # -------------------------------------------------------------------------
+# -------------------------------------------------------------------------
 
   output$pca_var <- renderImage({
     
-    validate(need(mvr()$pca, "Insert summary factors"))
+    validate(need(mvr(), "Choose your factors"))
     
-    dpi <- input$mvr_dpi
-    ancho <- input$mvr_width
-    alto <- input$mvr_height
+    dim <- input$mvr_dimension %>% 
+      strsplit(., "[*]") %>% 
+      pluck(1) %>% as.numeric()
+    
+    if(!is.na(dim[1])) { ancho <- dim[1] } else {ancho <- input$graph_width}
+    if(!is.na(dim[2])) { alto <- dim[2] } else {alto <- input$graph_height}
+    if(!is.na(dim[3])) { dpi <- dim[3] } else {dpi <- input$graph_dpi}
 
     outfile <- tempfile(fileext = ".png")
 
@@ -896,11 +1405,15 @@ observe({
 
   output$pca_ind <- renderImage({
     
-    validate(need(mvr()$pca, "Insert summary factors"))
+    validate(need(mvr(), "Choose your factors"))
 
-    dpi <- input$mvr_dpi
-    ancho <- input$mvr_width
-    alto <- input$mvr_height
+    dim <- input$mvr_dimension %>% 
+      strsplit(., "[*]") %>% 
+      pluck(1) %>% as.numeric()
+    
+    if(!is.na(dim[1])) { ancho <- dim[1] } else {ancho <- input$graph_width}
+    if(!is.na(dim[2])) { alto <- dim[2] } else {alto <- input$graph_height}
+    if(!is.na(dim[3])) { dpi <- dim[3] } else {dpi <- input$graph_dpi}
 
     outfile <- tempfile(fileext = ".png")
 
@@ -925,11 +1438,15 @@ observe({
 
   output$hcpc_tree <- renderImage({
     
-    validate(need(mvr()$pca, "Insert summary factors"))
+    validate(need(mvr(), "Choose your factors"))
 
-    dpi <- input$mvr_dpi
-    ancho <- input$mvr_width
-    alto <- input$mvr_height
+    dim <- input$mvr_dimension %>% 
+      strsplit(., "[*]") %>% 
+      pluck(1) %>% as.numeric()
+    
+    if(!is.na(dim[1])) { ancho <- dim[1] } else {ancho <- input$graph_width}
+    if(!is.na(dim[2])) { alto <- dim[2] } else {alto <- input$graph_height}
+    if(!is.na(dim[3])) { dpi <- dim[3] } else {dpi <- input$graph_dpi}
 
     outfile <- tempfile(fileext = ".png")
 
@@ -947,11 +1464,15 @@ observe({
 
   output$hcpc_map <- renderImage({
     
-    validate(need(mvr()$pca, "Insert summary factors"))
+    validate(need(mvr(), "Choose your factors"))
 
-    dpi <- input$mvr_dpi
-    ancho <- input$mvr_width
-    alto <- input$mvr_height
+    dim <- input$mvr_dimension %>% 
+      strsplit(., "[*]") %>% 
+      pluck(1) %>% as.numeric()
+    
+    if(!is.na(dim[1])) { ancho <- dim[1] } else {ancho <- input$graph_width}
+    if(!is.na(dim[2])) { alto <- dim[2] } else {alto <- input$graph_height}
+    if(!is.na(dim[3])) { dpi <- dim[3] } else {dpi <- input$graph_dpi}
 
     outfile <- tempfile(fileext = ".png")
 
@@ -959,10 +1480,15 @@ observe({
 
     plot.HCPC(x = mvr()$hcpc
               , choice = "map"
-              , legend = list(bty = "y"
-                              , x = "topright")
+              , legend = list(x = "topright"
+                              , cex = 0.5
+                              , inset = 0.001
+                              , box.lty=0
+                              )
               , draw.tree = F
-    )
+              )
+    
+    # http://www.sthda.com/english/wiki/add-legends-to-plots-in-r-software-the-easiest-way
 
     graphics.off()
 
@@ -974,21 +1500,26 @@ observe({
 
   output$correlation <- renderImage({
     
-    validate(need(mvr()$pca, "Insert summary factors"))
-
-    dpi <- input$mvr_dpi
-    ancho <- input$mvr_width + 5
-    alto <- input$mvr_height + 5
+    validate(need(mvr(), "Choose your factors"))
+    
+    dim <- input$mvr_dimension %>% 
+      strsplit(., "[*]") %>% 
+      pluck(1) %>% as.numeric()
+    
+    if(!is.na(dim[1])) { ancho <- dim[1] + 5} else {ancho <- input$graph_width + 5}
+    if(!is.na(dim[2])) { alto <- dim[2] + 5} else {alto <- input$graph_height + 5}
+    if(!is.na(dim[3])) { dpi <- dim[3] + 5} else {dpi <- input$graph_dpi + 5}
 
     outfile <- tempfile(fileext = ".png")
 
-    png(outfile, width = ancho, height = alto, units = "cm", res = dpi)
+    png(outfile, width = ancho, height = alto, units = "cm", res = dpi, pointsize = 8)
 
     corrplot(mvr()$corr$correlation
-             , method="number"
-             , tl.col="black"
-             , tl.srt=45
-    )
+             , method = "number"
+             , tl.col = "black"
+             , tl.srt = 45
+             , 
+             )
 
     graphics.off()
 
@@ -1000,9 +1531,9 @@ observe({
 
   output$mvr_preview <- renderUI({
     
-    validate(need(input$mvr_facts, "Insert summary factors"))
+    validate(need(mvr(), "Choose your factors"))
     
-    if ( input$mvr_module == "PCA" & !is.null(input$mvr_facts) ) {
+    if ( input$mvr_module == "PCA" ) {
 
       tagList(
 
@@ -1024,7 +1555,7 @@ observe({
 
       )
 
-    } else if ( input$mvr_module == "HCPC" & !is.null(input$mvr_facts) ) {
+    } else if ( input$mvr_module == "HCPC" ) {
 
       tagList(
 
@@ -1046,7 +1577,7 @@ observe({
 
       )
 
-    } else if (input$mvr_module == "CORR" & !is.null(input$mvr_facts) ) {
+    } else if (input$mvr_module == "CORR" ) {
 
       tagList(
 

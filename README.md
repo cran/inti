@@ -5,23 +5,20 @@
 
 <!-- badges: start -->
 
-[![Travis build
-status](https://travis-ci.org/Flavjack/inti.svg?branch=master)](https://travis-ci.org/Flavjack/inti)
-[![AppVeyor build
-status](https://ci.appveyor.com/api/projects/status/github/Flavjack/inti?branch=master&svg=true)](https://ci.appveyor.com/project/Flavjack/inti)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/inti)](https://CRAN.R-project.org/package=inti)
-[![CRAN RStudio mirror
-downloads](https://cranlogs.r-pkg.org/badges/grand-total/inti?color=green)](https://r-pkg.org/pkg/inti)
 [![DOI](https://zenodo.org/badge/82401374.svg)](https://zenodo.org/badge/latestdoi/82401374)
+[![R-CMD-check](https://github.com/Flavjack/inti/workflows/R-CMD-check/badge.svg)](https://github.com/Flavjack/inti/actions)
+[![CRAN RStudio mirror
+downloads](https://cranlogs.r-pkg.org/badges/grand-total/inti?color=brightgreen)](https://r-pkg.org/pkg/inti)
 <!-- badges: end -->
 
 The ‘inti’ package is part of the ‘inkaverse’ project for developing
 different procedures and tools used in plant science and experimental
 designs. The mean aim of the package is to support researchers during
 the planning of experiments and data collection ‘tarpuy()’, data
-analysis and graphics ‘yupana()’, and technical writing ‘rtciles()’.
-Learn more about the ‘inkaverse’ project at <https://inkaverse.com/>.
+analysis and graphics ‘yupana()’, and technical writing. Learn more
+about the ‘inkaverse’ project at <https://inkaverse.com/>.
 
 ## Installation
 
@@ -66,10 +63,4 @@ inti::yupana()
 
 ``` r
 inti::tarpuy()
-```
-
-### Rticles
-
-``` r
-inti::rticles()
 ```

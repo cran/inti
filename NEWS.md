@@ -1,3 +1,47 @@
+# Version 0.4.0
+
+Changes incompatible with the old versions.
+
+## Major changes
+
+- *Rticles*
+  - Deprecated: `create_rticles()` & `rticles()`
+  - Deprecated shiny app: `rticles`
+  - Now you can create your docs using Rmarkdown templates
+    - Rticles
+    - Books
+  - Vignette for explain the dependencies to use rticles
+    
+- *Yupana*
+  - Styled messages
+  - New module: `Exploratory`
+  - Update in the modules
+    - No need `fbsm`
+    - Reactivity in the analysis
+  - Export model information
+  - Overwrite graph info
+  - Design with 3 factor use `facet_grid()`
+  - Allow import/export information for plots
+  - Reduce font size in the significance
+  
+- *Tarpuy*
+  - Styled messages
+  - Vignette for explain the modules in the app
+  - Overwrite fieldbook info
+  
+- *Package* 
+  - New function: `plot_raw()`
+    - Boxplot graph
+  - Update function: `fieldbook_mvr` --> `yupana_mvr`
+    - Can be used independently
+  - symbols to internal data
+    - Table to create footnotes
+  - rename functions
+  - Include new logo
+  - Vignettes: comparison between `H2cal` and `asreml`
+  - Add data base for MET
+  - Logo for the package and apps
+    
 # Version 0.3.0
 
 - *Yupana*
@@ -10,7 +54,7 @@
 - *Package* 
   - Vignette for describe the arguments and options in Yupana
   - Delete redundant functions `info_figure()` & `info_grahics()`
-  - Update functions: `include_figure()` & `include_graphics()`
+  - Update functions: `include_figure()` & `include_figure()`
   - Update function `plot_smr()` include:
     - `xtext`: labels for the x level
     - `gtext`: labels for the group levels
