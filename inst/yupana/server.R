@@ -255,6 +255,11 @@ if(file.exists("www/analytics.r")) {source("www/analytics.r", local = T)}
     validate(need(input$raw_x, "Choose your parameters"))
     validate(need(input$raw_y, "Choose your parameters"))
     
+    y <- if(input$raw_y == "") NULL else input$raw_y
+    x <- if(input$raw_x == "") NULL else input$raw_x
+    
+    model <-  y ~ x
+    
     raw_xrotation <- input$raw_xrotation %>% 
       strsplit(., "[*]") %>% 
       pluck(1) %>% as.numeric()
@@ -272,9 +277,9 @@ if(file.exists("www/analytics.r")) {source("www/analytics.r", local = T)}
       pluck(1) %>% as.character()
     
     fieldbook() %>% 
-      plot_raw(type = "boxplot"
-               , x = if(input$raw_x == "") NULL else input$raw_x
-               , y = if(input$raw_y == "") NULL else input$raw_y
+      plot_raw(type = input$raw_type
+               , x = x
+               , y = y
                , group = if(input$raw_group == "") NULL else input$raw_group
                , xlab = if(input$raw_xlab == "") NULL else input$raw_xlab
                , ylab = if(input$raw_ylab == "") NULL else input$raw_ylab
@@ -286,7 +291,11 @@ if(file.exists("www/analytics.r")) {source("www/analytics.r", local = T)}
                , opt = if(input$raw_opt == "") NULL else input$raw_opt
                , xtext = if(input$raw_xtext == "") NULL else raw_xtext
                , gtext = if(input$raw_gtext == "") NULL else raw_gtext
-               )
+               ) +
+      {if(input$raw_type == "scatterplot") {
+        stat_poly_eq(formula = model
+                     , aes(label = paste(..eq.label.., ..rr.label.., sep = "~~~"))
+                     , parse = TRUE) } }
     })
   
   output$plotraw <- renderImage({
@@ -603,7 +612,7 @@ if(file.exists("www/analytics.r")) {source("www/analytics.r", local = T)}
   output$smrstats <- DT::renderDataTable(server = FALSE, {
 
     mc <- analysis()$stats %>%
-      inti::web_table(buttons = "copy")
+      inti::web_table(buttons = "copy", scrolly = "15vh")
 
   })
 
