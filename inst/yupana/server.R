@@ -4,7 +4,7 @@
 #> open https://flavjack.github.io/inti/
 #> open https://flavjack.shinyapps.io/yupanapro/
 #> author .: Flavio Lozano-Isla (lozanoisla.com)
-#> date .: 2021-05-24
+#> date .: 2021-08-07
 # -------------------------------------------------------------------------
 
 # -------------------------------------------------------------------------
@@ -78,7 +78,7 @@ observe({
 
     if(Sys.getenv('SHINY_PORT') == "") {
 
-      gs4_auth(T)
+      gs4_auth(email = TRUE)
 
     } else {
 
@@ -97,7 +97,6 @@ observe({
   })
   
 if(file.exists("www/analytics.r")) {source("www/analytics.r", local = T)}
-  
   
 # -------------------------------------------------------------------------
 
@@ -177,7 +176,8 @@ if(file.exists("www/analytics.r")) {source("www/analytics.r", local = T)}
     validate(need(input$fieldbook_gsheet, "Choose you fb sheet"))
     
     gs() %>%
-      range_read(input$fieldbook_gsheet)
+      range_read(input$fieldbook_gsheet) %>% 
+      select(!starts_with("[") | !ends_with("]")) 
     
     })
   
@@ -293,9 +293,11 @@ if(file.exists("www/analytics.r")) {source("www/analytics.r", local = T)}
                , gtext = if(input$raw_gtext == "") NULL else raw_gtext
                ) +
       {if(input$raw_type == "scatterplot") {
-        stat_poly_eq(formula = model
-                     , aes(label = paste(..eq.label.., ..rr.label.., sep = "~~~"))
-                     , parse = TRUE) } }
+        
+        stat_poly_eq(aes(label =  paste(stat(eq.label), stat(adj.rr.label), sep = "*\", \"*")),
+                     formula = formula)
+        
+        } }
     })
   
   output$plotraw <- renderImage({
@@ -580,7 +582,7 @@ if(file.exists("www/analytics.r")) {source("www/analytics.r", local = T)}
                             , test_comp = input$analysis_test_comparison
                             , sig_level = input$analysis_sig_level
                             , plot_dist = "boxplot"
-                            , plot_diag = TRUE
+                            , plot_diag = FALSE
                             , digits = input$analysis_digits
                             )
     })
@@ -910,7 +912,7 @@ output$plot_error <- renderUI({
   grdt <- grdt()
   
   opts <- c("top", "bottom", "left", "right", "none")
-  selection <- grdt$error
+  selection <- grdt$legend
   
   selectInput(
     inputId = "smr_legend"

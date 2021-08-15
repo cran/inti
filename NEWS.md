@@ -1,3 +1,22 @@
+# Version 0.4.2
+
+- *Package* 
+  - Include info `plot_smr()` and `plot_raw`
+  - `plot_smr()`
+    - Delete legend border
+  - Transparent logos background
+  - New vignette for coding with yupana
+  - Update Rticles and Books template
+  - Fix `web_table()` to export in xlsx
+  - `plot_raw()` with scientific notation in labels
+  - Include new data set `potato`
+
+- *Yupana*
+  - Legend position load correct
+  - Headers with [] are excluded from the analysis
+  
+> Agradecimiento a Pedro Barriga por sus sugerencias para mejorar `yupana()`
+
 # Version 0.4.1
 
 - *Package* 
@@ -5,13 +24,13 @@
     - Add significance font size
   - `plot_raw()` 
     - Allows vector with colors for plots
-    - Include "scatterplot"
+    - Include "scatter plot"
   - `H2cal()` include trial option for MET
   - New video for the version > 0.4.1
   
 - *Yupana*
   - Add equations in regressions plot
-  - Include scatterplot in "Exploratory" module
+  - Include scatter plot in "Exploratory" module
 
 # Version 0.4.0
 
@@ -46,7 +65,7 @@ Changes incompatible with the old versions.
   
 - *Package* 
   - New function: `plot_raw()`
-    - Boxplot graph
+    - Box plot graph
   - Update function: `fieldbook_mvr` --> `yupana_mvr()`
     - Can be used independently
   - symbols to internal data
@@ -56,6 +75,8 @@ Changes incompatible with the old versions.
   - Vignettes: comparison between `H2cal()` and `asreml`
   - Add data base for MET
   - Logo for the package and apps
+  
+> Agradecimiento a Khaterine por la idea en el diseño de los logos
     
 # Version 0.3.0
 

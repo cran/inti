@@ -12,16 +12,15 @@ tibble(
 
 ## ----pkgs, echo=TRUE----------------------------------------------------------
 library(inti)
-library(agridat)
 
 ## ----fig.width= 7, fig.height=5-----------------------------------------------
- dt <- john.alpha
+ dt <- potato
  hr <- H2cal(data = dt
-            , trait = "yield"
-            , gen.name = "gen"
-            , rep.n = 3
-            , ran.model = "1 + rep + (1|rep:block) + (1|gen)"
-            , fix.model = "0 + rep + (1|rep:block) + gen"
+            , trait = "stemdw"
+            , gen.name = "geno"
+            , rep.n = 5
+            , ran.model = "1 + (1|bloque) + (1|geno)"
+            , fix.model = "0 + (1|bloque) + geno"
             , emmeans = TRUE
             , plot_diag = TRUE
             , outliers.rm = TRUE
