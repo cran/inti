@@ -1,3 +1,10 @@
+# Version 0.4.3
+
+- *Yupana*
+  - Show equation with adjusted R in scatter plot graph
+  - `sig` include all the variables from summary table
+  - In plots if number of reps is 1 the `sig` and `error` is "none"
+
 # Version 0.4.2
 
 - *Package* 
@@ -13,7 +20,7 @@
 
 - *Yupana*
   - Legend position load correct
-  - Headers with [] are excluded from the analysis
+  - Headers with [] are excluded in the analysis
   
 > Agradecimiento a Pedro Barriga por sus sugerencias para mejorar `yupana()`
 

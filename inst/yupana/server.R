@@ -4,7 +4,7 @@
 #> open https://flavjack.github.io/inti/
 #> open https://flavjack.shinyapps.io/yupanapro/
 #> author .: Flavio Lozano-Isla (lozanoisla.com)
-#> date .: 2021-08-07
+#> date .: 2021-09-07
 # -------------------------------------------------------------------------
 
 # -------------------------------------------------------------------------
@@ -294,8 +294,7 @@ if(file.exists("www/analytics.r")) {source("www/analytics.r", local = T)}
                ) +
       {if(input$raw_type == "scatterplot") {
         
-        stat_poly_eq(aes(label =  paste(stat(eq.label), stat(adj.rr.label), sep = "*\", \"*")),
-                     formula = formula)
+        ggpmisc::stat_poly_eq(aes(label = paste(stat(eq.label), stat(adj.rr.label), sep = "*\", \"*")))
         
         } }
     })
@@ -734,13 +733,11 @@ observeEvent(input$import_sheet, {
   
 })
 
-
 observeEvent(input$analysis_response, {
   
   gropt <<- NULL
   
 })
-
 
 grdt <- reactive({
   
@@ -786,12 +783,12 @@ grdt <- reactive({
         , ylimits = NA 
         , xrotation = NA 
         , legend = NA 
-        , error = NA 
         , color = NA 
         , opt = NA 
         , xtext = NA 
         , gtext = NA 
-        , sig = NA 
+        , sig = "sig" 
+        , error = "ste"
         , dimension = NA 
         #>
         , model = analysis()$model
@@ -870,18 +867,10 @@ output$smr_sig <- renderUI({
   
   grdt <- grdt()
   
-  opts <- c(grdt$tabvar, "none")
+  opts <- c(grdt$factors, grdt$tabvar, "none")
   
-  if(is.null(gropt)) {
-    
-    selection <- "sig"
-    
-  } else {
-    
-    selection <- grdt$sig
-
-  }
-
+  selection <- if(all(is.na(grdt$data$ste))) {"none"} else {grdt$sig}
+  
 selectInput(
   inputId = "smr_sig"
   , label = "Significance"
@@ -896,7 +885,8 @@ output$smr_error <- renderUI({
   grdt <- grdt()
   
   opts <- c("ste", "std", "none")
-  selection <- grdt$error
+  
+  selection <- if(all(is.na(grdt$data$ste))) {"none"} else {grdt$error}
   
   selectInput(
     inputId = "smr_error"
