@@ -1,9 +1,26 @@
+# Version 0.4.4
+
+- *Package* 
+  - `jc_tombola()`
+    - Update function and selection paper by meeting
+  - `yupana_analysis()`
+    - Include last_factor selection
+  - `yupana_mvr()`
+    - Function not need last_factor
+  - Include package version in the apps
+  - Fixed navigation bar in the apps
+    
+- *Yupana*
+  - PCA for individual in the bottom
+  - Include version in the output table
+  - Dimension for plots in multivariate analysis
+
 # Version 0.4.3
 
 - *Yupana*
   - Show equation with adjusted R in scatter plot graph
-  - `sig` include all the variables from summary table
-  - In plots if number of reps is 1 the `sig` and `error` is "none"
+  - `sig` include all the variables from the summary table
+  - In plots if the number of reps is 1 the `sig` and `error` is "none"
 
 # Version 0.4.2
 
