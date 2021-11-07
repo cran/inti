@@ -1,4 +1,4 @@
-#' Heritability in plant breeding
+#' Broad-sense heritability in plant breeding
 #'
 #' Heritability in plant breeding on a genotype difference basis
 #'
@@ -6,46 +6,51 @@
 #' @param trait Name of the trait.
 #' @param gen.name Name of the genotypes.
 #' @param rep.n Number of replications in the experiment.
-#' @param loc.name Name of the location (default = NULL). See details.
-#' @param loc.n Number of locations (default = 1). See details.
+#' @param env.name Name of the environments (default = NULL). See details.
+#' @param env.n Number of environments (default = 1). See details.
 #' @param year.name Name of the years (default = NULL). See details.
 #' @param year.n Number of years (default = 1). See details.
-#' @param ran.model The random effects in the model. See examples.
-#' @param fix.model The fixed effects in the model. See examples.
+#' @param fixed.model The fixed effects in the model (BLUEs). See examples.
+#' @param random.model The random effects in the model (BLUPs). See examples.
 #' @param emmeans Use emmeans for calculate the BLUEs (default = FALSE).
 #' @param summary Print summary from random model (default = FALSE).
-#' @param plot_diag Show diagnostic plots (default = FALSE).
+#' @param plot_diag Show diagnostic plots for fixed and random effects (default
+#'   = FALSE).
 #' @param outliers.rm Remove outliers (default = FALSE). See references.
 #' @param weights an optional vector of ‘prior weights’ to be used in the
 #'   fitting process (default = NULL).
-#' @param trial Name of the trial in the results (default = NULL). 
+#' @param trial Column with the name of the trial in the results (default =
+#'   NULL).
 #'
 #' @details
 #'
 #' The function allows to made the calculation for individual or
-#' multi-environmental trials (MET) using th fixed and random model.
+#' multi-environmental trials (MET) using fixed and random model.
 #'
-#' 1. The variance components.
+#' 1. The variance components based in the random model and the population
+#' summary information based in the fixed model (BLUEs).
 #'
-#' 2. Heritability under three approaches: Standard, Cullis and Piepho.
+#' 2. Heritability under three approaches: Standard (ANOVA), Cullis (BLUPs) and
+#' Piepho (BLUEs).
 #'
-#' 3. Best Linear Unbiased Predictors (BLUPs).
+#' 3. Best Linear Unbiased Estimators (BLUEs), fixed effect.
 #'
-#' 4. Best Linear Unbiased Estimators (BLUEs).
+#' 4. Best Linear Unbiased Predictors (BLUPs), random effect.
 #'
-#' 5. Outliers remove.
+#' 5. Table with the outliers removed for each model.
 #'
 #' For individual experiments is necessary provide the \code{trait},
 #' \code{gen.name}, \code{rep.n}.
 #'
-#' For MET experiments you should \code{loc.n} and \code{loc.name} and/or
+#' For MET experiments you should \code{env.n} and \code{env.name} and/or
 #' \code{year.n} and \code{year.name} according your experiment.
 #'
-#' The blues calculation is based in the pairwise comparison and its could takes
-#' time according the number of the genotypes.
+#' The BLUEs calculation based in the pairwise comparison could be time
+#' consuming with the increase of the number of the genotypes. You can specify
+#' \code{emmeans = FALSE} and the calculate of the BLUEs will be faster.
 #'
-#' You can specify as \code{blues = FALSE} for calculate the variance components
-#' and blups faster.
+#' If \code{emmeans = FALSE} you should change 1 by 0 in the fixed model for
+#' exclude the intersect in the analysis and get all the genotypes BLUEs.
 #'
 #' For more information review the references.
 #'
@@ -59,6 +64,14 @@
 #'
 #' @references
 #'
+#' Bernal Vasquez, Angela Maria, et al. “Outlier Detection Methods for
+#' Generalized Lattices: A Case Study on the Transition from ANOVA to REML.”
+#' Theoretical and Applied Genetics, vol. 129, no. 4, Apr. 2016.
+#' 
+#' Buntaran, H., Piepho, H., Schmidt, P., Ryden, J., Halling, M., and Forkman, J.
+#' (2020). Cross validation of stagewise mixed model analysis of Swedish variety
+#' trials with winter wheat and spring barley. Crop Science, 60(5).
+#' 
 #' Schmidt, P., J. Hartung, J. Bennewitz, and H.P. Piepho. 2019. Heritability in
 #' Plant Breeding on a Genotype Difference Basis. Genetics 212(4).
 #'
@@ -66,9 +79,11 @@
 #' Sense Heritability with Unbalanced Data from Agricultural Cultivar Trials.
 #' Crop Science 59(2).
 #'
-#' Bernal Vasquez, Angela Maria, et al. “Outlier Detection Methods for
-#' Generalized Lattices: A Case Study on the Transition from ANOVA to REML.”
-#' Theoretical and Applied Genetics, vol. 129, no. 4, Apr. 2016.
+#' Tanaka, E., and Hui, F. K. C. (2019). Symbolic Formulae for Linear Mixed
+#' Models. In H. Nguyen (Ed.), Statistics and Data Science. Springer.
+#'
+#' Zystro, J., Colley, M., and Dawson, J. (2018). Alternative Experimental Designs
+#' for Plant Breeding. In Plant Breeding Reviews. John Wiley and Sons, Ltd.
 #'
 #' @importFrom dplyr filter pull rename mutate all_of
 #' @importFrom purrr pluck as_vector
@@ -85,20 +100,20 @@
 #' @examples
 #'
 #' library(inti)
-#' 
+#'
 #' dt <- potato
-#' 
+#'
 #' hr <- H2cal(data = dt
 #'             , trait = "tubdw"
 #'             , gen.name = "geno"
 #'             , rep.n = 5
-#'             , ran.model = "1 + (1|bloque) + (1|geno)"
-#'             , fix.model = "0 + (1|bloque) + geno"
+#'             , fixed.model = "0 + (1|bloque) + geno"
+#'             , random.model = "1 + (1|bloque) + (1|geno)"
 #'             , emmeans = TRUE
 #'             , plot_diag = TRUE
 #'             , outliers.rm = TRUE
 #'             )
-#'             
+#'
 #'  hr$tabsmr
 #'  hr$blues
 #'  hr$blups
@@ -108,12 +123,12 @@ H2cal <- function(data
                   , trait
                   , gen.name
                   , rep.n
-                  , loc.n = 1
+                  , env.n = 1
                   , year.n = 1
-                  , loc.name = NULL
+                  , env.name = NULL
                   , year.name = NULL
-                  , ran.model
-                  , fix.model
+                  , fixed.model
+                  , random.model
                   , summary = FALSE
                   , emmeans = FALSE
                   , weights = NULL
@@ -121,27 +136,55 @@ H2cal <- function(data
                   , outliers.rm = FALSE
                   , trial = NULL
                   ){
-
-  # avoid Undefined global functions or variables
-  grp <- emmean <- SE <- Var <- NULL 
   
-  # outliers remove ---------------------------------------------------------
+
+# test --------------------------------------------------------------------
+
+  if(FALSE) {
+   
+    data <- dt
+    
+    trait = "tubdw"
+    gen.name = "geno"
+    rep.n = 5
+    env.n = 1
+    year.n = 1
+    env.name = NULL
+    year.name = NULL
+    fixed.model = "0 + (1|bloque) + geno"
+    random.model = "1 + (1|bloque) + (1|geno)"
+    summary = TRUE
+    emmeans = TRUE
+    weights = NULL
+    plot_diag = TRUE
+    outliers.rm = TRUE
+    trial = NULL
+    
+  }
+  
+# -------------------------------------------------------------------------
+
+  grp <- emmean <- SE <- Var <- where <- NULL 
+  V.g <- V.gxl <- env <- V.gxy <- year <- NULL
+  V.gxlxy <- V.e <- V.p <- vdBLUEs <- vdBLUPs <- NULL
+  
+# outliers remove ---------------------------------------------------------
 
   if ( outliers.rm == TRUE ) {
 
     out.rm <- data %>% outliers_remove(data = .
                                      , trait = trait
-                                     , model = ran.model
+                                     , model = random.model
                                      )
-    dt.rm <- out.rm %>% pluck(1)
+    dt.rm <- out.rm %>% purrr::pluck(1)
 
     out.fm <- data %>% outliers_remove(data = .
                                        , trait = trait
-                                       , model = fix.model
+                                       , model = fixed.model
                                        )
-    dt.fm <- out.fm %>% pluck(1)
+    dt.fm <- out.fm %>% purrr::pluck(1)
 
-    outliers <- list(random = out.rm$outliers, fixed = out.fm$outliers)
+    outliers <- list(fixed = out.fm$outliers, random = out.rm$outliers)
 
   } else {
 
@@ -155,15 +198,15 @@ H2cal <- function(data
 
 # fit models --------------------------------------------------------------
   
-  # random genotype effect
-  r.md <- as.formula(paste(trait, paste(ran.model, collapse = " + "), sep = " ~ "))
-  g.ran <- eval(bquote(lmer(.(r.md), weights = weights, data = dt.rm)))
-
   # fixed genotype effect
-  f.md <- as.formula(paste(trait, paste(fix.model, collapse = " + "), sep = " ~ "))
-  g.fix <- eval(bquote(lmer(.(f.md), weights = weights, data = dt.fm)))
+  f.md <- as.formula(paste(trait, paste(fixed.model, collapse = " + "), sep = " ~ "))
+  g.fix <- eval(bquote(lme4::lmer(.(f.md), weights = weights, data = dt.fm)))
+  
+  # random genotype effect
+  r.md <- as.formula(paste(trait, paste(random.model, collapse = " + "), sep = " ~ "))
+  g.ran <- eval(bquote(lme4::lmer(.(r.md), weights = weights, data = dt.rm)))
 
-  # Print model summary -----------------------------------------------------
+# Print model summary -----------------------------------------------------
   
   if (summary == TRUE) {
     
@@ -193,24 +236,24 @@ H2cal <- function(data
 
 # -------------------------------------------------------------------------
 
-  ### handle model estimates
+### handle model estimates
 
-  # number of genotypes
+# number of genotypes
 
   gen.n <- g.ran %>%
     summary() %>%
     purrr::pluck("ngrps") %>%
     .[gen.name]
 
-  # genotypic variance component
+# genotypic variance component
 
-  vc.g <- c(VarCorr(g.ran)[[gen.name]])
+  vc.g <- c(lme4::VarCorr(g.ran)[[gen.name]])
 
-  # environment variance component
+# environment variance component
 
-  if(loc.n > 1){
+  if(env.n > 1){
 
-    gxl <- paste(gen.name, loc.name, sep = ":")
+    gxl <- paste(gen.name, env.name, sep = ":")
 
     vc.gxl <- g.ran %>%
       lme4::VarCorr() %>%
@@ -220,31 +263,31 @@ H2cal <- function(data
 
     if( length(strsplit(gxl,":")[[1]]) < 2) {
 
-      message("You should include loc.name in the arguments")
+      message("You should include env.name in the arguments")
 
       vc.gxl <- 0
 
     } else if (identical(vc.gxl, numeric(0))) {
 
-      message("You should include (1|genotype:location) interaction")
+      message("You should include (1|genotype:environment) interaction")
 
       vc.gxl <- 0
 
     }
 
-  } else if (!is.null(loc.name) && loc.n == 1) {
+  } else if (!is.null(env.name) && env.n == 1) {
 
-    message("You should include loc.n in the arguments")
+    message("You should include env.n in the arguments")
 
     vc.gxl <- 0
 
-    } else if (loc.n == 1){
+    } else if (env.n == 1){
 
     vc.gxl <- 0
 
   }
 
-  # year variance component
+# year variance component
 
   if(year.n > 1){
 
@@ -282,11 +325,11 @@ H2cal <- function(data
 
   }
 
-  # location x year variance component (review in MET)
+# environment x year variance component (review in MET)
 
-  if(year.n > 1 && loc.n > 1){
+  if(year.n > 1 && env.n > 1){
 
-    gxlxy <- paste(gen.name, loc.name, year.name, sep = ":")
+    gxlxy <- paste(gen.name, env.name, year.name, sep = ":")
 
     vc.gxlxy <- g.ran %>%
       lme4::VarCorr() %>%
@@ -296,25 +339,25 @@ H2cal <- function(data
 
     if( length(strsplit(gxlxy,":")[[1]]) < 3 ) {
 
-      message("You should include location/years arguments")
+      message("You should include environment/years arguments")
 
       vc.gxlxy <- 0
 
     } else if (identical(vc.gxlxy, numeric(0))) {
 
-      message("You should include (1|genotype:location:year) interaction")
+      message("You should include (1|genotype:environment:year) interaction")
 
       vc.gxlxy <- 0
 
     }
 
-  } else if (year.n == 1 && loc.n == 1){
+  } else if (year.n == 1 && env.n == 1){
 
     vc.gxlxy <- 0
 
   } else {vc.gxlxy <- 0}
 
-  # error variance component
+# error variance component
 
   vc.e <- g.ran %>%
     lme4::VarCorr() %>%
@@ -404,10 +447,10 @@ H2cal <- function(data
 
     smd <- BLUEs %>%
         dplyr::summarise(
-          mean = mean(!!as.name(trait), na.rm = T)
-          , std = sqrt(var(!!as.name(trait), na.rm = T))
-          , min = min(!!as.name(trait))
-          , max = max(!!as.name(trait))
+          mean = mean(.data[[trait]], na.rm = T)
+          , std = sqrt(var(.data[[trait]], na.rm = T))
+          , min = min(.data[[trait]])
+          , max = max(.data[[trait]])
         ) 
     
 # -------------------------------------------------------------------------
@@ -418,41 +461,35 @@ H2cal <- function(data
 
 # -------------------------------------------------------------------------
 
-  ## Heritability
-
-  # H2 Standard
-  H2.s <- vc.g/(vc.g + vc.gxl/loc.n + vc.gxy/year.n + vc.gxlxy/(loc.n*year.n) + vc.e/(loc.n*year.n*rep.n))
-
-  # H2 Piepho
-  H2.p <- vc.g/(vc.g + vdBLUE.avg/2)
-
-  # H2 Cullis
-  H2.c <- 1 - (vdBLUP.avg/2/vc.g)
-
-  ## Summary table VC & H^2
+## Summary table VC & Heritability
 
   vrcp <- dplyr::tibble(
-    variable = trait
+    trait = trait
     , rep = rep.n
     , geno = gen.n
-    , env = loc.n
+    , env = env.n
     , year = year.n
-    , mean = smd$mean
-    , std = smd$std
-    , min = smd$min
-    , max = smd$max
-    , V.g = vc.g
-    , V.gxl = vc.gxl
-    , V.gxy = vc.gxy
-    , V.e = vc.e
-    , h2.s = H2.s
-    , h2.c = H2.c
-    , h2.p = H2.p
     ) %>% 
+    merge(., smd) %>% 
+    mutate(V.g = vc.g) %>% 
+    mutate(V.gxl = vc.gxl) %>% 
+    mutate(V.gxy = vc.gxy) %>% 
+    mutate(V.gxlxy = vc.gxlxy) %>% 
+    mutate(V.e = vc.e) %>% 
+    mutate(V.p = (V.g + V.gxl/env + V.gxy/year + V.gxlxy/(env*year) + V.e/(env*year*rep))) %>%
+    mutate(repeatability = V.g/(V.g + V.e/rep)) %>% 
+    mutate(H2.s = V.g/V.p) %>% 
+    mutate(vdBLUEs = vdBLUE.avg) %>% 
+    mutate(H2.p = V.g/(V.g + vdBLUEs/2)) %>%
+    mutate(vdBLUPs = vdBLUP.avg) %>% 
+    mutate(H2.c = 1 - (vdBLUPs/2/V.g)) %>% 
+    select(!matches("BLUE|BLUP")) %>% 
+    purrr::discard(~all(. == 0 | is.nan(.))) %>% 
     {if (!is.null(trial)) dplyr::mutate(.data = ., trial = trial) else .} %>% 
     {if (!is.null(trial)) select(.data = ., trial, everything()) else .}
+    
 
-  ## Results
+# result ------------------------------------------------------------------
 
   rsl <- list(
     tabsmr = vrcp

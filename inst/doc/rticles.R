@@ -1,5 +1,5 @@
 ## ----setup, include=FALSE-----------------------------------------------------
-source("http://inkaverse.com/docs.r")
+source("https://raw.githubusercontent.com/Flavjack/inti/master/pkgdown/favicon/docs.r")
 
 ## ---- echo=TRUE, eval = FALSE-------------------------------------------------
 #  open https://chocolatey.org/packages

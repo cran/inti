@@ -4,7 +4,7 @@
 #> open https://flavjack.github.io/inti/
 #> open https://flavjack.shinyapps.io/yupanapro/
 #> author .: Flavio Lozano-Isla (lozanoisla.com)
-#> date .: 2021-09-30
+#> date .: 2021-10-06
 # -------------------------------------------------------------------------
 
 # -------------------------------------------------------------------------
@@ -32,15 +32,15 @@ if (file.exists("www/cloud.json")) gar_set_client(web_json = "www/cloud.json", a
 navbarPage(title = div(
   HTML('<h3><strong><a target="_blank" href="https://inkaverse.com/">Yupana</a></strong></h3>')
   , div(
-    id = "version"
-    , HTML(paste("<a target='_blank' href='https://inkaverse.com/news/'>inti"
-                 , packageVersion('inti') , "</a>"))
-    )
-  , div(
     id = "support"
     , HTML(paste("<a target='_blank' href='https://github.com/sponsors/flavjack' style='color:white'>"
                  , h4(icon("heart")) , "</a>"))
   )
+  , div(
+    id = "version"
+    , HTML(paste("<a target='_blank' href='https://inkaverse.com/news/'>inti"
+                 , packageVersion('inti') , "</a>"))
+    )
   )
   , windowTitle = "Yupana • app"
   , selected = "Intro"
@@ -645,52 +645,57 @@ tabPanel("Graphics",
                            
                     ),
                     
-                    column(6,
-                           
-                           uiOutput("graph_sheet_save"),
-                           
-                           ),
-                    
-                    column(6,
-                           
-                           radioButtons(inputId = "graph_smr_overwrite"
-                                        , label = "Overwrite"
-                                        , inline = TRUE
-                                        , choices = c("no", "yes")
-                                        )
-                           ),
-                    
-                    column(6,
-                           
-                           actionButton(inputId = "graph_smr_load"
-                                        , label = "Load"
-                                        , class = "btn btn-primary"
-                                        , width = "100%"
-                                        )
-                           
-                           ),
-                    
-                    column(6,
-                           
-                           actionButton(inputId = "graph_smr_save"
-                                        , label = "Save"
-                                        , class = "btn btn-warning"
-                                        , width = "100%"
-                                        )
-                           
-                           ),
-                    
-                    br(),
-                    br()
-                    
                     )
                   
            ),
            
+           #>
+           
            column(8,
                   
-                  uiOutput("plot_smr"),
-                  
+                  fluidRow(
+                        
+                      box(width = 12,
+                          
+                          div(
+                            class = "plotsave",
+                            
+                            div(
+                              actionButton(inputId = "graph_smr_load"
+                                           , label = "Load"
+                                           , class = "btn btn-primary"
+                              ),
+                            ),
+                            
+                            div(
+                              uiOutput("graph_sheet_save"),
+                              ),
+                            div(
+                              radioButtons(inputId = "graph_smr_overwrite"
+                                           , label = "Overwrite"
+                                           , inline = TRUE
+                                           , choices = c("no", "yes")
+                                           ),
+                              ),
+                            
+                              div(
+                                actionButton(inputId = "graph_smr_save"
+                                             , label = "Save"
+                                             , class = "btn btn-warning"
+                                             ),
+                                ),
+                            ),
+                          ),
+                  ),
+                          
+                      br(),
+                      br(),
+                       
+                box(width = 12, 
+                       
+                       uiOutput("plot_smr"),
+                       
+                       ),
            ),
            
            column(2,
@@ -832,7 +837,7 @@ tabPanel("Graphics",
                               inputId ="mvr_dimension_cor"
                               , label = "Dimensions (W*H*dpi) - Correlation"
                               , placeholder = "w*h*dpi"
-                              , value = "19*19*100"
+                              , value = "18*18*100"
                             ),
                             
                           ),

@@ -11,12 +11,14 @@ nocite: |
   [@schmidt2019Estimating; @schmidt2019Heritability; @bernal-vasquez2016Outliera;  @buntaran2020Cross; @bolker2021Mean]
 vignette: >
   %\VignetteIndexEntry{Broad-sense heritability in plant breeding}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
-source("http://inkaverse.com/docs.r")
+source("https://raw.githubusercontent.com/Flavjack/inti/master/pkgdown/favicon/docs.r")
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
@@ -98,8 +100,8 @@ library(inti)
             , trait = "stemdw"
             , gen.name = "geno"
             , rep.n = 5
-            , ran.model = "1 + (1|bloque) + (1|geno)"
-            , fix.model = "0 + (1|bloque) + geno"
+            , fixed.model = "0 + (1|bloque) + geno"
+            , random.model = "1 + (1|bloque) + (1|geno)"
             , emmeans = TRUE
             , plot_diag = TRUE
             , outliers.rm = TRUE
@@ -112,16 +114,10 @@ library(inti)
 hr$model %>% summary()
 ```
 
-## Variance component
+## Variance components
 
 ```{r}
 hr$tabsmr %>% kable(caption = "Variance component table")
-```
-
-## Best Linear Unbiased Predictors (BLUPs)
-
-```{r}
-hr$blups %>% kable(caption = "BLUPs")
 ```
 
 ## Best Linear Unbiased Estimators (BLUEs)
@@ -130,14 +126,20 @@ hr$blups %>% kable(caption = "BLUPs")
 hr$blues %>% kable(caption = "BLUEs")
 ```
 
+## Best Linear Unbiased Predictors (BLUPs)
+
+```{r}
+hr$blups %>% kable(caption = "BLUPs")
+```
+
 ## Outliers
 
 ```{r}
-hr$outliers$random %>% kable(caption = "Outliers random model")
+hr$outliers$fixed %>% kable(caption = "Outliers fixed model")
 ```
 
 ```{r}
-hr$outliers$fixed %>% kable(caption = "Outliers fixed model")
+hr$outliers$random %>% kable(caption = "Outliers random model")
 ```
 
 # Comparison: H2cal and asreml

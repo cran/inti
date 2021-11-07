@@ -2,19 +2,19 @@
 % Please edit documentation in R/H2cal.R
 \name{H2cal}
 \alias{H2cal}
-\title{Heritability in plant breeding}
+\title{Broad-sense heritability in plant breeding}
 \usage{
 H2cal(
   data,
   trait,
   gen.name,
   rep.n,
-  loc.n = 1,
+  env.n = 1,
   year.n = 1,
-  loc.name = NULL,
+  env.name = NULL,
   year.name = NULL,
-  ran.model,
-  fix.model,
+  fixed.model,
+  random.model,
   summary = FALSE,
   emmeans = FALSE,
   weights = NULL,
@@ -32,17 +32,17 @@ H2cal(
 
 \item{rep.n}{Number of replications in the experiment.}
 
-\item{loc.n}{Number of locations (default = 1). See details.}
+\item{env.n}{Number of environments (default = 1). See details.}
 
 \item{year.n}{Number of years (default = 1). See details.}
 
-\item{loc.name}{Name of the location (default = NULL). See details.}
+\item{env.name}{Name of the environments (default = NULL). See details.}
 
 \item{year.name}{Name of the years (default = NULL). See details.}
 
-\item{ran.model}{The random effects in the model. See examples.}
+\item{fixed.model}{The fixed effects in the model (BLUEs). See examples.}
 
-\item{fix.model}{The fixed effects in the model. See examples.}
+\item{random.model}{The random effects in the model (BLUPs). See examples.}
 
 \item{summary}{Print summary from random model (default = FALSE).}
 
@@ -51,11 +51,13 @@ H2cal(
 \item{weights}{an optional vector of ‘prior weights’ to be used in the
 fitting process (default = NULL).}
 
-\item{plot_diag}{Show diagnostic plots (default = FALSE).}
+\item{plot_diag}{Show diagnostic plots for fixed and random effects (default
+= FALSE).}
 
 \item{outliers.rm}{Remove outliers (default = FALSE). See references.}
 
-\item{trial}{Name of the trial in the results (default = NULL).}
+\item{trial}{Column with the name of the trial in the results (default =
+NULL).}
 }
 \value{
 list
@@ -65,29 +67,32 @@ Heritability in plant breeding on a genotype difference basis
 }
 \details{
 The function allows to made the calculation for individual or
-multi-environmental trials (MET) using th fixed and random model.
+multi-environmental trials (MET) using fixed and random model.
 
-1. The variance components.
+1. The variance components based in the random model and the population
+summary information based in the fixed model (BLUEs).
 
-2. Heritability under three approaches: Standard, Cullis and Piepho.
+2. Heritability under three approaches: Standard (ANOVA), Cullis (BLUPs) and
+Piepho (BLUEs).
 
-3. Best Linear Unbiased Predictors (BLUPs).
+3. Best Linear Unbiased Estimators (BLUEs), fixed effect.
 
-4. Best Linear Unbiased Estimators (BLUEs).
+4. Best Linear Unbiased Predictors (BLUPs), random effect.
 
-5. Outliers remove.
+5. Table with the outliers removed for each model.
 
 For individual experiments is necessary provide the \code{trait},
 \code{gen.name}, \code{rep.n}.
 
-For MET experiments you should \code{loc.n} and \code{loc.name} and/or
+For MET experiments you should \code{env.n} and \code{env.name} and/or
 \code{year.n} and \code{year.name} according your experiment.
 
-The blues calculation is based in the pairwise comparison and its could takes
-time according the number of the genotypes.
+The BLUEs calculation based in the pairwise comparison could be time
+consuming with the increase of the number of the genotypes. You can specify
+\code{emmeans = FALSE} and the calculate of the BLUEs will be faster.
 
-You can specify as \code{blues = FALSE} for calculate the variance components
-and blups faster.
+If \code{emmeans = FALSE} you should change 1 by 0 in the fixed model for
+exclude the intersect in the analysis and get all the genotypes BLUEs.
 
 For more information review the references.
 }
@@ -101,19 +106,27 @@ hr <- H2cal(data = dt
             , trait = "tubdw"
             , gen.name = "geno"
             , rep.n = 5
-            , ran.model = "1 + (1|bloque) + (1|geno)"
-            , fix.model = "0 + (1|bloque) + geno"
+            , fixed.model = "0 + (1|bloque) + geno"
+            , random.model = "1 + (1|bloque) + (1|geno)"
             , emmeans = TRUE
             , plot_diag = TRUE
             , outliers.rm = TRUE
             )
-            
+
  hr$tabsmr
  hr$blues
  hr$blups
  
 }
 \references{
+Bernal Vasquez, Angela Maria, et al. “Outlier Detection Methods for
+Generalized Lattices: A Case Study on the Transition from ANOVA to REML.”
+Theoretical and Applied Genetics, vol. 129, no. 4, Apr. 2016.
+
+Buntaran, H., Piepho, H., Schmidt, P., Ryden, J., Halling, M., and Forkman, J.
+(2020). Cross validation of stagewise mixed model analysis of Swedish variety
+trials with winter wheat and spring barley. Crop Science, 60(5).
+
 Schmidt, P., J. Hartung, J. Bennewitz, and H.P. Piepho. 2019. Heritability in
 Plant Breeding on a Genotype Difference Basis. Genetics 212(4).
 
@@ -121,9 +134,11 @@ Schmidt, P., J. Hartung, J. Rath, and H.P. Piepho. 2019. Estimating Broad
 Sense Heritability with Unbalanced Data from Agricultural Cultivar Trials.
 Crop Science 59(2).
 
-Bernal Vasquez, Angela Maria, et al. “Outlier Detection Methods for
-Generalized Lattices: A Case Study on the Transition from ANOVA to REML.”
-Theoretical and Applied Genetics, vol. 129, no. 4, Apr. 2016.
+Tanaka, E., and Hui, F. K. C. (2019). Symbolic Formulae for Linear Mixed
+Models. In H. Nguyen (Ed.), Statistics and Data Science. Springer.
+
+Zystro, J., Colley, M., and Dawson, J. (2018). Alternative Experimental Designs
+for Plant Breeding. In Plant Breeding Reviews. John Wiley and Sons, Ltd.
 }
 \author{
 Maria Belen Kistner

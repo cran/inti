@@ -1,5 +1,5 @@
 ## ----setup, include=FALSE-----------------------------------------------------
-source("http://inkaverse.com/docs.r")
+source("https://raw.githubusercontent.com/Flavjack/inti/master/pkgdown/favicon/docs.r")
 knitr::opts_chunk$set(echo = TRUE)
 
 ## ---- echo=FALSE--------------------------------------------------------------
@@ -19,8 +19,8 @@ library(inti)
             , trait = "stemdw"
             , gen.name = "geno"
             , rep.n = 5
-            , ran.model = "1 + (1|bloque) + (1|geno)"
-            , fix.model = "0 + (1|bloque) + geno"
+            , fixed.model = "0 + (1|bloque) + geno"
+            , random.model = "1 + (1|bloque) + (1|geno)"
             , emmeans = TRUE
             , plot_diag = TRUE
             , outliers.rm = TRUE
@@ -33,16 +33,16 @@ hr$model %>% summary()
 hr$tabsmr %>% kable(caption = "Variance component table")
 
 ## -----------------------------------------------------------------------------
-hr$blups %>% kable(caption = "BLUPs")
-
-## -----------------------------------------------------------------------------
 hr$blues %>% kable(caption = "BLUEs")
 
 ## -----------------------------------------------------------------------------
-hr$outliers$random %>% kable(caption = "Outliers random model")
+hr$blups %>% kable(caption = "BLUPs")
 
 ## -----------------------------------------------------------------------------
 hr$outliers$fixed %>% kable(caption = "Outliers fixed model")
+
+## -----------------------------------------------------------------------------
+hr$outliers$random %>% kable(caption = "Outliers random model")
 
 ## ----references, echo=FALSE---------------------------------------------------
 if(!file.exists("files/pkgs.bib")){write_bib(c(.packages()),'files/pkgs.bib')}

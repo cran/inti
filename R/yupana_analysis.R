@@ -33,16 +33,12 @@
 #' 
 #' fb <- gsheet2tbl(url)
 #' 
-#' yrs <- yupana_analysis(data = fb
+#' rsl <- yupana_analysis(data = fb
 #'                        , last_factor = "bloque"
 #'                        , response = "spad_83"
-#'                        , model_factors = "block + geno + treat"
+#'                        , model_factors = "block * geno * treat"
 #'                        , comparison = c("geno", "treat")
 #'                        )
-#'                        
-#' yrs$meancomp
-#' 
-#' yrs$anova %>% summary()
 #' 
 #' }
 #' 
@@ -64,9 +60,10 @@ yupana_analysis <- function(data
 if(FALSE) {
   
   data <- fb
+  last_factor = NULL
   response <- "spad_29"
   comparison <- c("geno", "treat")
-  model_factors <- "geno*treat"
+  model_factors <- "bloque*geno*treat"
   test_comp = "SNK"
   sig_level = 0.05
   plot_dist = "boxplot"
@@ -86,11 +83,13 @@ if(FALSE) {
       mutate(.data = ., across(!c(1:{{last_factor}}), as.numeric)) else .} %>%
     data.frame()
   
-# anova -------------------------------------------------------------------
-# -------------------------------------------------------------------------
-  
+
+# model -------------------------------------------------------------------
+
   model <- as.formula(paste({{response}}, model_factors, sep = "~"))
   
+# anova -------------------------------------------------------------------
+
   model_aov <- aov(formula = model, data = fb)
   
 # diagnostic plots --------------------------------------------------------
@@ -146,7 +145,6 @@ if(FALSE) {
     select(!{{info}}) %>% 
     names()
   
-  
 # model as text -----------------------------------------------------------
 
   model_formula <- paste(deparse(model, width.cutoff = 500), collapse="")
@@ -165,6 +163,9 @@ if(FALSE) {
     , comparison = comparison
     , factors = factors
     , tabvar = info
+    , model_factors = model_factors
+    , test_comp = test_comp
+    , sig_level = sig_level
     )
 
 }

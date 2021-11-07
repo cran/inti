@@ -1,3 +1,23 @@
+# Version 0.5.0
+
+> Changes incompatible with the old versions.
+
+- *Package* 
+  - `yupana_export_smr` ==> `yupana_export()`
+    - Extract all the information from `yupana_analysis`
+  - `yupana_import_smr` ==> `yupana_import()`
+    - Import information from the web and `yupana_analysis`
+  - Update function `H2cal()`
+
+- *Yupana*
+  - Include statistics and anova table in export results
+  - Clean headers in export data, exclude "{}"
+  - Update load/save interface
+  
+- *Tarpuy*
+  - Variable list only include arguments with {}
+    - You can exclude: {evaluation} or {sampling}
+
 # Version 0.4.4
 
 - *Package* 
@@ -58,7 +78,7 @@
 
 # Version 0.4.0
 
-Changes incompatible with the old versions.
+> Changes incompatible with the old versions.
 
 ## Major changes
 
@@ -121,11 +141,13 @@ Changes incompatible with the old versions.
 
 # Version 0.2.0
 
-Changes incompatible with the old versions.
-Arguments changed in the syntax for `fbsm` and `graphics`.
+> Changes incompatible with the old versions.
 
 ## Major changes
 
+- *Package* 
+  - Arguments changed in the syntax for `fbsm` and `graphics`.
+  
 - *Yupana*
   - Delete error messages in console when run the app
   - Change dependency: `ggpubr` --> `cowplot`
