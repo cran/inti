@@ -1,6 +1,15 @@
+# Version 0.5.1
+
+- *Package* 
+  - `H2cal()`: BLUEs from H2cal may be wrong if other fixed effects in the model (#10).
+    - Thanks Jim Holland (@ncsumaize) for the suggestion to improve the function.
+  - New functions: `gdoc2rmd()`, `table2rmd()`, `figure2rmd()`
+    - Use Articul8 Add-ons from Google docs to build Rticles
+  - Update pkgdown
+
 # Version 0.5.0
 
-> Changes incompatible with the old versions.
+> Changes are incompatible with the old versions.
 
 - *Package* 
   - `yupana_export_smr` ==> `yupana_export()`
