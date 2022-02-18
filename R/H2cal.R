@@ -15,7 +15,7 @@
 #' @param emmeans Use emmeans for calculate the BLUEs (default = FALSE).
 #' @param summary Print summary from random model (default = FALSE).
 #' @param plot_diag Show diagnostic plots for fixed and random effects (default
-#'   = FALSE).
+#'   = FALSE). Options: "base", "ggplot". .
 #' @param outliers.rm Remove outliers (default = FALSE). See references.
 #' @param weights an optional vector of ‘prior weights’ to be used in the
 #'   fitting process (default = NULL).
@@ -67,11 +67,11 @@
 #' Bernal Vasquez, Angela Maria, et al. “Outlier Detection Methods for
 #' Generalized Lattices: A Case Study on the Transition from ANOVA to REML.”
 #' Theoretical and Applied Genetics, vol. 129, no. 4, Apr. 2016.
-#' 
-#' Buntaran, H., Piepho, H., Schmidt, P., Ryden, J., Halling, M., and Forkman, J.
-#' (2020). Cross validation of stagewise mixed model analysis of Swedish variety
-#' trials with winter wheat and spring barley. Crop Science, 60(5).
-#' 
+#'
+#' Buntaran, H., Piepho, H., Schmidt, P., Ryden, J., Halling, M., and Forkman,
+#' J. (2020). Cross validation of stagewise mixed model analysis of Swedish
+#' variety trials with winter wheat and spring barley. Crop Science, 60(5).
+#'
 #' Schmidt, P., J. Hartung, J. Bennewitz, and H.P. Piepho. 2019. Heritability in
 #' Plant Breeding on a Genotype Difference Basis. Genetics 212(4).
 #'
@@ -82,8 +82,9 @@
 #' Tanaka, E., and Hui, F. K. C. (2019). Symbolic Formulae for Linear Mixed
 #' Models. In H. Nguyen (Ed.), Statistics and Data Science. Springer.
 #'
-#' Zystro, J., Colley, M., and Dawson, J. (2018). Alternative Experimental Designs
-#' for Plant Breeding. In Plant Breeding Reviews. John Wiley and Sons, Ltd.
+#' Zystro, J., Colley, M., and Dawson, J. (2018). Alternative Experimental
+#' Designs for Plant Breeding. In Plant Breeding Reviews. John Wiley and Sons,
+#' Ltd.
 #'
 #' @importFrom dplyr filter pull rename mutate all_of
 #' @importFrom purrr pluck as_vector
@@ -104,19 +105,20 @@
 #' dt <- potato
 #'
 #' hr <- H2cal(data = dt
-#'             , trait = "tubdw"
+#'             , trait = "stemdw"
 #'             , gen.name = "geno"
 #'             , rep.n = 5
 #'             , fixed.model = "0 + (1|bloque) + geno"
 #'             , random.model = "1 + (1|bloque) + (1|geno)"
 #'             , emmeans = TRUE
-#'             , plot_diag = TRUE
+#'             , plot_diag = FALSE
 #'             , outliers.rm = TRUE
 #'             )
 #'
 #'  hr$tabsmr
 #'  hr$blues
 #'  hr$blups
+#'  hr$outliers
 #'  
 
 H2cal <- function(data
@@ -137,28 +139,24 @@ H2cal <- function(data
                   , trial = NULL
                   ){
   
+  
 
-# test --------------------------------------------------------------------
-
-  if(FALSE) {
-   
-    data <- dt
+# -------------------------------------------------------------------------
+  
+  if (FALSE) {
     
-    trait = "tubdw"
+    data = dt
+    trait = "stemdw"
     gen.name = "geno"
     rep.n = 5
-    env.n = 1
-    year.n = 1
-    env.name = NULL
-    year.name = NULL
-    fixed.model = "1 + (1|bloque) + geno"
+    fixed.model = "0 + (1|bloque) + geno"
     random.model = "1 + (1|bloque) + (1|geno)"
-    summary = TRUE
-    emmeans = FALSE
-    weights = NULL
+    emmeans = TRUE
     plot_diag = TRUE
-    outliers.rm = TRUE
-    trial = NULL
+    outliers.rm = F
+    
+    weights = NULL
+    summary = TRUE
     
   }
   
@@ -176,21 +174,21 @@ H2cal <- function(data
                                      , trait = trait
                                      , model = random.model
                                      )
-    dt.rm <- out.rm %>% purrr::pluck(1)
+    dt.rm <- out.rm %>% purrr::pluck(1) 
 
     out.fm <- data %>% outliers_remove(data = .
                                        , trait = trait
                                        , model = fixed.model
                                        )
-    dt.fm <- out.fm %>% purrr::pluck(1)
+    dt.fm <- out.fm %>% purrr::pluck(1) 
 
     outliers <- list(fixed = out.fm$outliers, random = out.rm$outliers)
 
-  } else {
+  } else if (outliers.rm == FALSE) {
 
-    dt.rm <- data
+    dt.rm <- data 
 
-    dt.fm <- data
+    dt.fm <- data 
 
     outliers <- NULL
 
@@ -215,27 +213,55 @@ H2cal <- function(data
   }
 
 # Plot models -------------------------------------------------------------
-
-  if (plot_diag == TRUE) {
-
+  
+  fm.title <- paste("Fixed model:", trait)
+  rm.title <- paste("Random model:", trait)
+  
+  if (plot_diag == TRUE || plot_diag == "base") {
+    
+    diag.plot <- NULL
+    
     prp <- par(no.readonly = TRUE)
     on.exit(par(prp))   
     
     par(mfrow=c(2,4))
-    hist(resid(g.fix), main = trait)
-    qqnorm(resid(g.fix), main = trait); qqline(resid(g.fix))
-    plot(fitted(g.fix), resid(g.fix, type = "pearson"), main = trait); abline(h=0)
-    plot(resid(g.fix), main = trait)
-    hist(resid(g.ran), main = trait)
-    qqnorm(resid(g.ran), main = trait); qqline(resid(g.ran))
-    plot(fitted(g.ran), resid(g.ran, type = "pearson"), main = trait); abline(h=0)
-    plot(resid(g.ran), main = trait)
+    hist(resid(g.fix), main = fm.title)
+    qqnorm(resid(g.fix), main = fm.title); qqline(resid(g.fix))
+    plot(fitted(g.fix), resid(g.fix, type = "pearson"), main = fm.title); abline(h=0)
+    plot(resid(g.fix), main = fm.title)
+    #>
+    hist(resid(g.ran), main = rm.title)
+    qqnorm(resid(g.ran), main = rm.title); qqline(resid(g.ran))
+    plot(fitted(g.ran), resid(g.ran, type = "pearson"), main = rm.title); abline(h=0)
+    plot(resid(g.ran), main = rm.title)
     par(mfrow=c(1,1))
-
-  }
+    
+  } else if (plot_diag == "ggplot") {
+    
+    diag.fix <- inti::plot_diag(g.fix, title = fm.title)
+    diag.ran <- inti::plot_diag(g.ran, title = rm.title)
+    
+    diag.plot <- list(fixed = diag.fix, random = diag.ran)
+      
+    grid::grid.newpage()
+    grid::pushViewport(grid::viewport(layout = grid::grid.layout(nrow = 2
+                                                                 , ncol = 4
+                                                                 )))
+    
+    vplayout <- function(x, y) 
+      grid::viewport(layout.pos.row = x, layout.pos.col = y)
+    print(diag.fix$histogram, vp = vplayout(1, 1))
+    print(diag.fix$qqplot, vp = vplayout(1, 2))
+    print(diag.fix$residual, vp = vplayout(1, 3))
+    print(diag.fix$homoscedasticity, vp = vplayout(1, 4))
+    print(diag.ran$histogram, vp = vplayout(2, 1))
+    print(diag.ran$qqplot, vp = vplayout(2, 2))
+    print(diag.ran$residual, vp = vplayout(2, 3))
+    print(diag.ran$homoscedasticity, vp = vplayout(2, 4))
+    
+    } else {diag.plot <- NULL}
   
-  
-# handle model estimates --------------------------------------------------
+# Model estimates --------------------------------------------------
   
 # number of genotypes
 
@@ -396,7 +422,6 @@ H2cal <- function(data
         dplyr::rename(!!trait := .) %>% 
         mutate(across({{trait}}, as.numeric)) %>% 
         mutate(smith.w = diag(solve(vcov(g.fix)))) %>% 
-        #>
         dplyr::filter(grepl({{gen.name}}, .data[[gen.name]])) %>% 
         mutate(across({{gen.name}}, ~stringr::str_replace(., gen.name, "")))
       
@@ -405,9 +430,7 @@ H2cal <- function(data
         base::as.matrix(.) %>%
         diag(.) %>%
         enframe() %>%
-        #>
         dplyr::filter(grepl({{gen.name}}, .data$name)) %>% 
-        ##>
         select(!.data$name) %>% 
         deframe() %>% 
         mean()
@@ -475,10 +498,13 @@ H2cal <- function(data
     mutate(H2.p = V.g/(V.g + vdBLUEs/2)) %>%
     mutate(vdBLUPs = vdBLUP.avg) %>% 
     mutate(H2.c = 1 - (vdBLUPs/2/V.g)) %>% 
-    select(!matches("BLUE|BLUP")) %>% 
-    purrr::discard(~all(. == 0 | is.nan(.))) %>% 
+    select(!matches("BLUE|BLUP")) %>%
+    purrr::discard(~all(is.nan(.))) %>%
+    {if (env.n == 1) dplyr::select(.data = ., !V.gxl) else .} %>% 
+    {if (year.n == 1) dplyr::select(.data = ., !V.gxy) else .} %>%
+    {if (env.n && year.n == 1) dplyr::select(.data = ., !V.gxlxy) else .} %>%
     {if (!is.null(trial)) dplyr::mutate(.data = ., trial = trial) else .} %>% 
-    {if (!is.null(trial)) select(.data = ., trial, everything()) else .}
+    {if (!is.null(trial)) dplyr::select(.data = ., trial, everything()) else .}
     
 
 # result ------------------------------------------------------------------
@@ -489,6 +515,7 @@ H2cal <- function(data
     , blues = BLUEs
     , model = g.ran
     , outliers = outliers
+    , diagplot = diag.plot
     )
 }
 

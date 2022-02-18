@@ -52,7 +52,7 @@ H2cal(
 fitting process (default = NULL).}
 
 \item{plot_diag}{Show diagnostic plots for fixed and random effects (default
-= FALSE).}
+= FALSE). Options: "base", "ggplot". .}
 
 \item{outliers.rm}{Remove outliers (default = FALSE). See references.}
 
@@ -103,19 +103,20 @@ library(inti)
 dt <- potato
 
 hr <- H2cal(data = dt
-            , trait = "tubdw"
+            , trait = "stemdw"
             , gen.name = "geno"
             , rep.n = 5
             , fixed.model = "0 + (1|bloque) + geno"
             , random.model = "1 + (1|bloque) + (1|geno)"
             , emmeans = TRUE
-            , plot_diag = TRUE
+            , plot_diag = FALSE
             , outliers.rm = TRUE
             )
 
  hr$tabsmr
  hr$blues
  hr$blups
+ hr$outliers
  
 }
 \references{
@@ -123,9 +124,9 @@ Bernal Vasquez, Angela Maria, et al. “Outlier Detection Methods for
 Generalized Lattices: A Case Study on the Transition from ANOVA to REML.”
 Theoretical and Applied Genetics, vol. 129, no. 4, Apr. 2016.
 
-Buntaran, H., Piepho, H., Schmidt, P., Ryden, J., Halling, M., and Forkman, J.
-(2020). Cross validation of stagewise mixed model analysis of Swedish variety
-trials with winter wheat and spring barley. Crop Science, 60(5).
+Buntaran, H., Piepho, H., Schmidt, P., Ryden, J., Halling, M., and Forkman,
+J. (2020). Cross validation of stagewise mixed model analysis of Swedish
+variety trials with winter wheat and spring barley. Crop Science, 60(5).
 
 Schmidt, P., J. Hartung, J. Bennewitz, and H.P. Piepho. 2019. Heritability in
 Plant Breeding on a Genotype Difference Basis. Genetics 212(4).
@@ -137,8 +138,9 @@ Crop Science 59(2).
 Tanaka, E., and Hui, F. K. C. (2019). Symbolic Formulae for Linear Mixed
 Models. In H. Nguyen (Ed.), Statistics and Data Science. Springer.
 
-Zystro, J., Colley, M., and Dawson, J. (2018). Alternative Experimental Designs
-for Plant Breeding. In Plant Breeding Reviews. John Wiley and Sons, Ltd.
+Zystro, J., Colley, M., and Dawson, J. (2018). Alternative Experimental
+Designs for Plant Breeding. In Plant Breeding Reviews. John Wiley and Sons,
+Ltd.
 }
 \author{
 Maria Belen Kistner

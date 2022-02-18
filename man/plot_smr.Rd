@@ -80,15 +80,8 @@ You could add additional layer to the plot using "+" with ggplot2 options
 \dontrun{
 
 library(inti)
-library(gsheet)
 
-url <- paste0("https://docs.google.com/spreadsheets/d/"
-              , "15r7ZwcZZHbEgltlF6gSFvCTFA-CFzVBWwg3mFlRyKPs/"
-              , "edit#gid=172957346")
-# browseURL(url)
-
-fb <- gsheet2tbl(url)
-
+fb <- potato#' 
 
 yrs <- yupana_analysis(data = fb
                        , response = "hi"
@@ -100,14 +93,14 @@ yrs$meancomp \%>\%
   plot_smr(type = "line"
            , x = "geno"
            , y = "hi"
+           , xlab = ""
            , group = "treat"
-           , glab = "tratamientos (cm^{-2})"
+           , glab = "Tratamientos"
            , ylimits = ""
            , color = c("brown", "blue")
            , gtext = c("Irrigado", "Dry Down ")
            )
-  
-
+           
 }
 
 }

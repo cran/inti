@@ -45,8 +45,17 @@
 #'   plot_raw(type = "box"
 #'            , x = "geno"
 #'            , y = "twue"
-#'            #, group = "treat"
-#'            , color = "yes"
+#'            , group = NULL
+#'            , ylab = NULL
+#'            , xlab = NULL
+#'            , glab = ""
+#'            ) 
+#'            
+#' fb %>%
+#'   plot_raw(type = "sca"
+#'            , x = "hi"
+#'            , y = "twue"
+#'            , group = ""
 #'            ) 
 #'            
 #' }
@@ -70,6 +79,34 @@ plot_raw <- function(data
                      , linetype = 1
                      , opt = NULL
                      ){
+  
+# -------------------------------------------------------------------------
+
+if (FALSE) {
+  
+  data <- potato
+  type = "scat"
+  x = "hi"
+  y = "twue"
+  group = NULL
+  color = "yes"
+  
+  xlab = "test"
+  ylab = "hello"
+  
+  glab = ""
+  
+  ylimits = NULL
+  xlimits = NULL
+  xrotation = NULL
+  legend = "top"
+  xtext = NULL
+  gtext = NULL
+  color = TRUE
+  linetype = 1
+  opt = NULL
+  
+}
 
 # -------------------------------------------------------------------------
 
@@ -81,11 +118,13 @@ if(!c(x %in% colnames(data))) stop("colum no exist")
 if(!c(y %in% colnames(data))) stop("colum no exist")
 
 # -------------------------------------------------------------------------
+  
+  group <- if(is.null(group) || group == "") {x} else {group}
 
-  group <- if(is.null(group) || is.na(group) || group == "") {NULL} else {group}
-  xlab <- if(is.null(xlab) || is.na(xlab) || xlab == "") {NULL} else {xlab}
-  ylab <- if(is.null(ylab) || is.na(ylab) || ylab == "") {NULL} else {ylab}
-  glab <- if(is.null(glab) || is.na(glab) || glab == "") {NULL} else {glab}
+  xlab <- if(is.null(xlab) || is.na(xlab)) {NULL} else {xlab}
+  ylab <- if(is.null(ylab) || is.na(ylab)) {NULL} else {ylab}
+  glab <- if(is.null(glab) || is.na(glab) ) {NULL} else {glab}
+  
   opt <- if(is.null(opt) || is.na(opt) || opt == "") {NULL} else {opt}
 
   color <- if(is.null(color) || is.na(color) || color == "" || color == "yes") {
@@ -129,11 +168,7 @@ if(!c(y %in% colnames(data))) stop("colum no exist")
 
 if(type == "boxplot") {
   
-  if(is.null(group)) group <- x else group <- group
-  
-  if(is.null(group)) { ncolors <- length(data[[x]] %>% unique()) }
-  
-  else { ncolors <- length(data[[group]] %>% unique()) }
+  ncolors <- length(data[[group]] %>% unique())
   
 } else if (type == "scatterplot") {
   
@@ -168,14 +203,14 @@ if(type == "boxplot") {
 
 # sci-labels --------------------------------------------------------------
 
-if ( !is.null(xlab) ) { 
+xlab <- if ( !is.null(xlab) ) {
   
   xlab <- xlab %>%
     gsub(pattern = " ", "~", .)
   xlab <- eval(expression(parse(text = xlab)))
   }
 
-if ( !is.null(ylab) ) { #
+ylab <- if ( !is.null(ylab) ) { 
   
   ylab <- ylab %>%
     gsub(pattern = " ", "~", .)
@@ -183,13 +218,17 @@ if ( !is.null(ylab) ) { #
   ylab <- eval(expression(parse(text = ylab)))
   }
 
-if ( !is.null(glab) ) {
+glab <- if ( !is.null(glab) ) {
   
   glab <- glab %>%
     gsub(pattern = " ", "~", .)
   glab <- eval(expression(parse(text = glab)))
   } 
 
+  lab_x <- if(is.null(xlab)) x else xlab
+  lab_y <- if(is.null(ylab)) y else ylab
+  lab_group <- if(is.null(glab)) group else glab
+  
 # -------------------------------------------------------------------------
 
 if(type == "boxplot") {
@@ -208,6 +247,8 @@ if(type == "boxplot") {
     {if(!is.null(xtext)) scale_x_discrete(labels = xtext)} 
   
 } else if(type == "scatterplot") {
+  
+  group <- if(x == group) {group <- NULL} else {group}
 
   plotdt <- data %>% 
     mutate(across({{group}}, as.factor))
@@ -262,11 +303,11 @@ plot <- type + {
                      , labels = if(!is.null(gtext)) gtext else waiver()) +
 
   labs(
-    x = if(is.null(xlab)) x else xlab
-    , y = if(is.null(ylab)) y else ylab
-    , fill = if(is.null(glab)) group else glab
-    , shape = if(is.null(glab)) group else glab
-    , color = if(is.null(glab)) group else glab
+    x = lab_x
+    , y = lab_y
+    , fill = lab_group
+    , shape = lab_group
+    , color = lab_group
     ) 
 
 layers <- 'plot +

@@ -44,6 +44,9 @@ shinyServer(function(input, output, session) {
 
 # auth --------------------------------------------------------------------
 
+  source("auth.R")
+  if (file.exists("www/analytics.r")) {source("www/analytics.r", local = T)}
+  
   gar_shiny_auth(session)
 
 # longin vs local ---------------------------------------------------------
@@ -92,9 +95,6 @@ shinyServer(function(input, output, session) {
     as_sheets_id( fieldbook_url() )
 
   })
-  
-
-if (file.exists("www/analytics.r")) {source("www/analytics.r", local = T)}
   
 # generate sheet url ------------------------------------------------------
 
