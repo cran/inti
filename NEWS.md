@@ -1,7 +1,19 @@
+# inti 0.5.5
+
+- Yupana: update `yupana_import()` using `if_any()` instead `across()`
+- Tarpuy: in `dsg` the column `qr` ==> `barcode`
+- Tarpuy: update sheets names in `intro` section
+- Tarypu: export field-book in specific sheet
+- Tarpuy: select sheet for field-book sketch
+- Tarpuy: create field-book only with the factor list
+- Tarpuy: column with [] are omitted in the field-book generation
+- CRAN comments: if (class(model) == "lmerMod") => if ( is(model, "lmerMod") 
+
 # inti 0.5.4
 
-- `outliers_remove()`: change `cbind()` by `cbind.data.frame()`
-- Fix apps auth
+- `outliers_remove()`: change `cbind()` by `cbind.data.frame()`.
+- Fix apps auth.
+- Thanks to Uwe Ligges to allow consecutive CRAN updates.
 
 # inti 0.5.3
 

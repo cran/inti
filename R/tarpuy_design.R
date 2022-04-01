@@ -40,7 +40,7 @@
 #' library(gsheet)
 #' 
 #' url <- paste0("https://docs.google.com/spreadsheets/d/"
-#'               , "183upHd4wriZz2UnInoo5Ate5YFdk7cZlhE0sMQ2x5iw/edit#gid=532773890")
+#'               , "1tDcLZZ9C80uBJK8RRW6_WIyxiL8bIHACStJyf8avuCU/edit#gid=59220990")
 #' # browseURL(url)
 #' 
 #' fb <- gsheet2tbl(url) 
@@ -69,15 +69,59 @@ type <- match.arg(type, c(
   ))
 
 
-# data arguments ----------------------------------------------------------
+# factors -----------------------------------------------------------------
 # -------------------------------------------------------------------------
 
 dt_factors <- data %>%
   dplyr::select(where(~!all(is.na(.)))) %>% 
+  dplyr::select(!starts_with("[") | !ends_with("]")) %>%
   dplyr::select(!starts_with("{") | !ends_with("}")) %>%
   dplyr::rename_with(~ gsub("\\s+|\\.", "_", .)) %>%
   dplyr::mutate(across(everything(), ~ gsub(" ", "-", .))) %>%
   dplyr::na_if("NULL") 
+
+# -------------------------------------------------------------------------
+
+if(length(dt_factors) == 0 | length(dt_factors) < nfactors) {
+  
+  print("Factors without levels")
+  
+  return(fieldbook <- NULL)
+  
+}
+
+# desatendido -------------------------------------------------------------
+# -------------------------------------------------------------------------
+
+arg_opt <- data %>% 
+  dplyr::select(starts_with("{") | ends_with("}")) %>% 
+  names() 
+
+data <- if(length(arg_opt) == 2) {data} else if (length(arg_opt) < 2) {
+
+ndata <- data %>% 
+  dplyr::select(!starts_with("{") | !ends_with("}")) %>% 
+  dplyr::select(1:{{nfactors}})  
+
+opt <- list(nfactors = nfactors
+            , type = type
+            , rep = rep
+            , serie = serie
+            , seed = seed
+            , barcode = barcode
+            ) %>% 
+  tibble::enframe(name = "{arguments}", value = "{values}") %>% 
+  merge(.
+        , ndata
+        , by = 0
+        , all = TRUE
+        ) %>% 
+  dplyr::select(!.data$Row.names)
+  
+}
+
+# data arguments ----------------------------------------------------------
+# -------------------------------------------------------------------------
 
 arguments <- data %>%
   dplyr::select(where(~!all(is.na(.)))) %>% 
@@ -86,17 +130,6 @@ arguments <- data %>%
   tidyr::drop_na() %>% 
   tibble::deframe() %>% 
   as.list()
-
-# -------------------------------------------------------------------------
-# -------------------------------------------------------------------------
-
-if(length(dt_factors) == 0) {
-  
-  print("Factors without levels")
-  
-  return(fieldbook <- NULL)
-  
-}
 
 # -------------------------------------------------------------------------
 
