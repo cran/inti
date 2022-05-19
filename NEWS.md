@@ -1,3 +1,13 @@
+# inti 0.5.6
+
+- Package: `web_table()`
+  - `autoWidth = TRUE` 
+  - `columnwidth` argument
+  - `width` argument
+- Fix `plot_smr()`: "length(x) = 2 > 1' in coercion to 'logical(1)"
+- New function: `split_folder()`
+- Yupana: add `scale` and `method` in correlation plot
+
 # inti 0.5.5
 
 - Yupana: update `yupana_import()` using `if_any()` instead `across()`
