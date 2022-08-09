@@ -1,6 +1,6 @@
 Package: inti
 Type: Package
-Version: 0.5.6
+Version: 0.5.7
 Title: Tools and Statistical Procedures in Plant Science
 Description: The 'inti' package is part of the 'inkaverse' project for developing 
     different procedures and tools used in plant science and experimental designs. 
@@ -8,7 +8,7 @@ Description: The 'inti' package is part of the 'inkaverse' project for developin
     experiments and data collection (tarpuy()), data analysis and graphics (yupana())
     , and technical writing. 
     Learn more about the 'inkaverse' project at <https://inkaverse.com/>.
-Date: 2022-05-18
+Date: 2022-08-08
 Authors@R: c(
     person("Flavio", "Lozano-Isla", email = "flavjack@gmail.com", role = c("aut", "cre")
           , comment = c(ORCID = "0000-0002-0714-669X")),
@@ -25,12 +25,12 @@ VignetteBuilder: knitr
 License: GPL-3 | file LICENSE
 LazyData: true
 Encoding: UTF-8
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.1
 NeedsCompilation: no
-Packaged: 2022-05-19 02:33:18 UTC; flavjack
+Packaged: 2022-08-08 20:01:35 UTC; flavjack
 Author: Flavio Lozano-Isla [aut, cre] (<https://orcid.org/0000-0002-0714-669X>),
   QuipoLab [ctb],
   Inkaverse [cph]
 Maintainer: Flavio Lozano-Isla <flavjack@gmail.com>
 Repository: CRAN
-Date/Publication: 2022-05-19 06:50:06 UTC
+Date/Publication: 2022-08-09 08:50:10 UTC

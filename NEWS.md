@@ -1,3 +1,16 @@
+# inti 0.5.7
+
+- Update functions bookdown to quarto: 
+  - `figure2rmd()` ==> `figure2qmd()`
+  - `table2rmd()` ==> `table2qmd()`
+  - `gdocs2rmd()` ==> `gdocs2qmd()`
+ - Fix `plot_raw()`: "length(x) = 2 > 1' in coercion to 'logical(1)"
+ - Update `jc_tombola()`
+ - `outliers_remove(drop.na = FALSE)` allows avoid drop NA values by default 
+ - `H2cal()` outliers are changed to NA in the data.frame
+ - `yupana_mvr()`: update function for correlation and PCA
+ - Yupana: update multivariate analysis
+
 # inti 0.5.6
 
 - Package: `web_table()`
@@ -16,7 +29,7 @@
 - Tarypu: export field-book in specific sheet
 - Tarpuy: select sheet for field-book sketch
 - Tarpuy: create field-book only with the factor list
-- Tarpuy: column with [] are omitted in the field-book generation
+- Tarpuy: column with [] in `design` are omitted in the field-book generation
 - CRAN comments: if (class(model) == "lmerMod") => if ( is(model, "lmerMod") 
 
 # inti 0.5.4
