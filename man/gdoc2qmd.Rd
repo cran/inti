@@ -4,12 +4,14 @@
 \alias{gdoc2qmd}
 \title{Google docs to Rmarkdown}
 \usage{
-gdoc2qmd(file, export = NA)
+gdoc2qmd(file, export = NA, format = "qmd")
 }
 \arguments{
 \item{file}{Zip file path from Articul8 exported in md format [path]}
 
 \item{export}{Path to export the files [path: NA (file directory)]}
+
+\item{format}{Output format [string: "qmd" "rmd"]}
 }
 \value{
 path
@@ -18,5 +20,5 @@ path
 Use Articul8 Add-ons from Google docs to build Rticles
 }
 \details{
-If you add "> END" will replace by "knitr::knit_exit()"
+If you add "|# END" will replace by "knitr::knit_exit()"
 }

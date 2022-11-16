@@ -1,3 +1,18 @@
+# inti 0.5.9
+
+- Yupana - fieldbook module:
+  - [ ] Create a filter function and module: `yupana_filter()` 
+  - [ ] Preview result?
+
+# inti 0.5.8
+
+- `gdocs2qmd(format)` allow transform to quarto or Rmarkdown format
+- Update RStudio download link to posit
+
+- Yupana - fieldbook module:
+  - [X] Use "_" or "." to separate the traits factors: `yupana_reshape()`
+  - [X] Load and Save in specific sheet
+
 # inti 0.5.7
 
 - Update functions bookdown to quarto: 
@@ -6,7 +21,7 @@
   - `gdocs2rmd()` ==> `gdocs2qmd()`
  - Fix `plot_raw()`: "length(x) = 2 > 1' in coercion to 'logical(1)"
  - Update `jc_tombola()`
- - `outliers_remove(drop.na = FALSE)` allows avoid drop NA values by default 
+ - `outliers_remove(drop.na = FALSE)` avoid drop NA values by default 
  - `H2cal()` outliers are changed to NA in the data.frame
  - `yupana_mvr()`: update function for correlation and PCA
  - Yupana: update multivariate analysis
