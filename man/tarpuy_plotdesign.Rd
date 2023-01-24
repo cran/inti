@@ -6,8 +6,7 @@
 \usage{
 tarpuy_plotdesign(
   data,
-  factor,
-  dim = NULL,
+  factor = NA,
   fill = "plots",
   xlab = NULL,
   ylab = NULL,
@@ -19,8 +18,6 @@ tarpuy_plotdesign(
 examples.}
 
 \item{factor}{Vector with the name of the columns with the factors.}
-
-\item{dim}{Dimension for reshape the design arrangement.}
 
 \item{fill}{Value for fill the experimental units (default = "plots").}
 
@@ -39,4 +36,28 @@ Plot fieldbook sketch designs based in experimental design
 \details{
 The function allows to plot the experimental design according the
   field experiment design.
+}
+\examples{
+
+\dontrun{
+
+library(inti)
+library(gsheet)
+
+url <- paste0("https://docs.google.com/spreadsheets/d/"
+              , "1grAv_2po804pPGg9nj1o5nli01IcEGvSevDruq_ssHk/edit#gid=1807254932")
+# browseURL(url)
+
+fb <- gsheet2tbl(url) 
+
+dsg <- fb \%>\% tarpuy_design() 
+
+dsg
+
+dsg \%>\% str()
+
+dsg \%>\% 
+  tarpuy_plotdesign()
+
+}
 }

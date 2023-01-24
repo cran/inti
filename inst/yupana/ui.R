@@ -2,9 +2,9 @@
 # yupana ------------------------------------------------------------------
 # -------------------------------------------------------------------------
 #> open https://flavjack.github.io/inti/
-#> open https://flavjack.shinyapps.io/yupanapro/
+#> open https://flavjack.shinyapps.io/yupana/
 #> author .: Flavio Lozano-Isla (lozanoisla.com)
-#> date .: 2022-04-28
+#> date .: 2023-01-21
 # -------------------------------------------------------------------------
 
 # -------------------------------------------------------------------------
@@ -54,7 +54,7 @@ navbarPage(title = div(
 # Yupana Info -------------------------------------------------------------
 # -------------------------------------------------------------------------
 
-           tabPanel("Intro"
+           tabPanel("Intro", icon = icon("home")
                     
                     , bs_theme_dependencies("flatly") #!
                     
@@ -67,7 +67,7 @@ navbarPage(title = div(
                       meta_social(
                         title = "Yupana",
                         description = "Yupana: platform for statistical data analysis",
-                        url = "https://flavjack.shinyapps.io/yupanapro/",
+                        url = "https://flavjack.shinyapps.io/yupana/",
                         image = "https://flavjack.github.io/inti/img/yupana.png",
                         image_alt = "inkaverse.com"
                       )
@@ -346,7 +346,7 @@ navbarPage(title = div(
 # Exploratory -------------------------------------------------------------
 # -------------------------------------------------------------------------
 
-tabPanel("Exploratory",
+tabPanel(h5(icon("magnifying-glass-chart"), "Exploratory"),
          
          fluidRow(
            
@@ -512,7 +512,7 @@ tabPanel("Exploratory",
 # Yupana Analysis ---------------------------------------------------------
 # -------------------------------------------------------------------------
 
-tabPanel("Analysis",
+tabPanel(h5(icon("chart-simple"), "Analysis"),
          
 fluidRow(
   
@@ -587,7 +587,7 @@ fluidRow(
 
 ),
 
-tabPanel("Graphics",
+tabPanel(h5(icon("feather-pointed"), "Graphics"),
          
          fluidRow(
            
@@ -783,7 +783,7 @@ tabPanel("Graphics",
 
 ),
 
-        tabPanel("Multivariate",
+        tabPanel(h5(icon("gears"), "Multivariate"),
 
 
                  fluidRow(
@@ -888,7 +888,7 @@ tabPanel("Graphics",
 # Yupana Fieldbook --------------------------------------------------------
 # -------------------------------------------------------------------------
 
-tabPanel("Fieldbook",
+tabPanel(h5(icon("book"), "Fieldbook"),
          
          fluidRow(
            

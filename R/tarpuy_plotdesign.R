@@ -5,7 +5,6 @@
 #' @param data Experimental design data frame with the factors and level. See
 #'   examples.
 #' @param factor Vector with the name of the columns with the factors.
-#' @param dim Dimension for reshape the design arrangement.
 #' @param fill  Value for fill the experimental units (default = "plots").
 #' @param xlab Title for x axis.
 #' @param ylab Title for y axis.
@@ -25,10 +24,32 @@
 #' 
 #' @export
 #'
+#' @examples
+#' 
+#' \dontrun{
+#'
+#' library(inti)
+#' library(gsheet)
+#' 
+#' url <- paste0("https://docs.google.com/spreadsheets/d/"
+#'               , "1grAv_2po804pPGg9nj1o5nli01IcEGvSevDruq_ssHk/edit#gid=1807254932")
+#' # browseURL(url)
+#' 
+#' fb <- gsheet2tbl(url) 
+#' 
+#' dsg <- fb %>% tarpuy_design() 
+#' 
+#' dsg
+#' 
+#' dsg %>% str()
+#' 
+#' dsg %>% 
+#'   tarpuy_plotdesign()
+#' 
+#' }
 
 tarpuy_plotdesign <- function(data
-                        , factor
-                        , dim = NULL
+                        , factor = NA
                         , fill = "plots"
                         , xlab = NULL
                         , ylab = NULL
@@ -37,41 +58,43 @@ tarpuy_plotdesign <- function(data
 
 # -------------------------------------------------------------------------
 
+  # data <- dsg <- sketch
+  # factor <- "rows"
+  # data <- fb
   # xlab <- ylab <- glab <- NULL
-  # fill <- "plots"
+  # factor <- "geno"
 
-  if (is.null(xlab)) { xlab <-  "Experimental Units" }
-  if (is.null(ylab)) { ylab <-  "Blocks" }
-  if (is.null(glab)) { glab <- factor }
-
- if ( is.numeric(dim) ) {
-
-    ncols <- dim[1]
-    nrows <- dim[2]
-
-  } else if ( any(dim %in% names(data)) ) {
-
-    nrows <- data %>%
-      select(.data[[dim]]) %>%
-      unique() %>%
-      deframe() %>% length()
-
-    ncols <- data %>%
-      nrow() / nrows
-
-  }  else if ( is.character(dim) ) {
-
-    dim <- dim %>%
-      strsplit(., "x") %>% deframe() %>% as.numeric()
-
-    ncols <- dim[1]
-    nrows <- dim[2]
-
+# -------------------------------------------------------------------------
+  
+  if( is.data.frame(data) ) {
+    
+    design <- data %>% list() %>%  purrr::pluck(1)
+    
+    param <- NULL
+    
+    factor <- if(is.na(factor) | is.null(factor)) { names(design)[3] } else {factor}
+    
+    lengthfactor <- nlevels(as.factor(design[[factor]])) 
+    
+    nrow <- design$rows %>% unique() %>% length()
+    
+    ncol <- design$cols %>% unique() %>% length()
+    
+  } else if ( length(data) > 1 ) {
+    
+    design <- data %>% purrr::pluck(1)
+    
+    param <- data %>% purrr::pluck(2)
+    
+    factor <- if(is.na(factor) | is.null(factor)) { param$factornames[1] }
+    
+    lengthfactor <- length(param$factors[[factor]])
+    
+    nrow <-  param$dim[1]
+    
+    ncol <-  param$dim[2]
+    
   }
-
-  dsg <- data %>%
-    mutate(cols = rep(1:ncols, times = nrow(.)/ncols )) %>%
-    mutate(rows = rep(1:nrows,  each = nrow(.)/nrows ))
 
 # plot --------------------------------------------------------------------
 
@@ -81,25 +104,29 @@ tarpuy_plotdesign <- function(data
         , "#F3BB00" # yellow
         , "#0198CD" # blue
         , "#FE6673" # red
-      ))(length(data[[factor]] %>% unique()))
+      ))(lengthfactor)
 
-plot <- dsg %>%
-  ggplot(aes(x = .data$cols, y = .data$rows, fill = .data[[factor]])) +
+# -------------------------------------------------------------------------
+
+  if (is.null(xlab)) { xlab <-  "columns" }
+  if (is.null(ylab)) { ylab <-  "row" }
+  if (is.null(glab)) { glab <- factor }
+
+# -------------------------------------------------------------------------
+
+plot <- design %>%
+  arrange(.data$rows, .data$cols) %>%
+  ggplot(aes(x = .data$cols, y = .data$rows, fill = as.factor(.data[[factor]]))) +
   geom_tile(color = "black", size = 0.5) +
   geom_text(aes(label = .data[[fill]])) +
-  scale_x_continuous(expand = c(0, 0), n.breaks = ncols) +
-  scale_y_continuous(expand = c(0, 0), n.breaks = nrows, trans = 'reverse') +
+  scale_y_continuous(expand = c(0, 0), trans = 'reverse', breaks = 1:nrow) +
+  scale_x_continuous(expand = c(0, 0), breaks = 1:ncol) +
   scale_fill_manual(values = color_grps) +
   labs(x = xlab, y = ylab, fill = glab) +
   theme_bw() +
   theme(legend.position = "top")
 
-plot
-
-# result ------------------------------------------------------------------
-# -------------------------------------------------------------------------
-
-  return(plot)
+return(plot)
 
 }
 

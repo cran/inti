@@ -25,6 +25,7 @@
 #' @param nfactor Number of factors for the design.
 #' @param design Type of design.
 #' @param rep Number of replication.
+#' @param zigzag Experiment layout in zigzag [logic: F]
 #' @param serie Number of digits in the plots.
 #' @param seed Seed for the randomization.
 #'
@@ -68,7 +69,8 @@ tarpuy_plex <- function(data = NULL
                           , nfactor = 2
                           , design = "rcbd"
                           , rep = 3
-                          , serie = 2
+                          , zigzag = FALSE
+                          , serie = 100
                           , seed = 0
                          ) {
   
@@ -151,28 +153,103 @@ if ( is.null(data) ) {
 }
 
 # variables ---------------------------------------------------------------
-
-var_list <- tibble(variable = rep(NA, 5)
-                   , siglas = rep(NA, 5) # abbreviation
-                   , evaluation = rep(NA, 5) # evaluation, eval dap dat
-                   , sampling = rep(NA, 5) # sampling sample subplot muestra
-                   , units = rep(NA, 5)
-                   , description = rep(NA, 5)
-                   ) %>%
-  rename('{siglas}' = .data$siglas
-         , '{evaluation}' = .data$evaluation
-         , '{sampling}' = .data$sampling)
+  
+var_list <- traits <- list(
+  list(format = "numeric"
+        , variable = "X"
+       , abbreviation = "X"
+       , when = "X"
+       , samples = NA
+       , units = "X"
+       , details = NA
+       , minimum = "X"
+       , maximum = "X"
+       )
+  , list(format = "categorical"
+         , variable = "X"
+         , abbreviation = "X"
+         , when = "X"
+         , samples = NA
+         , units = "X"
+         , details = NA
+         , categories = "X"
+         )
+  ,  list(format = "boolean"
+          , variable = "X"
+          , abbreviation = "X"
+          , when = "X"
+          , samples = NA
+          , units = "X"
+          , details = NA
+          )
+  ,  list(format = "counter"
+          , variable = "X"
+          , abbreviation = "X"
+          , when = "X"
+          , samples = NA
+          , units = "X"
+          , details = NA
+          )
+  ,  list(format = "photo"
+          , variable = "X"
+          , abbreviation = "X"
+          , when = "X"
+          , samples = NA
+          , units = "X"
+          , details = NA
+          )
+  ,  list(format = "audio"
+          , variable = "X"
+          , abbreviation = "X"
+          , when = "X"
+          , samples = NA
+          , units = "X"
+          , details = NA
+          )
+  ,  list(format = "text"
+          , variable = "X"
+          , abbreviation = "X"
+          , when = "X"
+          , samples = NA
+          , units = "X"
+          , details = NA
+          )
+  ,  list(format = "location"
+          , variable = "X"
+          , abbreviation = "X"
+          , when = "X"
+          , samples = NA
+          , units = "X"
+          , details = NA
+          )
+  ) %>% 
+    dplyr::bind_rows() %>% 
+    dplyr::select(.data$variable
+                  , .data$abbreviation
+                  , .data$when
+                  , .data$samples
+                  , .data$format
+                  , .data$units
+                  , .data$details
+                  , .data$categories
+                  ) %>%
+    rename('{abbreviation}' = .data$abbreviation
+         , '{when}' = .data$when
+         , '{samples}' = .data$samples
+         , '{format}' = .data$format
+         )
 
 # design ------------------------------------------------------------------
 
 factors <- c(paste0("factor", 1:nfactor))
-
+  
 dsg_info <-  c(nfactors = nfactor
               , type = design
               , rep = rep
+              , zigzag = zigzag
               , serie = serie
               , seed = seed
-              , barcode = barcode
+              , fbname = barcode
               ) %>%
   enframe() %>%
   rename('{arguments}' = .data$name, '{values}' = .data$value)
@@ -192,7 +269,7 @@ first_col <- c("Activities (DAI)"
                ) %>%
   enframe(value = "Dates") %>% select(!.data$name)
 
-ttable <- c(DAI = seq.int(from = -15, to = finish, by = 5)) %>%
+ttable <- c(DAI = seq.int(from = -30, to = finish, by = 5)) %>%
   enframe() %>%
   mutate(date =  format( .data$value + start, "%d/%b")) %>%
   select(date, DAI = .data$value) %>%

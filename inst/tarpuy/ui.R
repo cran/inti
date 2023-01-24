@@ -4,7 +4,7 @@
 #> open https://flavjack.github.io/inti/
 #> open https://flavjack.shinyapps.io/tarpuy/
 #> author .: Flavio Lozano-Isla (lozanoisla.com)
-#> date .: 2022-03-26
+#> date .: 2023-01-21
 # -------------------------------------------------------------------------
 
 # -------------------------------------------------------------------------
@@ -51,7 +51,7 @@ navbarPage(title = div(
 # Yupana Info -------------------------------------------------------------
 # -------------------------------------------------------------------------
 
-           tabPanel("Intro"
+           tabPanel("Intro", icon = icon("home") 
                     
                     , bs_theme_dependencies("flatly") #!
                     
@@ -204,7 +204,7 @@ navbarPage(title = div(
 
                                    textInput(inputId = "gsheet_varlist"
                                              , label = NULL
-                                             , value = "variables"
+                                             , value = "traits"
                                              , placeholder = "Sheet name"
                                    ),
 
@@ -308,7 +308,7 @@ navbarPage(title = div(
                                   Si tienes muchas pestañas que dificultan tu trabajo, puedes ir ocultandolas (<em>click derecho en la pestaña > Ocultar hoja</em>).
                                   Al momento de usar la app puedes especificar qué hoja deseas utilizar y la app extrae la información de la hoja indicada.
                                   <li>Si deseas analizar los datos experimentales de tu proyecto, puedes usar la app Yupana:
-                                  <a href="https://flavjack.shinyapps.io/yupanapro/">https://flavjack.shinyapps.io/yupanapro/</a>
+                                  <a href="https://flavjack.shinyapps.io/yupana/">https://flavjack.shinyapps.io/yupana/</a>
                                   </li>
                                   </ul>
                                   <p>
@@ -371,7 +371,7 @@ navbarPage(title = div(
             
            ),
 
-           tabPanel("Plex",
+           tabPanel(div(h5(icon("seedling"),  "Plex")),
 
                     # Yupana Fieldbook --------------------------------------------------------
                     # -------------------------------------------------------------------------
@@ -485,6 +485,7 @@ navbarPage(title = div(
                                                                       , "Field"
                                                                       , "Greenhouse"
                                                                       , "Laboratory"
+                                                                      , "Others"
                                                                       )
                                                         , width = "100%"
                                                         )
@@ -608,7 +609,6 @@ navbarPage(title = div(
                              
                              fluidRow(
                                
-                               
                                column(7,
                                       
                                       numericInput(
@@ -630,18 +630,35 @@ navbarPage(title = div(
                                                    )
                                       )
                                ),
-
-                             uiOutput("plex_design"),
+                             
+                             fluidRow( 
+                               
+                               column(7,
+                                      
+                                      uiOutput("plex_design")
+                                      
+                                      ),
+                               
+                               column(5,
+                                      
+                                      selectizeInput(
+                                        inputId = "plex_zigzag",
+                                        label = "Zigzag",
+                                        choices = c("FALSE", "TRUE")
+                                      )
+                               ),
+                               
+                               
+                               ), 
                              
                              fluidRow(
 
                                column(6,
                                       
                                       numericInput(inputId = "plex_serie"
-                                                   , label = "Plot digits"
-                                                   , value = 2
-                                                   , max = 3
-                                                   , min = 1
+                                                   , label = "Plots serie"
+                                                   , value = 100
+                                                   , min = 100
                                                    )
                                       
                                       ),
@@ -665,7 +682,7 @@ navbarPage(title = div(
 
            ),
 
-           tabPanel("Fieldbook",
+           tabPanel(div(h5(icon("book"), "Fieldbook")),
 
                     fluidRow(
 
@@ -705,10 +722,9 @@ navbarPage(title = div(
                                column(6,
                                       
                                       numericInput(inputId = "design_serie"
-                                                   , label = "Plot digits"
-                                                   , value = 2
-                                                   , max = 3
-                                                   , min = 1
+                                                   , label = "Plots serie"
+                                                   , value = 100
+                                                   , min = 0
                                                    ),
                                       
                                       ),
@@ -737,6 +753,14 @@ navbarPage(title = div(
                                
                                column(6,
                                       
+                                      selectInput(inputId = "design_zigzag"
+                                                  , label = "Zigzag"
+                                                  , choices = c("FALSE",  "TRUE")
+                                      )
+                               ),
+                               
+                               column(6,
+                                      
                                       textInput(inputId = "fb2export"
                                                 , label = "Sheet export"
                                                 , placeholder = "sheet name"
@@ -747,20 +771,20 @@ navbarPage(title = div(
                                
                                column(6,
                                       
-                                      radioButtons(inputId = "export_design_overwrite"
-                                                 , label = "Overwrite"
-                                                 , inline = TRUE
-                                                 , choices = c("no", "yes")
-                                                 )
-                                      ),
-                               
-                               column(12,
-                                      
                                       actionButton(inputId = "export_design"
                                                    , label = "Generate"
                                                    , class = "btn btn-success"
                                                    )
+                                      ),
+                               
+                               column(6,
+                                      
+                                      radioButtons(inputId = "export_design_overwrite"
+                                                   , label = "Overwrite"
+                                                   , inline = TRUE
+                                                   , choices = c("no", "yes")
                                       )
+                               ),
                                
                                ),
                              
@@ -782,7 +806,7 @@ navbarPage(title = div(
 
            ),
 
-tabPanel("Sketch",
+tabPanel(div(h5(icon("pen-ruler"), "Sketch")) ,
 
          fluidRow(
 
@@ -822,7 +846,83 @@ tabPanel("Sketch",
            ),
 
 
+         ),
+
+
+# connect -----------------------------------------------------------------
+# -------------------------------------------------------------------------
+
+tabPanel(div(h5(icon("plug-circle-check"), "Mobile")),
+         
+         fluidRow(
+           
+           column(2,
+                  
+                  h5(icon("mobile-screen-button"), "Field Book app"),
+                  
+                  br(),
+                  
+                  radioButtons(inputId = "connection_sheet_preview"
+                               , label = h5(icon("magnifying-glass"), "Preview") 
+                               , choices = c("Traits"
+                                             , "Field Book")
+                               , inline = TRUE
+                               , selected = "Traits"
+                  ),
+                  
+                  fluidRow(
+                    
+                    h5(icon("wheat-awn"), "Traits"),
+                    
+                    uiOutput("connection_sheet_traits"),
+                    
+                  ),
+                  
+                  fluidRow(
+                    
+                    h5(icon("book"), "Field Book"),
+                    
+                    uiOutput("connection_sheet_fieldbook"),
+                    
+                    uiOutput("connection_fieldbook_lastfactor"),
+                    
+                  ),
+                  
+                  br(),
+                  
+                  fluidRow(
+                    
+                    h5(icon("cloud-arrow-down"), "Download Files"),
+                    
+                    column(6,
+                           
+                           uiOutput("connection_traits_download"),
+                           
+                           ),
+                    
+                    column(6,
+                           
+                           uiOutput("connection_fieldbook_download"),
+                           
+                    ),
+                    
+                  ),
+                  
+                  
+           ),
+           
+           column(10,
+                  
+                  uiOutput("connection_sheet_preview"),
+                  
+                  br(),
+                  br()
+                  
+           )
+           
          )
+
+)
 
 # Tarpuy end code ---------------------------------------------------------
 # -------------------------------------------------------------------------

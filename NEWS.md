@@ -1,8 +1,15 @@
-# inti 0.5.9
+# inti 0.6.0
 
-- Yupana - fieldbook module:
-  - [ ] Create a filter function and module: `yupana_filter()` 
-  - [ ] Preview result?
+- Fix for dev dplyr (Thanks @hadley)
+- `tarpuy_plotdesign()` 
+  - Autoconvert as factor for plot design
+  - Default names in plot to "row" and "columns"
+- New function: `design_repblock` for "rcbd", "crd" for any factor number
+- Yupana create by default the sheet `locale = "en_US"` to use the decimal point
+- `yupana_mvr` allow to select specific numeric variables
+- `tarpuy_varlist` adapted to field book app
+- Tarpuy: new module for use the information in Field Book app <https://play.google.com/store/apps/details?id=com.fieldbook.tracker>
+- Rename function: `tarpuy_varlist` ==> `tarpuy_traits`
 
 # inti 0.5.8
 
@@ -11,7 +18,7 @@
 
 - Yupana - fieldbook module:
   - [X] Use "_" or "." to separate the traits factors: `yupana_reshape()`
-  - [X] Load and Save in specific sheet
+  - [X] Load and Save in a specific sheet
 
 # inti 0.5.7
 

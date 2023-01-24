@@ -9,9 +9,10 @@ tarpuy_design(
   nfactors = 1,
   type = "crd",
   rep = 2,
-  serie = 2,
-  seed = 0,
-  barcode = NA
+  zigzag = FALSE,
+  serie = 100,
+  seed = NULL,
+  fbname = NA
 )
 }
 \arguments{
@@ -25,12 +26,14 @@ details.}
 
 \item{rep}{Number of replications in the experiment (default = 3).}
 
-\item{serie}{Digits in the plot id (default = 2).}
+\item{zigzag}{Experiment layout in zigzag [logic: F].}
+
+\item{serie}{Number to start the plot id [numeric: 100].}
 
 \item{seed}{Replicability of draw results (default = 0) always random. See
 details.}
 
-\item{barcode}{Barcode prefix for data collection.}
+\item{fbname}{Barcode prefix for data collection.}
 }
 \value{
 A list with the fieldbook design
@@ -54,12 +57,17 @@ library(inti)
 library(gsheet)
 
 url <- paste0("https://docs.google.com/spreadsheets/d/"
-              , "1tDcLZZ9C80uBJK8RRW6_WIyxiL8bIHACStJyf8avuCU/edit#gid=59220990")
+              , "1grAv_2po804pPGg9nj1o5nli01IcEGvSevDruq_ssHk/edit#gid=1595426169")
 # browseURL(url)
 
 fb <- gsheet2tbl(url) 
 
-tarpuy_design(data = fb) 
+dsg <- fb \%>\% tarpuy_design() 
+
+dsg \%>\% str()
+
+dsg \%>\% 
+  tarpuy_plotdesign()
 
 }
 }
