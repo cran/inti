@@ -17,27 +17,19 @@ url %>%
     , label = "Nota:"
     )
 
-## ----tparam, fig.cap= fig$caption---------------------------------------------
-dir <- "files/graph-table.png"
-fig <- dir %>% 
-  include_figure(caption = "Parámetros en `{arguments}` y `{values}` para la generación de gráficos en la aplicación Yupana.")
-fig$figure
+## ----tparam, fig.cap= "Parámetros en `{arguments}` y `{values}` para la generación de gráficos en la aplicación Yupana."----
 
-## ----plot, fig.cap= fig$caption-----------------------------------------------
-dir <- "files/graph-figure.png"
-fig <- dir %>%
-  include_figure(caption = "Figura basada en los `{arguments}` y `{values}` de la tabla anterior.")
-fig$figure
+knitr::include_graphics("files/graph-table.png")
 
-## ----opt, fig.cap= fig$caption------------------------------------------------
-dir <- "files/graph-figure-grid.png"
-fig <- dir %>% 
-  include_figure(caption = "Gráfico con la inclusión de la capa `facet_grid()`")
-fig$figure
+## ----plot, fig.cap= "Figura basada en los `{arguments}` y `{values}` de la tabla anterior."----
 
-## ----topt, fig.cap= fig$caption-----------------------------------------------
-dir <- "files/graph-table-grid.png"
-fig <- dir %>% 
-  include_figure(caption = "Inclusión de `facet_grid(tratamiento ~ .)` en `opt` de los `{arguments}` en Yupana.")
-fig$figure
+knitr::include_graphics("files/graph-figure.png")
+
+## ----opt, fig.cap= "Gráfico con la inclusión de la capa `facet_grid()`"-------
+
+knitr::include_graphics("files/graph-figure.png")
+
+## ----topt, fig.cap= "Inclusión de `facet_grid(tratamiento ~ .)` en `opt` de los `{arguments}` en Yupana."----
+
+knitr::include_graphics("files/graph-table-grid.png")
 

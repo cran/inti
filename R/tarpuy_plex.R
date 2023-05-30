@@ -22,6 +22,7 @@
 #' @param github link with the github repository.
 #' @param about Short description of the project.
 #' @param fieldbook Name or ID for the fieldbook/project.
+#' @param gdocs link for Google Docs
 #' @param nfactor Number of factors for the design.
 #' @param design Type of design.
 #' @param rep Number of replication.
@@ -47,31 +48,32 @@
 #' 
 
 tarpuy_plex <- function(data = NULL
-                          , idea = NULL
-                          , goal = NULL
-                          , hypothesis = NULL
-                          , rationale = NULL
-                          , objectives = NULL
-                          , plan = NULL
-                          , institutions = NULL
-                          , researchers = NULL
-                          , manager = NULL
-                          , location = NULL
-                          , altitude = NULL
-                          , georeferencing = NULL
-                          , environment = NULL
-                          , start = NA
-                          , end = NA
-                          , about = NULL
-                          , fieldbook = NULL
-                          , album = NULL
-                          , github = NULL
-                          , nfactor = 2
-                          , design = "rcbd"
-                          , rep = 3
-                          , zigzag = FALSE
-                          , serie = 100
-                          , seed = 0
+                        , idea = NULL
+                        , goal = NULL
+                        , hypothesis = NULL
+                        , rationale = NULL
+                        , objectives = NULL
+                        , plan = NULL
+                        , institutions = NULL
+                        , researchers = NULL
+                        , manager = NULL
+                        , location = NULL
+                        , altitude = NULL
+                        , georeferencing = NULL
+                        , environment = NULL
+                        , start = NA
+                        , end = NA
+                        , about = NULL
+                        , fieldbook = NULL
+                        , gdocs = NULL
+                        , github = NULL
+                        , album = NULL
+                        , nfactor = 2
+                        , design = "rcbd"
+                        , rep = 3
+                        , zigzag = FALSE
+                        , serie = 100
+                        , seed = 0
                          ) {
   
   
@@ -138,6 +140,7 @@ if ( is.null(data) ) {
              , "END EXPERIMENT" = as.character.Date(end)
              , ABOUT = info
              , "FIELDBOOK NAME" = fbname
+             , GDOCS = gdocs
              , GITHUB = github
              , ALBUM = album
              ) %>%
@@ -243,12 +246,14 @@ var_list <- traits <- list(
 
 factors <- c(paste0("factor", 1:nfactor))
   
+seedset <- if(seed == 0) sample(1:9999, 1) else seed
+  
 dsg_info <-  c(nfactors = nfactor
               , type = design
               , rep = rep
               , zigzag = zigzag
               , serie = serie
-              , seed = seed
+              , seed = seedset
               , fbname = barcode
               ) %>%
   enframe() %>%

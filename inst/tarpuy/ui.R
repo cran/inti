@@ -4,7 +4,7 @@
 #> open https://flavjack.github.io/inti/
 #> open https://flavjack.shinyapps.io/tarpuy/
 #> author .: Flavio Lozano-Isla (lozanoisla.com)
-#> date .: 2023-01-21
+#> date .: 2023-05-21
 # -------------------------------------------------------------------------
 
 # -------------------------------------------------------------------------
@@ -213,12 +213,8 @@ navbarPage(title = div(
                                box(title = #h5("Fieldbook")
                                    , width = 2
                                    , solidHeader = T,
-
-                                   # textInput(inputId = "gsheet_fb"
-                                   #           , label = NULL
-                                   #           , value = "fb"
-                                   #           , placeholder = "Sheet name"
-                                   # ),
+                                   
+                                   #> gap()
 
                                ),
 
@@ -394,12 +390,14 @@ navbarPage(title = div(
                                                               , "fieldbook"
                                                               , "album"
                                                               , "github"
+                                                              , "gdocs"
                                                               )
                                                 , selected = c("manager"
                                                                , "location"
                                                                , "dates"
                                                                , "about"
                                                                , "environment"
+                                                               , "gdocs"
                                                                )
                              ),
 
@@ -422,11 +420,6 @@ navbarPage(title = div(
                                        , width = "100%"
                                        , value = NA
                                        , placeholder = "sheet name"
-                             ),
-
-                             actionButton(inputId = "plex_generate"
-                                          , label = "Generate"
-                                          , class = "btn btn-success"
                              )
 
                              ),
@@ -562,6 +555,17 @@ navbarPage(title = div(
                                                         , value = NA
                                               )
 
+                             ),
+                             
+                             conditionalPanel(condition =  ' input["plex_fields"].includes("gdocs") ',
+                                              
+                                              textInput(inputId = "plex_gdocs"
+                                                        , label = "Google Docs"
+                                                        , width = "100%"
+                                                        , placeholder = "url or link"
+                                                        , value = NA
+                                              )
+                                              
                              )
                       ),
 
@@ -672,7 +676,27 @@ navbarPage(title = div(
                                                    )
                                       
                                       )
+                               ),
+                             
+                             br(),
+                             
+                             fluidRow(
+                               
+                               column(12,
+                                      
+                                      uiOutput("plex_sheets2create"),
+
+                               ),
+                                      
+                               
+                               column(12,
+                                      
+                                      actionButton(inputId = "plex_generate"
+                                                   , label = "Generate"
+                                                   , class = "btn btn-success"
+                                                   )
                                )
+                             )
                              
                              )
                       )

@@ -1,3 +1,26 @@
+# inti 0.6.2
+
+- To improve:
+  - Include lattice
+
+# inti 0.6.1
+
+- Tarpuy: 
+  - Include google sheet and docs in PLEX
+  - Allow empty rows and without filling
+  - Drop values in sheet traits with "X" 
+  - Only generate traits sheets
+  - Seed is set by default 
+  
+- Deprecated:
+  - include_figure()
+  
+- New function
+  - include_pdf()
+  
+- gdocs2qmd()
+  - Word document with different output structure
+  
 # inti 0.6.0
 
 - Fix for dev dplyr (Thanks @hadley)
