@@ -11,7 +11,9 @@
 #' 
 #' @details 
 #' 
-#' If you add "|# END" will replace by "knitr::knit_exit()"
+#' Document rendering until certain point: "#| end"
+#' Include for next page: "#| newpage"
+#' You can include the cover page params using "#|" in a Google docs table
 #' 
 #' @export
 #' 
@@ -22,8 +24,8 @@ gdoc2qmd <- function(file
                      , type = "asis"
                      ){
   
-  # file <- "manuscript.zip"; format = "qmd"; export = NA
-  # type <- "full"
+  # file <- choose.files() ; format = "qmd"; export = NA
+  # type <- "listfull"
 
   export <- if(is.na(export)) {
     file %>% gsub(".zip", "", .) %>% file.path()
@@ -34,16 +36,37 @@ gdoc2qmd <- function(file
   
 # -------------------------------------------------------------------------
   
-  txt <-  zip %>% 
+  text <-  zip %>% 
     .[grep('.md', .)] %>%
     readLines() %>% 
     tibble::enframe() %>%
-    dplyr::rowwise() %>% 
-    dplyr::filter(!.data$value %in% "# ") %>% 
-    dplyr::mutate(across("value"
-                         , ~ gsub("```Unknown element type at this position: UNSUPPORTED```", "", .))) %>%
-    utils::head(which(startsWith(.$value, c('#| END', "#| end"))) - 1)
+    dplyr::filter(!grepl("^#+ $", .data$value)) %>%  
+    dplyr::mutate(value = gsub("```Unknown element type at this position: UNSUPPORTED```"
+                               , "\n\n", .data$value)) %>% 
+    {
+      if (any(grepl(pattern = '#\\| end', x = .$value))) {
+        dplyr::slice(.data = ., 1:(which(x = .$value == '#| end')-1))
+      } else { . }
+    } %>% 
+    mutate(across(.data$value, ~ gsub("#\\| newpage", "\\\\newpage", .))) %>% 
+    dplyr::rowwise() 
   
+  params <- text %>% 
+    dplyr::filter(str_detect(.data$value, "\\| \\#\\|")) %>% 
+    dplyr::mutate(across(everything(), ~gsub("\\| \\#\\|", "", .))) %>% 
+    dplyr::mutate(across(.data$value, ~gsub("\\|$", "", .))) %>% 
+    tidyr::separate(.data$value, c("name", "value"), sep = "\\|") %>% 
+    dplyr::mutate(across(everything(), ~trimws(.))) %>% 
+    tibble::deframe() %>% 
+    as.list() 
+  
+  txt <- text %>% 
+      {
+        if(length(params) >0) {
+          .[-(1:(max(which(grepl("\\| \\#\\|", .$value))))), ]
+        } else {.}
+      }
+
   txtonly <- txt %>% 
     dplyr::filter(!grepl("\\|", .data$value)) %>% 
     dplyr::filter(!grepl("#tbl", .data$value)) %>% 
@@ -61,36 +84,59 @@ gdoc2qmd <- function(file
     dplyr::group_split(.data$value) %>% 
     rev() %>% 
     purrr::map_dfr(~ add_row(.x, .before = grepl("#fig", .x))) %>% 
-    dplyr::mutate(across(.data$value, ~ ifelse(is.na(.), "\\newpage", .))) 
+    {
+      if(length(.) != 0) {
+        dplyr::mutate(.data = ., across(.data$value, ~ ifelse(is.na(.), "\\newpage", .)))
+      }  else {.}
+    }
+    
   
   figx <- fig %>% 
     dplyr::rowwise() %>% 
-    dplyr::mutate(across(.data$value, ~gsub("\\{#fig:(.*)\\}", paste0("{#fig:", .data$name ,"}"), .)))
-  
+    {
+      if(length(.) != 0) {
+        dplyr::mutate(.data = ., across(.data$value, ~gsub("\\{#fig:(.*)\\}", paste0("{#fig:", .data$name ,"}"), .)))
+      }  else {.}
+    }
+    
   figlist <- fig %>% 
-    dplyr::mutate(value = case_when(
-      dplyr::row_number() == 1 ~ .data$value
-      , grepl("#fig", .data$value) ~ .data$value
-      , TRUE  ~ "\n\n"
-    )) %>% 
-    dplyr::mutate(across(.data$value, ~gsub("\\((.*)\\)", "()", .))) 
+    {
+      if(length(.) != 0) {
+        
+        dplyr::mutate(.data = ., value = case_when(
+          dplyr::row_number() == 1 ~ .data$value
+          , grepl("#fig", .data$value) ~ .data$value
+          , TRUE  ~ "\n\n"
+        )) %>% 
+          dplyr::mutate(.data = ., across(.data$value, ~gsub("\\]\\((.*)\\)\\{", "](){", .))) 
+        
+      }  else {.}
+    }
   
   tab <- txt %>% 
     dplyr::filter(grepl("^\\|", .data$value) | grepl("#tbl", .data$value)) %>% 
-    dplyr::mutate(group = case_when(
-      grepl("^:", .data$value) ~ as.character(.data$name)
-      , TRUE ~ NA
-    )) %>% 
-    tibble::as_tibble() %>% 
-    tidyr::fill("group", .direction = "up") %>% 
-    tidyr::drop_na(.data$group) %>% 
-    dplyr::group_by(.data$group) %>% 
-    dplyr::slice(n(), 1:(n() - 1)) %>% 
-    dplyr::ungroup() %>% 
-    dplyr::group_split(.data$group) %>%
-    purrr::map_dfr(~ add_row(.x, .after = grepl("#tbl", .x))) %>% 
-    dplyr::mutate(across(.data$value, ~ ifelse(is.na(.), "\\newpage", .))) %>% 
-    dplyr::select(!.data$group) 
+    {
+      if(nrow(. > 1)) { 
+        
+        dplyr::mutate(.data = ., group = case_when(
+          grepl(pattern = "^:", x = .data$value) ~ as.character(.data$name)
+          , TRUE ~ NA
+        )) %>% 
+          tibble::as_tibble(x = .) %>% 
+          tidyr::fill(data = ., "group", .direction = "up", ) %>% 
+          tidyr::drop_na(data = ., .data$group) %>% 
+          dplyr::group_by(.data = ., .data$group) %>% 
+          dplyr::slice(.data = ., n(), 1:(n() - 1)) %>% 
+          dplyr::ungroup() %>% 
+          dplyr::group_split(.tbl = ., .data$group) %>%
+          purrr::map_dfr(~ add_row(.x, .after = grepl("#tbl", .x))) %>% 
+          dplyr::mutate(.data = ., across(.data$value, ~ ifelse(is.na(.), "\\newpage", .))) %>% 
+          dplyr::select(.data = ., !.data$group) %>% 
+          dplyr::mutate(.data = ., across(.data$value, ~gsub("}", "}", .))) 
+        
+        } else { . }
+    }  
+    
   
   tabx <- tab %>% 
     dplyr::rowwise() %>% 
@@ -125,13 +171,13 @@ gdoc2qmd <- function(file
     {
       if(format == "qmd") {
         
-        dplyr::mutate(.data = ., value = figure2qmd(text = .data$value, path = export)) %>% 
-        dplyr::mutate(.data = ., value = table2qmd(text = .data$value, type))
+        dplyr::mutate(.data = ., value = inti::figure2qmd(text = .data$value, path = export)) %>% 
+        dplyr::mutate(.data = ., value = inti::table2qmd(text = .data$value, type))
         
       } else if (format == "rmd") {
         
-        dplyr::mutate(.data = ., value = figure2rmd(text = .data$value, path = export)) %>% 
-        dplyr::mutate(.data = ., value = table2rmd(text = .data$value)) 
+        dplyr::mutate(.data = ., value = inti::figure2rmd(text = .data$value, path = export)) %>% 
+        dplyr::mutate(.data = ., value = inti::table2rmd(text = .data$value)) 
         
       }
     } %>% 
@@ -139,15 +185,25 @@ gdoc2qmd <- function(file
     tibble::add_row(value = "\\newpage", .before = which(grepl("# reference", .$value, ignore.case = TRUE))) %>% 
     tibble::add_row(value = "\\newpage", .before = which(grepl("# result", .$value, ignore.case = TRUE)))  %>% 
     tibble::add_row(value = "\\newpage", .before = which(grepl("# discussion", .$value, ignore.case = TRUE))) %>% 
-    tibble::add_row(value = paste(tt, "\n\n"), .before = which(grepl("# abstract", .$value, ignore.case = TRUE))) %>% 
+    {
+      if (any(grepl(pattern = '# abstract', x = .$value, ignore.case = TRUE))) {
+        tibble::add_row(.data = ., value = paste(tt, sep = "\n\n"),
+                        .before = which(x = grepl(pattern = "# abstract", x = .$value, ignore.case = TRUE)))
+      } else {.}
+    } %>%
     dplyr::select(.data$value) %>% 
     tibble::add_row(value = "\n```{r}\nknitr::knit_exit() \n```", ) %>%
     tibble::deframe() %>% 
     writeLines(con = file.path(export, "_doc.Rmd") %>% gsub("\\\\", "\\/", .))
 
-# -------------------------------------------------------------------------
+
+  # -------------------------------------------------------------------------
 
   doc <- list.files(path = export, pattern = "_doc", full.names = T)
+  
+  
+  return(list(path = doc
+              , params = params))
   
 }
 

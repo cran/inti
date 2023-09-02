@@ -22,5 +22,7 @@ path
 Use Articul8 Add-ons from Google docs to build Rticles
 }
 \details{
-If you add "|# END" will replace by "knitr::knit_exit()"
+Document rendering until certain point: "#| end"
+Include for next page: "#| newpage"
+You can include the cover page params using "#|" in a Google docs table
 }
