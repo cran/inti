@@ -1,11 +1,24 @@
+# inti2improve
+
+  - Improve PCA supplementary variables
+  - Select the dimension in PCA
+  - Sub module for PCA with variable contribution and dimension correlation
+  - Include lattice
+  - Include LCD
+
 # inti 0.6.3
 
-- To improve:
-  - Include lattice
+- `gdocs2qmd()`
+  - change params: template ==> theme
+  - reference-doc: style_rticle.docx
+- Tarpuy
+  - Field book design allows different number of rows  
+  - Design without replication (observation plots) ==> `design_noreps()`
+  - Fix traits name order
 
 # inti 0.6.2
 
-- gdocs2qmd()
+- `gdocs2qmd()`
   - Bug with: "```Unknown element type at this position: UNSUPPORTED```"
   - The function works for articles and thesis
   - Include the cover page using a table

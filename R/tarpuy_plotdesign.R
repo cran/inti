@@ -32,7 +32,7 @@
 #' library(gsheet)
 #' 
 #' url <- paste0("https://docs.google.com/spreadsheets/d/"
-#'               , "1grAv_2po804pPGg9nj1o5nli01IcEGvSevDruq_ssHk/edit#gid=1807254932")
+#'               , "1_BVzChX_-lzXhB7HAm6FeSrwq9iKfZ39_Sl8NFC6k7U/edit#gid=1834109539")
 #' # browseURL(url)
 #' 
 #' fb <- gsheet2tbl(url) 
@@ -58,7 +58,7 @@ tarpuy_plotdesign <- function(data
 
 # -------------------------------------------------------------------------
 
-  # data <- dsg <- sketch
+  # data <- fb dsg <- sketch
   # factor <- "rows"
   # data <- fb
   # xlab <- ylab <- glab <- NULL
@@ -114,17 +114,19 @@ tarpuy_plotdesign <- function(data
 
 # -------------------------------------------------------------------------
 
+legend <- if(nlevels(as.factor(design[[factor]])) > 20) "none" else "top"
+ 
 plot <- design %>%
   arrange(.data$rows, .data$cols) %>%
   ggplot(aes(x = .data$cols, y = .data$rows, fill = as.factor(.data[[factor]]))) +
-  geom_tile(color = "black", size = 0.5) +
+  geom_tile(color = "black", linewidth = 0.5) +
   geom_text(aes(label = .data[[fill]])) +
   scale_y_continuous(expand = c(0, 0), trans = 'reverse', breaks = 1:nrow) +
   scale_x_continuous(expand = c(0, 0), breaks = 1:ncol) +
   scale_fill_manual(values = color_grps) +
   labs(x = xlab, y = ylab, fill = glab) +
   theme_bw() +
-  theme(legend.position = "top")
+  theme(legend.position = legend) 
 
 return(plot)
 
