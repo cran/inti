@@ -5,6 +5,17 @@
   - Sub module for PCA with variable contribution and dimension correlation
   - Include lattice
   - Include LCD
+  
+# inti 0.6.4
+
+- Update bootstrap in apps
+- Tarpuy:
+  - Alows to exclude or delete `{when}` or `{sample}` colums
+  - Allow `defaultValue` for traits
+- Rticles
+  - Include images using markdown syntax `![]()`
+  
+=> Fix if "defaultvalue" is in the trait table
 
 # inti 0.6.3
 

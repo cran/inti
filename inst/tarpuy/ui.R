@@ -1,10 +1,10 @@
 # -------------------------------------------------------------------------
-# tarpuy ------------------------------------------------------------------
+# Tarpuy ------------------------------------------------------------------
 # -------------------------------------------------------------------------
 #> open https://flavjack.github.io/inti/
 #> open https://flavjack.shinyapps.io/tarpuy/
 #> author .: Flavio Lozano-Isla (lozanoisla.com)
-#> date .: 2023-05-21
+#> date .: 2024-02-05
 # -------------------------------------------------------------------------
 
 # -------------------------------------------------------------------------
@@ -29,33 +29,20 @@ if (file.exists("www/cloud.json")) gar_set_client(web_json = "www/cloud.json", a
 # app ---------------------------------------------------------------------
 # -------------------------------------------------------------------------
 
-navbarPage(title = div(
-  HTML('<h3><strong><a target="_blank" href="https://inkaverse.com/">Tarpuy</a></strong></h3>')  , div(
-    id = "version"
-    , HTML(paste("<a target='_blank' href='https://inkaverse.com/news/'>inti"
-                 , packageVersion('inti') , "</a>"))
-  )
-  , div(
-    id = "support"
-    , HTML(paste("<a target='_blank' href='https://github.com/sponsors/flavjack' style='color:white'>"
-                 , h4(icon("heart")) , "</a>"))
-    )
-  )
+navbarPage(title = HTML('<strong><a target="_blank" href="https://inkaverse.com/">TARPUY</a></strong>')
   , windowTitle = "Tarpuy • app"
   , selected = "Intro"
-  , theme = "bootstrap_sandstone.css"  #!
+  , theme =  bslib::bs_theme(version = 5, bootswatch = 'sandstone')
+  , tags$style(HTML("p{ text-align: justify; }"))
   , position = "fixed-top"
-  , 
+  , tags$style(HTML("body {padding-top: 50px;}"))
+  ,
 
 # -------------------------------------------------------------------------
 # Yupana Info -------------------------------------------------------------
 # -------------------------------------------------------------------------
 
            tabPanel("Intro", icon = icon("home") 
-                    
-                    , bs_theme_dependencies("flatly") #!
-                    
-                    , includeCSS("www/custom.css")
                     , tags$head(includeHTML(("www/analytics.html")))
                     , tags$head(tags$link(rel="shortcut icon"
                                           , href="https://flavjack.github.io/inti/img/inkaverse.png")),
@@ -103,7 +90,6 @@ navbarPage(title = div(
 
                              box(title = "Presentación"
                                  , solidHeader = T
-                                 , background = "green"
                                  , width = 12
                                  , status = "primary",
 
@@ -120,7 +106,6 @@ navbarPage(title = div(
 
                              box(title = "Características"
                                  , solidHeader = T
-                                 , background = "green"
                                  , width = 12
                                  , status = "primary",
 
@@ -367,7 +352,9 @@ navbarPage(title = div(
             
            ),
 
-           tabPanel(div(h5(icon("seedling"),  "Plex")),
+           tabPanel("Plex", icon = icon("seedling"), 
+             
+             # div(h5(icon("seedling"),  "Plex")),
 
                     # Yupana Fieldbook --------------------------------------------------------
                     # -------------------------------------------------------------------------
@@ -402,7 +389,7 @@ navbarPage(title = div(
                              ),
 
                              textInput(inputId = "plex_logbook"
-                                       , label = "Logbook (optinal)"
+                                       , label = "Logbook (optional)"
                                        , width = "100%"
                                        , value = NA
                                        , placeholder = "sheet name"
@@ -582,27 +569,32 @@ navbarPage(title = div(
                              textAreaInput(inputId = "plex_goal"
                                            , label = "Goal"
                                            , placeholder = "The main goal of the project."
+                                           , width = "100%"
                              ),
 
                              textAreaInput(inputId = "plex_hypothesis"
                                            , label = "Hypothesis"
                                            , placeholder = "What are the expected results."
+                                           , width = "100%"
                              ),
 
                              textAreaInput(inputId = "plex_rationale"
                                            , label = "Rationale"
                                            , placeholder = "Based in which evidence is planned the experiment."
+                                           , width = "100%"
 
                              ),
 
                              textAreaInput(inputId = "plex_objectives"
                                            , label = "Objectives"
                                            , placeholder = "Objectives of the project."
+                                           , width = "100%"
                              ),
 
                              textAreaInput(inputId = "plex_plan"
                                            , label = "Project plan"
                                            , placeholder = "General plan description of the project (M & M)."
+                                           , width = "100%"
                              )
 
                       ),
@@ -706,7 +698,9 @@ navbarPage(title = div(
 
            ),
 
-           tabPanel(div(h5(icon("book"), "Fieldbook")),
+           tabPanel("Fieldbook", icon = icon("book"),
+             
+             # div(h5(icon("book"), "Fieldbook")),
 
                     fluidRow(
 
@@ -830,7 +824,9 @@ navbarPage(title = div(
 
            ),
 
-tabPanel(div(h5(icon("pen-ruler"), "Sketch")) ,
+tabPanel("Sketch", icon = icon("pen-ruler"),
+  
+  # div(h5(icon("pen-ruler"), "Sketch")) ,
 
          fluidRow(
 
@@ -876,20 +872,22 @@ tabPanel(div(h5(icon("pen-ruler"), "Sketch")) ,
 # connect -----------------------------------------------------------------
 # -------------------------------------------------------------------------
 
-tabPanel(div(h5(icon("plug-circle-check"), "Mobile")),
+tabPanel("Mobile", icon = icon("plug-circle-check"),
+  
+  # div(h5(icon("plug-circle-check"), "Mobile")),
          
          fluidRow(
            
            column(2,
                   
-                  h5(icon("mobile-screen-button"), "Field Book app"),
+                  h5(icon("mobile-screen-button"), HTML('<a target="_blank" href="https://inkaverse.com/">Field-Book (PhenoApp)</a>')),
                   
                   br(),
                   
                   radioButtons(inputId = "connection_sheet_preview"
                                , label = h5(icon("magnifying-glass"), "Preview") 
                                , choices = c("Traits"
-                                             , "Field Book")
+                                             , "Field-Book")
                                , inline = TRUE
                                , selected = "Traits"
                   ),
@@ -904,7 +902,7 @@ tabPanel(div(h5(icon("plug-circle-check"), "Mobile")),
                   
                   fluidRow(
                     
-                    h5(icon("book"), "Field Book"),
+                    h5(icon("book"), "Field-Book"),
                     
                     uiOutput("connection_sheet_fieldbook"),
                     
@@ -946,7 +944,22 @@ tabPanel(div(h5(icon("plug-circle-check"), "Mobile")),
            
          )
 
-)
+),
+
+nav_spacer(),
+nav_item(
+  tags$a(
+    shiny::icon("heart"), "support",
+    href = "https://github.com/sponsors/flavjack",
+    target = "_blank"
+  )),
+
+nav_item(
+  tags$a(
+    shiny::icon("github"), paste("Inti ", packageVersion('inti')),
+    href = "https://github.com/sponsors/flavjack",
+    target = "_blank"
+  )),
 
 # Tarpuy end code ---------------------------------------------------------
 # -------------------------------------------------------------------------

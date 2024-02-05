@@ -6,7 +6,7 @@
 #' @param last_factor Last factor in the field book [string: colnames]
 #' @param traits Traits information [dataframe or list].
 #'
-#' @details For the traits parameters you can used shown in the field Book app
+#' @details For the traits parameters you can used shown in the Field Book app
 #'
 #' @return list
 #' 
@@ -64,19 +64,19 @@
 #' library(gsheet)
 #' 
 #' url_fb <- paste0("https://docs.google.com/spreadsheets/d/"
-#'        , "1_BVzChX_-lzXhB7HAm6FeSrwq9iKfZ39_Sl8NFC6k7U/edit#gid=150858522")
+#'        , "1kIoI__uHQpZ8qXMPFoZpimBhywU8J0Rw49KgjJcovMY/edit#gid=2128359606")
 #'        
 #' fb <- gsheet2tbl(url_fb) 
 #' 
 #' url_ds <- paste0("https://docs.google.com/spreadsheets/d/"
-#'        , "1_BVzChX_-lzXhB7HAm6FeSrwq9iKfZ39_Sl8NFC6k7U/edit#gid=1255730357")
+#'        , "1kIoI__uHQpZ8qXMPFoZpimBhywU8J0Rw49KgjJcovMY/edit#gid=1559599083")
 #'        
 #' ds <- gsheet2tbl(url_ds) 
 #' 
 #' fb <- ds %>% tarpuy_design()
 #' 
 #' url_trt <- paste0("https://docs.google.com/spreadsheets/d/"
-#'        , "1_BVzChX_-lzXhB7HAm6FeSrwq9iKfZ39_Sl8NFC6k7U/edit#gid=2106059499")
+#'        , "1fBSnEq6CmYKK9Pdxlz0egEEflezJRnlAOylQwbythBE/edit#gid=179601173")
 #'        
 #' traits <- gsheet2tbl(url_trt) 
 #' 
@@ -111,8 +111,8 @@ tarpuy_traits <- function(fieldbook = NULL
     
 # -------------------------------------------------------------------------
   
-  cols <- c("trait" = NA_real_,	"format" = NA_real_,	"default" = NA_real_
-            ,	"minimum" = NA_real_,	"maximum" = NA_real_,	"details" = NA_real_
+  cols <- c("trait" = NA_real_, "format" = NA_real_, "default" = NA_real_
+            , "minimum" = NA_real_,	"maximum" = NA_real_, "details" = NA_real_
             , "categories" = NA_real_)
   
 # -------------------------------------------------------------------------
@@ -122,7 +122,7 @@ tarpuy_traits <- function(fieldbook = NULL
       traits %>% 
         dplyr::mutate(across(everything(), as.character)) %>% 
         dplyr::rename_with(~ gsub("\\{|\\}", "", .)) %>% 
-        tidyr::drop_na(c("abbreviation", "when", "format")) %>% 
+        tidyr::drop_na(c("abbreviation")) %>% 
         tibble::rownames_to_column() %>% 
         tidyr::pivot_longer(!"rowname") %>% 
         dplyr::group_split(.data$rowname, .keep = FALSE)  %>% 
@@ -131,10 +131,11 @@ tarpuy_traits <- function(fieldbook = NULL
     } %>% 
     dplyr::bind_rows() %>% 
     tibble::add_column(!!!cols[!names(cols) %in% names(.)]) %>% 
+    dplyr::rename("defaultValue" = "default") %>% 
     dplyr::filter(!grepl("X", .data$abbreviation))
   
   traitsnames <- traitstb %>% 
-    dplyr::select("abbreviation", "when", "samples") %>% 
+    dplyr::select(any_of(c("abbreviation", "when", "samples"))) %>% 
     purrr::discard(~all(is.na(.))) %>% 
     names()
   
@@ -152,16 +153,18 @@ tarpuy_traits <- function(fieldbook = NULL
       } else .
     } %>% 
     dplyr::rowwise() %>%
-    dplyr::mutate("trait" := paste(across(traitsnames)
+    dplyr::mutate("trait" := paste(across(all_of(traitsnames))
                                    , collapse = "_")) %>% 
     dplyr::group_by(across(traitsnames)) %>% 
-    dplyr::arrange(as.numeric(.data$when)) %>% 
+    {
+      if( "when" %in% traitsnames ) dplyr::arrange(.data = ., as.numeric(.data$when)) else .
+    } %>% 
     dplyr::ungroup() %>%  
     tibble::rownames_to_column("realPosition") %>% 
     dplyr::mutate(isVisible = "true") %>% 
     dplyr::mutate(defaultValue = dplyr::case_when(
       .data$format %in% "boolean" ~ "false"
-      , TRUE ~ ""
+      , TRUE ~ as.character(.data$defaultValue)
     )) %>% 
     dplyr::rowwise() %>% 
     dplyr::mutate(categories = case_when(
