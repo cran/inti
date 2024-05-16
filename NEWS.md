@@ -6,6 +6,15 @@
   - Include lattice
   - Include LCD
   
+# inti 0.6.5
+
+- Package
+  - Include Addins for Google authentication and renew process
+
+- Rticles
+  - Fix title position in article
+  - Fix figure caption and cross reference
+
 # inti 0.6.4
 
 - Update bootstrap in apps
