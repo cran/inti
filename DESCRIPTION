@@ -1,6 +1,6 @@
 Package: inti
 Type: Package
-Version: 0.6.5
+Version: 0.6.6
 Title: Tools and Statistical Procedures in Plant Science
 Description: The 'inti' package is part of the 'inkaverse' project for developing 
     different procedures and tools used in plant science and experimental designs. 
@@ -8,7 +8,7 @@ Description: The 'inti' package is part of the 'inkaverse' project for developin
     experiments and data collection (tarpuy()), data analysis and graphics (yupana())
     , and technical writing. 
     Learn more about the 'inkaverse' project at <https://inkaverse.com/>.
-Date: 2024-05-16
+Date: 2024-09-03
 Authors@R: c(
     person("Flavio", "Lozano-Isla", email = "flozanoisla@gmail.com", role = c("aut", "cre")
           , comment = c(ORCID = "0000-0002-0714-669X")),
@@ -18,19 +18,19 @@ Authors@R: c(
 URL: https://inkaverse.com/, https://github.com/flavjack/inti
 BugReports: https://github.com/flavjack/inti/issues/
 Depends: shiny, ggplot2, dplyr, tidyr, tibble, R (>= 2.10)
-Imports: lme4, agricolae, FactoMineR, emmeans, purrr, stringr, stringi,
+Imports: lme4, agricolae, FactoMineR, emmeans, purrr, stringr,
         googlesheets4, DT
-Suggests: gsheet, knitr, rmarkdown, bookdown
+Suggests: gsheet, cowplot, knitr, rmarkdown, bookdown
 VignetteBuilder: knitr
 License: GPL-3 | file LICENSE
 LazyData: true
 Encoding: UTF-8
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
 NeedsCompilation: no
-Packaged: 2024-05-16 13:52:09 UTC; floza
+Packaged: 2024-09-03 17:36:50 UTC; LENOVO
 Author: Flavio Lozano-Isla [aut, cre] (<https://orcid.org/0000-0002-0714-669X>),
   QuipoLab [ctb],
   Inkaverse [cph]
 Maintainer: Flavio Lozano-Isla <flozanoisla@gmail.com>
 Repository: CRAN
-Date/Publication: 2024-05-16 14:10:10 UTC
+Date/Publication: 2024-09-03 18:00:02 UTC

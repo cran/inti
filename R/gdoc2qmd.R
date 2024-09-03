@@ -24,8 +24,7 @@ gdoc2qmd <- function(file
                      , type = "asis"
                      ){
   
-  # file <- choose.files() ; format = "qmd"; export = NA
-  # type <- "listfull"
+  # file <- choose.files() ; format = "qmd"; export = NA; type <- "listfull"
 
   export <- if(is.na(export)) {
     file %>% gsub(".zip", "", .) %>% file.path()
@@ -41,6 +40,7 @@ gdoc2qmd <- function(file
     readLines() %>% 
     tibble::enframe() %>%
     dplyr::filter(!grepl("^#+ $", .data$value)) %>%  
+    dplyr::filter(!grepl("^#$", .data$value)) %>%  
     dplyr::mutate(value = gsub("```Unknown element type at this position: UNSUPPORTED```"
                                , "\n\n", .data$value)) %>% 
     {
@@ -82,9 +82,7 @@ gdoc2qmd <- function(file
   
   fig <- txt %>% 
     dplyr::filter(grepl("#fig", .data$value)) %>% 
-    tibble::as_tibble() %>% 
-    dplyr::group_split(.data$value) %>% 
-    rev() %>% 
+    split(1:nrow(.)) %>% 
     purrr::map_dfr(~ add_row(.x, .before = grepl("#fig", .x))) %>% 
     {
       if(length(.) != 0) {
@@ -116,28 +114,20 @@ gdoc2qmd <- function(file
   
   tab <- txt %>% 
     dplyr::filter(grepl("^\\|", .data$value) | grepl("#tbl", .data$value)) %>% 
-    {
-      if(nrow(. > 1)) { 
-        
-        dplyr::mutate(.data = ., group = case_when(
-          grepl(pattern = "^:", x = .data$value) ~ as.character(.data$name)
-          , TRUE ~ NA
-        )) %>% 
-          tibble::as_tibble(x = .) %>% 
-          tidyr::fill(data = ., "group", .direction = "up", ) %>% 
-          tidyr::drop_na(data = ., .data$group) %>% 
-          dplyr::group_by(.data = ., .data$group) %>% 
-          dplyr::slice(.data = ., n(), 1:(n() - 1)) %>% 
-          dplyr::ungroup() %>% 
-          dplyr::group_split(.tbl = ., .data$group) %>%
-          purrr::map_dfr(~ add_row(.x, .after = grepl("#tbl", .x))) %>% 
-          dplyr::mutate(.data = ., across(.data$value, ~ ifelse(is.na(.), "\\newpage", .))) %>% 
-          dplyr::select(.data = ., !.data$group) %>% 
-          dplyr::mutate(.data = ., across(.data$value, ~gsub("}", "}", .))) 
-        
-        } else { . }
-    }  
-    
+    dplyr::ungroup() %>% 
+    dplyr::mutate(group = case_when(
+      grepl("#tbl", .data$value) ~ .data$name
+    )) %>% 
+    tidyr::fill(., .data$group, .direction = "up") %>% 
+    dplyr::mutate(group = case_when(
+      group %in% NA ~ 1
+    )) %>% 
+    split(.$group) %>% 
+    purrr::map_dfr(~ slice(.data = ., c(n(),  1:(n()-1)))) %>% 
+    split(.$group) %>% 
+    purrr::map_dfr(~ bind_rows(tibble(name = NA, value = NA), .x)) %>% 
+    dplyr::mutate(.data = ., across(.data$value, ~ ifelse(is.na(.), "\\newpage", .)))
+
   tabx <- tab %>% 
     dplyr::rowwise() %>% 
     dplyr::mutate(across(.data$value, ~gsub("\\{#tbl:(.*)\\}", paste0("{#tbl:", .data$name ,"}"), .)))
@@ -154,15 +144,15 @@ gdoc2qmd <- function(file
 
   manuscript <- if(type == "full") {
     
-    dplyr::bind_rows(txtonly, tablist, figlist, tabx, figx)
+    dplyr::bind_rows(txtonly, figlist, tablist, figx, tabx)
     
   } else if (type == "listfull") {
     
-    dplyr::bind_rows(txtonly, tab, fig)
+    dplyr::bind_rows(txtonly, fig, tab)
     
   } else if (type == "list") {
     
-    dplyr::bind_rows(txtonly, tablist, figlist)
+    dplyr::bind_rows(txtonly, figlist, tablist)
     
   } else if (type == "asis") { txt } 
    
@@ -181,10 +171,13 @@ gdoc2qmd <- function(file
         
       }
     } %>% 
-    tibble::add_row(value = "\\newpage", .before = which(grepl("# abstract", .$value, ignore.case = TRUE))) %>% 
-    tibble::add_row(value = "\\newpage", .before = which(grepl("# reference", .$value, ignore.case = TRUE))) %>% 
-    tibble::add_row(value = "\\newpage", .before = which(grepl("# result", .$value, ignore.case = TRUE)))  %>% 
-    tibble::add_row(value = "\\newpage", .before = which(grepl("# discussion", .$value, ignore.case = TRUE))) %>% 
+    tibble::add_row(value = "\\newpage", .before = which(grepl("statements and declarations$", .$value, ignore.case = TRUE))) %>% 
+    tibble::add_row(value = "\\newpage", .before = which(grepl("# abstract$", .$value, ignore.case = TRUE))) %>% 
+    tibble::add_row(value = "\\newpage", .before = which(grepl("# introduction$", .$value, ignore.case = TRUE))) %>% 
+    tibble::add_row(value = "\\newpage", .before = which(grepl("# materials and methods$", .$value, ignore.case = TRUE))) %>%
+    tibble::add_row(value = "\\newpage", .before = which(grepl("# results$", .$value, ignore.case = TRUE)))  %>% 
+    tibble::add_row(value = "\\newpage", .before = which(grepl("# discussion$", .$value, ignore.case = TRUE))) %>% 
+    tibble::add_row(value = "\\newpage", .before = which(grepl("# references$", .$value, ignore.case = TRUE))) %>% 
     {
       if (any(grepl(pattern = '# abstract', x = .$value, ignore.case = TRUE))) {
         tibble::add_row(.data = ., value = paste(tt, "\n\n"),

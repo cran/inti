@@ -21,11 +21,11 @@ Function to plot the diagnostic of models
 
 \dontrun{
 
-dt <- potato
+library(inti)
 
-lm <- aov(stemdw ~ bloque + geno*treat, dt)
+lm <- aov(stemdw ~ bloque + geno*treat, data = potato)
 
-#lm <- lme4::lmer(stemdw ~ bloque + (1|geno:treat), dt)
+# lm <- potato \%>\% lme4::lmer(stemdw ~ (1|bloque) + geno*treat, data = .)
  
 plot(lm, which = 1)
 plot_diag(lm)[3]

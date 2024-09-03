@@ -2,7 +2,8 @@
 #'
 #' Function to plot the diagnostic of models
 #'
-#' @param model Statistical model
+#' @param data Experimental design data frame with the factors and traits.
+#' @param formula Mixed model formula
 #' @param title Plot title
 #'
 #' @return plots
@@ -17,28 +18,25 @@
 #' 
 #' library(inti)
 #' 
-#' lm <- aov(stemdw ~ bloque + geno*treat, data = potato)
-#' 
-#' # lm <- potato %>% lme4::lmer(stemdw ~ (1|bloque) + geno*treat, data = .)
-#'  
-#' plot(lm, which = 1)
-#' plot_diag(lm)[3]
-#' 
-#' plot(lm, which = 2)
-#' plot_diag(lm)[2]
-#' 
-#' plot(lm, which = 3)
-#' plot_diag(lm)[4]
-#' 
-#' plot(lm, which = 4)
-#' plot_diag(lm)[1]
+#' plot_diagnostic(data = potato
+#'                 , formula = stemdw ~ (1|bloque) + geno*treat)
 #' 
 #' }
 #' 
 
-plot_diag <- function(model, title = NA) {
+plot_diagnostic <- function(data, formula, title = NA) {
   
-  # model  <-  potato %>% lme4::lmer(stemdw ~ (1|bloque) + geno*treat, data = .)
+  # data <- inti::potato; formula = stemdw ~ (1|bloque) + geno*treat
+  # formula <- stemdw ~ bloque + geno*treat; title = NA
+  
+  formula <- as.formula(formula)
+  
+  model  <-  if( length(lme4::findbars(formula))>0 ) {
+    
+    data %>% lme4::lmer(formula, data = .)
+    
+  } else {  data %>% aov(formula, data = .) }
+  
   
   stopifnot(class(model) %in% c("lm", "aov", "lmerMod"))
   
@@ -46,11 +44,11 @@ plot_diag <- function(model, title = NA) {
   
   dt <- if ( inherits(model, "lm") || inherits(model, "aov") ) {
     
-    ggplot2::fortify(model)
+    ggplot2::fortify(model, data)
     
   } else if ( inherits(model, "lmerMod") ) {
     
-    lme4::fortify.merMod(model)
+    lme4::fortify.merMod(model, data)
     
   }
   

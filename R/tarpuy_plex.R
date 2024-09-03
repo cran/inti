@@ -30,6 +30,7 @@
 #' @param nrows Experimental design dimension by rows [numeric: value]
 #' @param serie Number of digits in the plots.
 #' @param seed Seed for the randomization.
+#' @param qrcode [string: "\{fbname\}\{plots\}\{factors\}"] String to concatenate the qr code.
 #'
 #' @details
 #'
@@ -76,6 +77,7 @@ tarpuy_plex <- function(data = NULL
                         , nrows = NA
                         , serie = 100
                         , seed = 0
+                        , qrcode = "{fbname}{plots}{factors}"
                          ) {
   
   
@@ -95,8 +97,8 @@ tarpuy_plex <- function(data = NULL
   
   loc <- if(is.null(location) || is.na(location) || location == "") { "INKAVERSE" 
     } else {location} %>% 
-    stringi::stri_trans_general("Latin-ASCII") %>%
-    stringr::str_to_upper() %>% 
+    iconv(., to="ASCII//TRANSLIT") %>%
+    toupper() %>% 
     strsplit(., "[[:punct:]]") %>% 
     unlist() %>% 
     trimws() %>% 
@@ -105,8 +107,8 @@ tarpuy_plex <- function(data = NULL
   
   info <- if(is.null(about) || is.na(about) || about == "") { "TARPUY" 
     } else {about} %>% 
-    stringi::stri_trans_general("Latin-ASCII") %>%
-    stringr::str_to_upper() %>% 
+    iconv(., to="ASCII//TRANSLIT") %>%
+    toupper() %>% 
     strsplit(., "[[:punct:]]") %>% 
     unlist() %>% 
     trimws() %>% 
@@ -159,10 +161,10 @@ if ( is.null(data) ) {
 
 # variables ---------------------------------------------------------------
   
-var_list <- traits <- list(
+var_list <- list(
   list(format = "numeric"
         , variable = "X"
-       , abbreviation = "X"
+       , trait = "X"
        , when = "X"
        , samples = NA
        , units = "X"
@@ -170,26 +172,9 @@ var_list <- traits <- list(
        , minimum = "X"
        , maximum = "X"
        )
-  , list(format = "categorical"
-         , variable = "X"
-         , abbreviation = "X"
-         , when = "X"
-         , samples = NA
-         , units = "X"
-         , details = NA
-         , categories = "X"
-         )
-  ,  list(format = "boolean"
+  ,  list(format = "text"
           , variable = "X"
-          , abbreviation = "X"
-          , when = "X"
-          , samples = NA
-          , units = "X"
-          , details = NA
-          )
-  ,  list(format = "counter"
-          , variable = "X"
-          , abbreviation = "X"
+          , trait = "X"
           , when = "X"
           , samples = NA
           , units = "X"
@@ -197,7 +182,57 @@ var_list <- traits <- list(
           )
   ,  list(format = "photo"
           , variable = "X"
-          , abbreviation = "X"
+          , trait = "X"
+          , when = "X"
+          , samples = NA
+          , units = "X"
+          , details = NA
+          )
+  , list(format = "scategorical"
+         , variable = "X"
+         , trait = "X"
+         , when = "X"
+         , samples = NA
+         , units = "X"
+         , details = NA
+         , categories = "X"
+         )
+  , list(format = "mcategorical"
+         , variable = "X"
+         , trait = "X"
+         , when = "X"
+         , samples = NA
+         , units = "X"
+         , details = NA
+         , categories = "X"
+         )
+  ,  list(format = "location"
+          , variable = "X"
+          , trait = "X"
+          , when = "X"
+          , samples = NA
+          , units = "X"
+          , details = NA
+          )
+  ,  list(format = "date"
+          , variable = "X"
+          , trait = "X"
+          , when = "X"
+          , samples = NA
+          , units = "X"
+          , details = NA
+          )
+  ,  list(format = "counter"
+          , variable = "X"
+          , trait = "X"
+          , when = "X"
+          , samples = NA
+          , units = "X"
+          , details = NA
+          )
+  ,  list(format = "boolean"
+          , variable = "X"
+          , trait = "X"
           , when = "X"
           , samples = NA
           , units = "X"
@@ -205,23 +240,7 @@ var_list <- traits <- list(
           )
   ,  list(format = "audio"
           , variable = "X"
-          , abbreviation = "X"
-          , when = "X"
-          , samples = NA
-          , units = "X"
-          , details = NA
-          )
-  ,  list(format = "text"
-          , variable = "X"
-          , abbreviation = "X"
-          , when = "X"
-          , samples = NA
-          , units = "X"
-          , details = NA
-          )
-  ,  list(format = "location"
-          , variable = "X"
-          , abbreviation = "X"
+          , trait = "X"
           , when = "X"
           , samples = NA
           , units = "X"
@@ -230,7 +249,7 @@ var_list <- traits <- list(
   ) %>% 
     dplyr::bind_rows() %>% 
     dplyr::select(.data$variable
-                  , .data$abbreviation
+                  , .data$trait
                   , .data$when
                   , .data$samples
                   , .data$format
@@ -238,7 +257,7 @@ var_list <- traits <- list(
                   , .data$details
                   , .data$categories
                   ) %>%
-    rename('{abbreviation}' = .data$abbreviation
+    rename('{trait}' = .data$trait
          , '{when}' = .data$when
          , '{samples}' = .data$samples
          , '{format}' = .data$format
@@ -260,6 +279,7 @@ dsg_info <-  c(nfactors = nfactor
               , serie = serie
               , seed = seedset
               , fbname = barcode
+              , qrcode = qrcode
               ) %>%
   enframe() %>%
   rename('{arguments}' = .data$name, '{values}' = .data$value)

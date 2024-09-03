@@ -1,10 +1,25 @@
-# inti2improve
+# inti4improve
 
   - Improve PCA supplementary variables
   - Select the dimension in PCA
   - Sub module for PCA with variable contribution and dimension correlation
   - Include lattice
   - Include LCD
+  
+# inti 0.6.6
+
+- Package
+  - New function related `outliers_remove()` => "`remove_outliers`" to work with formula
+  - New function related `plot_diag()`  => "`plot_diagnostic`" to work with formula
+  
+- Rticles
+  - Fix Tables and Figures order in final document
+
+- Tarpuy
+  - Change name of the trait tab from `abbreviation` to `trait`
+  - Update traits tab for include two formats: `date` and `mcategorical`
+  - Fix sort of the traits in field book app
+  - New option for generate the qr-code for each plot
   
 # inti 0.6.5
 
