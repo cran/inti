@@ -5,6 +5,22 @@
   - Sub module for PCA with variable contribution and dimension correlation
   - Include lattice
   - Include LCD
+  - Dashboard for Tarpuy experiment progress
+
+  
+# inti 0.6.7
+
+ - Rticles
+  - Fix table conversion when only is present one table
+ - Yupana
+  - Avoid different bar widths
+  - New project template info
+  - Increase y limits for better error visualization
+  - Re arrange statistic information 
+  - Repare agricolae table summary anova
+- Tarpuy
+  - Update budget template
+  - Update experimental plan information
   
 # inti 0.6.6
 

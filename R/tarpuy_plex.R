@@ -3,11 +3,11 @@
 #' Information for build a plan for an experiment (PLEX)
 #'
 #' @param data Data with the fieldbook information.
-#' @param idea How the idea was born.
-#' @param goal The main goal of the project.
+#' @param title Project title.
+#' @param objectives The objectives of the project.
 #' @param hypothesis What are the expected results.
 #' @param rationale Based in which evidence is planned the experiment.
-#' @param objectives The objectives of the project.
+#' @param references References.
 #' @param plan General description of the project (M & M).
 #' @param institutions Institutions involved in the project.
 #' @param researchers Persons involved in the project.
@@ -19,10 +19,11 @@
 #' @param start The date of the start of the experiments.
 #' @param end The date of the end of the experiments.
 #' @param album link with the photos of the project.
-#' @param github link with the github repository.
+#' @param repository link to the repository.
 #' @param about Short description of the project.
 #' @param fieldbook Name or ID for the fieldbook/project.
-#' @param gdocs link for Google Docs
+#' @param project link for project.
+#' @param manuscript link for manuscript.
 #' @param nfactor Number of factors for the design.
 #' @param design Type of design.
 #' @param rep Number of replication.
@@ -50,11 +51,11 @@
 #' 
 
 tarpuy_plex <- function(data = NULL
-                        , idea = NULL
-                        , goal = NULL
+                        , title = NULL
+                        , objectives = NULL
                         , hypothesis = NULL
                         , rationale = NULL
-                        , objectives = NULL
+                        , references = NULL
                         , plan = NULL
                         , institutions = NULL
                         , researchers = NULL
@@ -67,8 +68,9 @@ tarpuy_plex <- function(data = NULL
                         , end = NA
                         , about = NULL
                         , fieldbook = NULL
-                        , gdocs = NULL
-                        , github = NULL
+                        , project = NULL
+                        , repository = NULL
+                        , manuscript = NULL
                         , album = NULL
                         , nfactor = 2
                         , design = "rcbd"
@@ -127,11 +129,11 @@ tarpuy_plex <- function(data = NULL
 
 if ( is.null(data) ) {
 
-  plex <-  c(IDEA = idea
-             , GOAL = goal
+  plex <-  c(TITLE = title
+             , OBJECTIVES = objectives
              , HYPOTHESIS = hypothesis
              , RATIONALE = rationale
-             , OBJECTIVES = objectives
+             , REFERENCES = references
              , PLAN = plan
              , INSTITUTIONS = institutions
              , RESEARCHERS = researchers
@@ -144,8 +146,9 @@ if ( is.null(data) ) {
              , "END EXPERIMENT" = as.character.Date(end)
              , ABOUT = info
              , "FIELDBOOK NAME" = fbname
-             , GDOCS = gdocs
-             , GITHUB = github
+             , PROJECT = project
+             , GITHUB = repository
+             , MANUSCRIPT = manuscript
              , ALBUM = album
              ) %>%
     enframe() %>%
@@ -326,13 +329,63 @@ logbook <- tibble(Date = c(rep(NA, 3), as.character.Date(start), rep(NA, 3))
 
 # budget ------------------------------------------------------------------
 
-budget <- tibble("Material/Service" = rep(NA, 5)
-                 , Unit = rep(NA, 5)
-                 , Price = rep(NA, 5)
-                 , Quantity = rep(NA, 5)
-                 , Total = rep(NA, 5)
-                 , Description = rep(NA, 5)
-                 )
+budget <- tibble(
+  Category = c("Supplies", "Supplies", "Supplies", "Materials", "Materials", 
+               "Equipment", "Tools", "Equipment", "Human Resources", 
+               "Human Resources", "Human Resources", "Transport and Logistics", 
+               "Transport and Logistics", "Services", "Services", "Other", 
+               "Other", "Other"),
+  Description = c("Seeds", "Fertilizers", "Phytosanitary products", 
+                  "Substrate (soil, sand, etc.)", "Laboratory materials (pipettes, Petri dishes, etc.)", 
+                  "Measuring instruments (sensors, scales, etc.)", "Field tools", 
+                  "Software or programs for data analysis", "Researchers", 
+                  "Laboratory technicians", "Field workers", "Equipment transport", 
+                  "Personnel transport", "Sequencing", "Article publication", 
+                  "Electricity", "General services", "Administrative expenses"),
+  Unit = c(NA, NA, NA, "kg", NA, NA, NA, NA, "months", "months", "day", 
+           "trips", "trips", "samples", "articles", "months", NA, NA),
+  Quantity = NA,
+  `Unit Cost` = NA,
+  `Total Cost` = NA,
+  `Technical Specifications` = c("Variety, purity, germination (%)", 
+                               "Chemical composition (NPK, etc.)", 
+                               "Active ingredient, concentration", 
+                               "Soil type, pH, electrical conductivity", 
+                               "Brand, capacity, material", 
+                               "Precision, measurement range", 
+                               "Type of tool, material", 
+                               "Software name, license, compatibility", 
+                               "Level of specialization, required hours", 
+                               "Specialization, certification", 
+                               "Experience, skills", 
+                               "Type of vehicle, distance", 
+                               "Number of people, distance", 
+                               "Type of sequencing, number of samples", 
+                               "Journal, impact level", 
+                               "Kilowatt per month", 
+                               "Service details", 
+                               "Details of administrative expenses"),
+  Justification = c("Essential for experimental cultivation", 
+                    "Provides essential nutrients for growth", 
+                    "Prevents pests and diseases", 
+                    "Necessary for seed germination", 
+                    "For precise measurements and laboratory cultivation", 
+                    "Measurement of environmental and growth variables", 
+                    "For crop management in the field", 
+                    "Processing and analysis of experimental data", 
+                    "Specialized personnel for design and analysis", 
+                    "Technical assistance for experiment management", 
+                    "Implementation and management of field experiments", 
+                    "Transport of necessary equipment to the experimental site", 
+                    "Transport of personnel to the experimental site", 
+                    "Genetic analysis of samples", 
+                    "Publication of experimental results", 
+                    "Power supply for laboratory and field equipment", 
+                    "Necessary for general experiment maintenance", 
+                    "Administration and management of the experimental project"),
+  `Reference` = "<link to info>"
+)
+
 
 # result ------------------------------------------------------------------
 
