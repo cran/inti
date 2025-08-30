@@ -6,6 +6,7 @@
 #' @param export Path to export the files [path: NA (file directory)]
 #' @param format Output format [string: "qmd" "rmd"]
 #' @param type output file type [strig: "asis" "list", "listfull", "full"]
+#' @param fill_table extract table in listfull [strig: "up", "down"]
 #'
 #' @return path
 #' 
@@ -22,6 +23,7 @@ gdoc2qmd <- function(file
                      , export = NA
                      , format = "qmd"
                      , type = "asis"
+                     , fill_table = "down"
                      ){
   
   # file <- choose.files() ; format = "qmd"; export = NA; type <- "listfull"
@@ -111,36 +113,43 @@ gdoc2qmd <- function(file
         
       }  else {.}
     }
-  
-  tab <- txt %>% 
-    dplyr::filter(grepl("^\\|", .data$value) | grepl("#tbl", .data$value)) %>% 
-    dplyr::ungroup() %>% 
-    dplyr::mutate(group = case_when(
-      grepl("#tbl", .data$value) ~ .data$name
-    )) %>% 
-    tidyr::fill(., .data$group, .direction = "up") %>% 
-    dplyr::mutate(group = case_when(
-      is.na(.data$group) ~ 1
-      , .default = .data$group 
-    )) %>% 
-    split(.$group) %>% 
-    purrr::map_dfr(~ slice(.data = ., c(n(),  1:(n()-1)))) %>% 
-    split(.$group) %>% 
-    purrr::map_dfr(~ bind_rows(tibble(name = NA, value = NA), .x)) %>% 
-    dplyr::mutate(.data = ., across(.data$value, ~ ifelse(is.na(.), "\\newpage", .)))
 
-  tabx <- tab %>% 
-    dplyr::rowwise() %>% 
-    dplyr::mutate(across(.data$value, ~gsub("\\{#tbl:(.*)\\}", paste0("{#tbl:", .data$name ,"}"), .)))
+  if (any(grepl("^\\|", txt$value) | grepl("#tbl", txt$value))) {
+    
+    tab <- txt %>% 
+      dplyr::filter(grepl("^\\|", .data$value) | grepl("#tbl", .data$value)) %>% 
+      dplyr::ungroup() %>% 
+      dplyr::mutate(group = case_when(
+        grepl("#tbl", .data$value) ~ .data$name
+      )) %>% 
+      tidyr::fill(.data$group, .direction = fill_table) %>% 
+      split(.$group) %>% 
+      purrr::map_dfr(~ bind_rows(tibble(name = NA, value = NA), .x)) %>% 
+      dplyr::mutate(across(.data$value, ~ ifelse(is.na(.), "\\newpage", .)))
+    
+    tabx <- tab %>% 
+      dplyr::rowwise() %>% 
+      dplyr::mutate(value = gsub("\\{#tbl:(.*)\\}"
+                                 , paste0("{#tbl:", .data$name ,"}"), .data$value))
+    
+    tablist <- tab %>% 
+      dplyr::filter(!grepl("\\|", .data$value)) %>% 
+      dplyr::mutate(value = case_when(
+        dplyr::row_number() == 1 ~ .data$value,
+        grepl("#tbl", .data$value) ~ .data$value,
+        TRUE ~ "\n\n"
+      ))
+    
+  } else {
+    
+    tab <- tibble()
+    
+    tabx <- tibble()
+    
+    tablist <- tibble()
+    
+  }
   
-  tablist <- tab %>% 
-    dplyr::filter(!grepl("\\|", .data$value)) %>% 
-    dplyr::mutate(value = case_when(
-      dplyr::row_number() == 1 ~ .data$value
-      , grepl("#tbl", .data$value) ~ .data$value
-      , TRUE  ~ "\n\n"
-    )) 
-
 # -------------------------------------------------------------------------
 
   manuscript <- if(type == "full") {

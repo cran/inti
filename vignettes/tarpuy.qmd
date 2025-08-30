@@ -1,12 +1,16 @@
 ---
-title: "Tarpuy"
-description: 'Tarpuy: field-book experimental plans'
+title: Tarpuy
+description: > 
+  Tarpuy: field-book experimental plans.
 author: "Flavio Lozano-Isla"
-output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Tarpuy}
-  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{tarpuy}
+  %\VignetteEngine{quarto::html}
   %\VignetteEncoding{UTF-8}
+knitr:
+  opts_chunk: 
+    collapse: true
+    comment: '#>'
 ---
 
 ```{r setup, include=FALSE}

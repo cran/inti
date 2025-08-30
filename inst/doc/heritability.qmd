@@ -1,25 +1,21 @@
 ---
-title: "Broad-sense heritability in plant breeding"
-description: 'How to calculate the heritability in plant breeding'
+title: Broad-sense heritability in plant breeding
+description: > 
+  How to calculate the heritability in plant breeding.
 author: "Maria Belen Kistner & Flavio Lozano-Isla"
-output:
-  # bookdown::pdf_book:
-  #   keep_tex: true
-  bookdown::html_document2:
-    base_format: rmarkdown::html_vignette
-    toc: true
-    number_sections: false
-pkgdown:
-  as_is: true
 vignette: >
-  %\VignetteIndexEntry{Broad-sense heritability in plant breeding}
+  %\VignetteIndexEntry{heritability}
+  %\VignetteEngine{quarto::html}
   %\VignetteEncoding{UTF-8}
-  %\VignetteEngine{knitr::rmarkdown}
+knitr:
+  opts_chunk: 
+    collapse: true
+    comment: '#>'
 editor_options: 
   chunk_output_type: console
 bibliography: [files/pkgs.bib, files/book.bib]
 link-citations: true
-colorlinks: yes
+colorlinks: true
 csl: https://www.zotero.org/styles/crop-science
 nocite: |  
   [@schmidt2019Estimating; @schmidt2019Heritability; @bernal-vasquez2016Outliera;  @buntaran2020Cross; @bolker2021Mean]
@@ -102,7 +98,7 @@ library(inti)
 ## H2cal function
 
 ```{r fig.width= 7, fig.height=5}
- dt <- potato
+ dt <- inti::potato
  hr <- H2cal(data = dt
             , trait = "stemdw"
             , gen.name = "geno"
@@ -149,9 +145,9 @@ hr$outliers$fixed %>% kable(caption = "Outliers fixed model")
 hr$outliers$random %>% kable(caption = "Outliers random model")
 ```
 
-# Comparison: H2cal and asreml
+<!-- # Comparison: H2cal and asreml -->
 
-> <https://inkaverse.com/articles/extra/stagewise.html>
+<!-- > <https://inkaverse.com/articles/extra/stagewise.html> -->
 
 ::: {#refs}
 :::

@@ -1,10 +1,13 @@
 ---
-title: "Inkaverse Privacy Policy"
-output: rmarkdown::html_vignette
+title: Inkaverse Privacy Policy
 vignette: >
-  %\VignetteIndexEntry{Inkaverse Privacy Policy}
-  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{policy}
+  %\VignetteEngine{quarto::html}
   %\VignetteEncoding{UTF-8}
+knitr:
+  opts_chunk: 
+    collapse: true
+    comment: '#>'
 ---
 
 # Privacy policy for apps that access Google APIs

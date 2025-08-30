@@ -2,6 +2,7 @@
 source("https://raw.githubusercontent.com/Flavjack/inti/master/pkgdown/favicon/docs.r")
 knitr::opts_chunk$set(echo = TRUE)
 
+
 ## ----echo=FALSE---------------------------------------------------------------
 tibble(
   Standart = "$H^2=\\frac{\\sigma_g^2}{\\sigma_p^2}=\\frac{\\Delta G}{S}$",
@@ -10,11 +11,13 @@ tibble(
   ) %>% 
   kable(caption = "Differentes heritability calculation")
 
+
 ## ----pkgs, echo=TRUE----------------------------------------------------------
 library(inti)
 
+
 ## ----fig.width= 7, fig.height=5-----------------------------------------------
- dt <- potato
+ dt <- inti::potato
  hr <- H2cal(data = dt
             , trait = "stemdw"
             , gen.name = "geno"
@@ -26,23 +29,30 @@ library(inti)
             , outliers.rm = TRUE
             )
 
+
 ## -----------------------------------------------------------------------------
 hr$model %>% summary()
+
 
 ## -----------------------------------------------------------------------------
 hr$tabsmr %>% kable(caption = "Variance component table")
 
+
 ## -----------------------------------------------------------------------------
 hr$blues %>% kable(caption = "BLUEs")
+
 
 ## -----------------------------------------------------------------------------
 hr$blups %>% kable(caption = "BLUPs")
 
+
 ## -----------------------------------------------------------------------------
 hr$outliers$fixed %>% kable(caption = "Outliers fixed model")
 
+
 ## -----------------------------------------------------------------------------
 hr$outliers$random %>% kable(caption = "Outliers random model")
+
 
 ## ----references, echo=FALSE---------------------------------------------------
 if(!file.exists("files/pkgs.bib")){write_bib(c(.packages()),'files/pkgs.bib')}

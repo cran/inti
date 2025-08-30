@@ -1,45 +1,28 @@
 <!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
-<html>
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.32">
 
-<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta charset="utf-8" />
-<meta name="generator" content="pandoc" />
-<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
-
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-
-<meta name="author" content="Flavio Lozano-Isla" />
-
+<meta name="author" content="Flavio Lozano-Isla">
+<meta name="description" content="Tarpuy: field-book experimental plans.">
 
 <title>Tarpuy</title>
-
-<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
-// be compatible with the behavior of Pandoc < 2.8).
-document.addEventListener('DOMContentLoaded', function(e) {
-  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
-  var i, h, a;
-  for (i = 0; i < hs.length; i++) {
-    h = hs[i];
-    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
-    a = h.attributes;
-    while (a.length > 0) h.removeAttribute(a[0].name);
-  }
-});
-</script>
-
-<style type="text/css">
+<style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
-span.underline{text-decoration: underline;}
-div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
 div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+width: 0.8em;
+margin: 0 0.8em 0.2em -1em;  vertical-align: middle;
+}
+.display.math{display: block; text-align: center; margin: 0.5rem auto;}
 </style>
-
-
-
 
 
 
@@ -54,34 +37,6 @@ padding-right: 2em;
 font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 font-size: 14px;
 line-height: 1.35;
-}
-#TOC {
-clear: both;
-margin: 0 0 10px 10px;
-padding: 4px;
-width: 400px;
-border: 1px solid #CCCCCC;
-border-radius: 5px;
-background-color: #f6f6f6;
-font-size: 13px;
-line-height: 1.3;
-}
-#TOC .toctitle {
-font-weight: bold;
-font-size: 15px;
-margin-left: 5px;
-}
-#TOC ul {
-padding-left: 40px;
-margin-left: -1.5em;
-margin-top: 5px;
-margin-bottom: 5px;
-}
-#TOC ul ul {
-margin-left: -2em;
-}
-#TOC li {
-line-height: 16px;
 }
 table {
 margin: 1em auto;
@@ -211,38 +166,20 @@ a[href^="http:"] {
 text-decoration: underline; }
 a[href^="https:"] {
 text-decoration: underline; }
-
-code > span.kw { color: #555; font-weight: bold; } 
-code > span.dt { color: #902000; } 
-code > span.dv { color: #40a070; } 
-code > span.bn { color: #d14; } 
-code > span.fl { color: #d14; } 
-code > span.ch { color: #d14; } 
-code > span.st { color: #d14; } 
-code > span.co { color: #888888; font-style: italic; } 
-code > span.ot { color: #007020; } 
-code > span.al { color: #ff0000; font-weight: bold; } 
-code > span.fu { color: #900; font-weight: bold; } 
-code > span.er { color: #a61717; background-color: #e3d2d2; } 
 </style>
-
-
-
-
 </head>
 
 <body>
 
 
+<header id="title-block-header">
+<h1 class="title">Tarpuy</h1>
+<p class="author">Flavio Lozano-Isla</p>
+
+</header>
 
 
-<h1 class="title toc-ignore">Tarpuy</h1>
-<h4 class="author">Flavio Lozano-Isla</h4>
-
-
-
-<p>Tarpuy es una herramienta que permite la construcción de planes
-experimentales de forma interactiva.</p>
+<p>Tarpuy es una herramienta que permite la construcción de planes experimentales de forma interactiva.</p>
 <p>Tarpuy permite:</p>
 <ul>
 <li>Generación de planes experimentales</li>
@@ -268,73 +205,45 @@ experimentales de forma interactiva.</p>
 </p></div>
 
 </div>
-<div id="módulos" class="section level1">
-<h1>Módulos</h1>
-<table>
+<h1 id="módulos">Módulos</h1>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<table class="caption-top">
 <caption>Módulos de la aplicación Tarpuy</caption>
 <colgroup>
-<col width="2%" />
-<col width="97%" />
+<col style="width: 2%">
+<col style="width: 97%">
 </colgroup>
 <thead>
 <tr class="header">
-<th align="left">Modules</th>
-<th align="left">Description</th>
+<th style="text-align: left;">Modules</th>
+<th style="text-align: left;">Description</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">Intro</td>
-<td align="left">Página principal con la presentación de la aplicación.
-Opciones para configurar el nombre de las pestañas en el libro de campo:
-información del experimento (info), diseño experimental (dsg), lista de
-variables (var) y libro de campo (fb). Una vez realizada la
-autenticación, se puede crear de forma directa una hoja de cálculo nueva
-para exportar la información del plan experimental (Create GS) o
-insertar el url de una hoja ya creada</td>
+<td style="text-align: left;">Intro</td>
+<td style="text-align: left;">Página principal con la presentación de la aplicación. Opciones para configurar el nombre de las pestañas en el libro de campo: información del experimento (info), diseño experimental (dsg), lista de variables (var) y libro de campo (fb). Una vez realizada la autenticación, se puede crear de forma directa una hoja de cálculo nueva para exportar la información del plan experimental (Create GS) o insertar el url de una hoja ya creada</td>
 </tr>
 <tr class="even">
-<td align="left">Plex</td>
-<td align="left">El módulo del plan experimental (PLEX) permite incluir
-la información del experimento, como: datos del investigador y la
-institución, información del experimento, plan experimental y el modelo
-del diseño experimental. Esta información permitirá generar los
-parámetros para el diseño experimental que posteriormente generará el
-libro de campo para la colecta de datos</td>
+<td style="text-align: left;">Plex</td>
+<td style="text-align: left;">El módulo del plan experimental (PLEX) permite incluir la información del experimento, como: datos del investigador y la institución, información del experimento, plan experimental y el modelo del diseño experimental. Esta información permitirá generar los parámetros para el diseño experimental que posteriormente generará el libro de campo para la colecta de datos</td>
 </tr>
 <tr class="odd">
-<td align="left">FieldBook</td>
-<td align="left">Permite crear libros de campo de forma independiente o
-de acuerdo a los datos del módulo del plan experimental. Permite la
-selección del número de factores, repeticiones y otros parámetros que
-serán usados para la generación del libro de campo. Si la hoja de lista
-de variables (var) contiene información, esta será incluida en las
-variables a evaluar en el libro de campo</td>
+<td style="text-align: left;">FieldBook</td>
+<td style="text-align: left;">Permite crear libros de campo de forma independiente o de acuerdo a los datos del módulo del plan experimental. Permite la selección del número de factores, repeticiones y otros parámetros que serán usados para la generación del libro de campo. Si la hoja de lista de variables (var) contiene información, esta será incluida en las variables a evaluar en el libro de campo</td>
 </tr>
 <tr class="even">
-<td align="left">Sketch</td>
-<td align="left">Módulo para generar los croquis o sketchs del diseño
-experimental seleccionado de acuerdo a la información contenida en el
-libro de campo (fb)</td>
+<td style="text-align: left;">Sketch</td>
+<td style="text-align: left;">Módulo para generar los croquis o sketchs del diseño experimental seleccionado de acuerdo a la información contenida en el libro de campo (fb)</td>
 </tr>
 </tbody>
 </table>
 </div>
+</div>
 
 
 
-<!-- code folding -->
 
 
-<!-- dynamically load mathjax for compatibility with self-contained -->
-<script>
-  (function () {
-    var script = document.createElement("script");
-    script.type = "text/javascript";
-    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
-    document.getElementsByTagName("head")[0].appendChild(script);
-  })();
-</script>
-
-</body>
-</html>
+</body></html>
