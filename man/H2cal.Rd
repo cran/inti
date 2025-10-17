@@ -68,30 +68,27 @@ Heritability in plant breeding on a genotype difference basis
 \details{
 The function allows to made the calculation for individual or
 multi-environmental trials (MET) using fixed and random model.
-
-1. The variance components based in the random model and the population
+\enumerate{
+\item The variance components based in the random model and the population
 summary information based in the fixed model (BLUEs).
-
-2. Heritability under three approaches: Standard (ANOVA), Cullis (BLUPs) and
+\item Heritability under three approaches: Standard (ANOVA), Cullis (BLUPs) and
 Piepho (BLUEs).
+\item Best Linear Unbiased Estimators (BLUEs), fixed effect.
+\item Best Linear Unbiased Predictors (BLUPs), random effect.
+\item Table with the outliers removed for each model.
+}
 
-3. Best Linear Unbiased Estimators (BLUEs), fixed effect.
+For individual experiments is necessary provide the \code{{trait}},
+\code{{gen.name}},  \code{{rep.n}}.
 
-4. Best Linear Unbiased Predictors (BLUPs), random effect.
-
-5. Table with the outliers removed for each model.
-
-For individual experiments is necessary provide the \code{trait},
-\code{gen.name}, \code{rep.n}.
-
-For MET experiments you should \code{env.n} and \code{env.name} and/or
-\code{year.n} and \code{year.name} according your experiment.
+For MET experiments you should \code{{env.n}} and \code{{env.name}} and/or
+\code{{year.n}} and \code{{year.name}} according your experiment.
 
 The BLUEs calculation based in the pairwise comparison could be time
 consuming with the increase of the number of the genotypes. You can specify
-\code{emmeans = FALSE} and the calculate of the BLUEs will be faster.
+\code{{emmeans = FALSE}} and the calculate of the BLUEs will be faster.
 
-If \code{emmeans = FALSE} you should change 1 by 0 in the fixed model for
+If \code{{emmeans = FALSE}} you should change 1 by 0 in the fixed model for
 exclude the intersect in the analysis and get all the genotypes BLUEs.
 
 For more information review the references.
@@ -106,8 +103,8 @@ hr <- H2cal(data = dt
             , trait = "stemdw"
             , gen.name = "geno"
             , rep.n = 5
-            , fixed.model = "0 + (1|bloque) + geno"
-            , random.model = "1 + (1|bloque) + (1|geno)"
+            , fixed.model = ~ 0 + (1|bloque) + geno
+            , random.model = ~ 1 + (1|bloque) + (1|geno)
             , emmeans = TRUE
             , plot_diag = FALSE
             , outliers.rm = TRUE

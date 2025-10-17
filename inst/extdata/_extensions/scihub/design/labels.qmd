@@ -31,17 +31,16 @@ gs <- "url" %>%
 
 fb <- gs %>% 
   range_read(ss = .,sheet = "fb")
+
+#> Google fonts: https://fonts.google.com/
+
+font <- c("Merriweather Sans", "Permanent Marker", "Tillana")
+huito_fonts(font)
 ```
 
 ## Labels 
 
 ```{r}
-#| eval: false
-
-font <- c("Merriweather Sans", "Permanent Marker", "Tillana")
-
-huito_fonts(font)
-
 label <- fb %>%
   label_layout(size = c(5.2, 10)
                , border_color = "forestgreen"
@@ -95,7 +94,7 @@ label %>% label_print()
 
 label %>% 
   label_print(mode = "c"
-              , filename = "labels"
+              , filename = "design/labels"
               , paper = c(21.0, 29.7)
               )
 ```
