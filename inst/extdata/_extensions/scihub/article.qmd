@@ -1,15 +1,17 @@
 ---
 format:
   html:
+    css: "files/style.css"
     toc: true
     toc-location: left
     number-sections: true
     self-contained: true
+    output-file: "manuscript"
   docx:
     toc: false
     toc-title: Indice
     section-numbers: true
-    reference-doc: "files/template.docx"
+    reference-doc: "files/style.docx"
     output-file: "manuscript"
 editor_options: 
   chunk_output_type: console
@@ -21,47 +23,20 @@ crossref:
   fig-prefix: Figure
   tbl-title: Table
   tbl-prefix: Table
-# params:
-#   template: ""
-#   author: ""
-#   advisor: ""
-#   coadvisor: ""
-#   location: ""
-#   date: ""
-#   institution: ""
-#   faculty: ""
-#   program: ""
-#   type: ""
-#   title: ""
 ---
 
 ```{r}
 #| label: setup
 
 source("http://inkaverse.com/docs.r")
-doc <- inti::gdoc2qmd(file = "article.zip"
-                      # , type = "listfull"
-                      )
-params <- doc$params
 ```
 
 ```{r}
 #| eval: true
 #| results: 'asis'
 
-if(length(params) > 0) {
- cover <- list.files(path = "files/"
-                    , pattern = paste0("cover-", params$template)
-                    , full.names = T) %>% 
-  knitr::knit_child(quiet = TRUE) %>% 
-  cat(sep = '\n')
- }
-```
-
-```{r}
-#| results: 'asis'
-
-doc$path %>% 
+"draft.md" %>% 
+  rticle(type = "asis") %>% # ["asis" or "list"]
   knitr::knit_child(quiet = TRUE) %>% 
   cat(sep = '\n')
 ```

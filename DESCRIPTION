@@ -1,6 +1,6 @@
 Package: inti
 Title: Tools and Statistical Procedures in Plant Science
-Version: 0.6.92
+Version: 0.7.0
 Description: The 'inti' package is part of the 'inkaverse' project for developing 
     different procedures and tools used in plant science and experimental designs. 
     The mean aim of the package is to support researchers during the planning of
@@ -16,8 +16,9 @@ Authors@R: c(
     person("Inkaverse", role = c("cph"))
     )
 License: GPL-3 | file LICENSE
-URL: https://inkaverse.com/, https://github.com/flavjack/inti
-BugReports: https://github.com/flavjack/inti/issues/
+URL: https://inkaverse.com/, https://github.com/flavjack/inti,
+        https://github.com/Flavjack/inti
+BugReports: https://github.com/Flavjack/inti/issues
 Depends: shiny, ggplot2, dplyr, tidyr, tibble, R (>= 4.1.0)
 Imports: lme4, agricolae, FactoMineR, emmeans, purrr, stringr,
         googlesheets4, DT, cli
@@ -26,9 +27,9 @@ VignetteBuilder: knitr, quarto
 LazyData: true
 Encoding: UTF-8
 SystemRequirements: pandoc
-RoxygenNote: 7.3.3
+Config/roxygen2/version: 8.0.0
 NeedsCompilation: no
-Packaged: 2026-03-23 02:37:16 UTC; LENOVO
+Packaged: 2026-06-08 02:25:50 UTC; LENOVO
 Author: Flavio Lozano-Isla [aut, cre] (ORCID:
     <https://orcid.org/0000-0002-0714-669X>),
   María Belén Kistner [ctb] (ORCID:
@@ -37,4 +38,4 @@ Author: Flavio Lozano-Isla [aut, cre] (ORCID:
   Inkaverse [cph]
 Maintainer: Flavio Lozano-Isla <flozanoisla@gmail.com>
 Repository: CRAN
-Date/Publication: 2026-03-23 03:40:08 UTC
+Date/Publication: 2026-06-08 05:20:03 UTC
