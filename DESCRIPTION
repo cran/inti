@@ -1,6 +1,6 @@
 Package: inti
 Title: Tools and Statistical Procedures in Plant Science
-Version: 0.7.0
+Version: 0.7.1
 Description: The 'inti' package is part of the 'inkaverse' project for developing 
     different procedures and tools used in plant science and experimental designs. 
     The mean aim of the package is to support researchers during the planning of
@@ -10,32 +10,35 @@ Description: The 'inti' package is part of the 'inkaverse' project for developin
 Authors@R: c(
     person("Flavio", "Lozano-Isla", email = "flozanoisla@gmail.com", role = c("aut", "cre")
           , comment = c(ORCID = "0000-0002-0714-669X")),
+    person("Yoel", "Diaz-Saucedo", email = "7576425921@untrm.edu.pe", role = c("aut")
+          , comment = c(ORCID = "0009-0003-9765-136X")),
     person("María Belén", "Kistner", email = "kistner@agro.uba.ar", role = c("ctb")
           , comment = c(ORCID = "0000-0002-0947-6414")),
     person("QuipoLab", role = c("ctb")),
     person("Inkaverse", role = c("cph"))
     )
 License: GPL-3 | file LICENSE
-URL: https://inkaverse.com/, https://github.com/flavjack/inti,
-        https://github.com/Flavjack/inti
+URL: https://inkaverse.com/, https://github.com/Flavjack/inti
 BugReports: https://github.com/Flavjack/inti/issues
 Depends: shiny, ggplot2, dplyr, tidyr, tibble, R (>= 4.1.0)
 Imports: lme4, agricolae, FactoMineR, emmeans, purrr, stringr,
         googlesheets4, DT, cli
-Suggests: gsheet, cowplot, knitr, rmarkdown, quarto
+Suggests: gsheet, cowplot, huito, knitr, rmarkdown, quarto
 VignetteBuilder: knitr, quarto
 LazyData: true
 Encoding: UTF-8
 SystemRequirements: pandoc
 Config/roxygen2/version: 8.0.0
 NeedsCompilation: no
-Packaged: 2026-06-08 02:25:50 UTC; LENOVO
+Packaged: 2026-06-22 05:01:47 UTC; LENOVO
 Author: Flavio Lozano-Isla [aut, cre] (ORCID:
     <https://orcid.org/0000-0002-0714-669X>),
+  Yoel Diaz-Saucedo [aut] (ORCID:
+    <https://orcid.org/0009-0003-9765-136X>),
   María Belén Kistner [ctb] (ORCID:
     <https://orcid.org/0000-0002-0947-6414>),
   QuipoLab [ctb],
   Inkaverse [cph]
 Maintainer: Flavio Lozano-Isla <flozanoisla@gmail.com>
 Repository: CRAN
-Date/Publication: 2026-06-08 05:20:03 UTC
+Date/Publication: 2026-06-22 05:20:08 UTC

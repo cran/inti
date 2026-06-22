@@ -6,13 +6,11 @@ format:
     toc-location: left
     number-sections: true
     self-contained: true
-    output-file: "manuscript"
   docx:
     toc: false
     toc-title: Indice
     section-numbers: true
     reference-doc: "files/style.docx"
-    output-file: "manuscript"
 editor_options: 
   chunk_output_type: console
 execute:
@@ -32,10 +30,9 @@ source("http://inkaverse.com/docs.r")
 ```
 
 ```{r}
-#| eval: true
 #| results: 'asis'
 
-"draft.md" %>% 
+"render2rticle.md" %>% 
   rticle(type = "asis") %>% # ["asis" or "list"]
   knitr::knit_child(quiet = TRUE) %>% 
   cat(sep = '\n')
@@ -43,6 +40,33 @@ source("http://inkaverse.com/docs.r")
 
 ```{r}
 knitr::knit_exit()
+```
+
+```{bash}
+#| label: git check
+#| eval: false
+
+SIZE_MB=100
+EXCLUDE_DIRS=(".git" "xclude")
+
+find . \
+  \( -name "${EXCLUDE_DIRS[0]}" -o -name "${EXCLUDE_DIRS[1]}" \) \
+  -prune -o \
+  -type f -size +${SIZE_MB}M -exec ls -lh {} \; | sort -hr -k5
+  
+git reset --soft HEAD~0
+git status
+```
+
+```{bash}
+#| label: git > github
+#| eval: false
+
+git pull
+
+git add .
+git commit -m "update"
+git push
 ```
 
 ```{r}
