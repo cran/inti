@@ -84,6 +84,10 @@ tarpuy_plex <- function(data = NULL
   
   PLEX <- INFORMATION <- DAI <- NULL
   
+  design <- normalize_tarpuy_design_type(
+    design
+  )
+  
 # arguments ---------------------------------------------------------------
   
   start <- if(is.null(start) || is.na(start)) { 
@@ -116,11 +120,13 @@ tarpuy_plex <- function(data = NULL
     gsub(" ", "-", .) %>% 
     pluck(1)
   
-  project <- if(is.null(project) || is.na(project) || project == "") {
+  project_info <- if(is.null(project) || is.na(project) || project == "") {
     
     paste(loc, start, info, sep = "_")
     
-  } else { project } 
+  } else { project }
+  
+  project_code <- paste(loc, format(start, "%Y-%m"), sep = "_")
     
 # plex -----------------------------------------------------------------------
 
@@ -140,7 +146,7 @@ if ( is.null(data) ) {
              , ENVIRONMENT = environment
              , "START EXPERIMENT" = as.character.Date(start)
              , "END EXPERIMENT" = as.character.Date(end)
-             , PROJECT = project
+             , PROJECT = project_info
              , GITHUB = repository
              , MANUSCRIPT = manuscript
              , ALBUM = album
@@ -298,7 +304,7 @@ var_list <- list(
         NA,
         serie,
         seedset,
-        project,
+        project_code,
         "{project}{plots}"
       )
     )
@@ -331,7 +337,7 @@ var_list <- list(
         zigzag,
         serie,
         seedset,
-        project,
+        project_code,
         qrcode_design
       )
     )
@@ -355,7 +361,7 @@ var_list <- list(
       nrows    = nrowsx,
       serie    = serie,
       seed     = seedset,
-      project  = project,
+      project  = project_code,
       qrcode   = qrcode_design
     ) %>%
       tibble::enframe() %>%

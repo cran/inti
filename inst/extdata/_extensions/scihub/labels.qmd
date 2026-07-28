@@ -1,18 +1,20 @@
 ---
-title: "experimental labels"
+title: "Experimental Label"
 format:
   html:
     toc: true
+    toc-expand: true
+    toc-depth: 4
     toc-location: left
     number-sections: true
     self-contained: true
-    output-file: "labels"
+    code-fold: false
 editor_options: 
   chunk_output_type: console
 execute: 
-  echo: true
-  message: false
   warning: false
+  message: false
+  echo: true
 ---
 
 # Setup
@@ -23,7 +25,7 @@ execute:
 source("https://inkaverse.com/setup.r")
 ```
 
-## Field-book
+# Field-book
 
 ```{r}
 gs <- "url" %>% 
@@ -38,7 +40,7 @@ font <- c("Merriweather Sans", "Permanent Marker", "Tillana")
 huito_fonts(font)
 ```
 
-## Labels 
+# Labels 
 
 ```{r}
 label <- fb %>%
@@ -72,14 +74,14 @@ label <- fb %>%
                , size = 16
                , color = "blue"
                , font = font[1]
-               , prefix = "Factor1: "
+               , prefix = "Factor: "
                ) %>% 
   include_text(value = "factor2"
                , position = c(2.6, 1.8)
                , size = 15
                , color = "red"
                , font = font[1]
-               , prefix = "Factor2: "
+               , prefix = "Factor: "
                ) %>% 
   include_image(
     value = "https://huito.inkaverse.com/img/scale.pdf"
@@ -91,12 +93,14 @@ label <- fb %>%
 label %>% label_print(mode = "preview")
 ```
 
+# Labels to print
+
 ```{r}
 #| eval: false
 
 label %>% 
   label_print(mode = "complete"
-              , filename = "design/labels"
+              , filename = "files/labels"
               # , paper = c(100, 100)
               , units = "cm"
               )
