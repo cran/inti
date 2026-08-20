@@ -1,14 +1,16 @@
-# inti (development version)
+# inti 0.7.3
 
   - Improve PCA supplementary variables
   - Select the dimension in PCA
   - Sub module for PCA with variable contribution and dimension correlation
 
+# inti 0.7.3
   
   - Update `scihub()` to include pages
   - `rticle()` improve crossrefs
   - Update qrcode in designs
   - Fix legend in PCA
+  - Update Tarpuy
 
 # inti 0.7.1
 

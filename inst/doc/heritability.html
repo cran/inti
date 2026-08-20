@@ -1,54 +1,28 @@
 <!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
-<html>
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.25">
 
-<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta charset="utf-8" />
-<meta name="generator" content="pandoc" />
-<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
-
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-
-<meta name="author" content="Maria Belen Kistner &amp; Flavio Lozano-Isla" />
-
+<meta name="author" content="Maria Belen Kistner &amp; Flavio Lozano-Isla">
+<meta name="description" content="How to calculate the heritability in plant breeding.">
 
 <title>Broad-sense heritability in plant breeding</title>
-
-<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
-// be compatible with the behavior of Pandoc < 2.8).
-document.addEventListener('DOMContentLoaded', function(e) {
-  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
-  var i, h, a;
-  for (i = 0; i < hs.length; i++) {
-    h = hs[i];
-    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
-    a = h.attributes;
-    while (a.length > 0) h.removeAttribute(a[0].name);
-  }
-});
-</script>
-
-<style type="text/css">
+<style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
-span.underline{text-decoration: underline;}
-div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
 div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
-</style>
-
-
-
-<style type="text/css">
-code {
-white-space: pre;
+ul.task-list li input[type="checkbox"] {
+width: 0.8em;
+margin: 0 0.8em 0.2em -1em;  vertical-align: middle;
 }
-.sourceCode {
-overflow: visible;
-}
-</style>
-<style type="text/css" data-origin="pandoc">
+.display.math{display: block; text-align: center; margin: 0.5rem auto;}
+
 html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
@@ -76,82 +50,19 @@ border: none; display: inline-block;
 -khtml-user-select: none; -moz-user-select: none;
 -ms-user-select: none; user-select: none;
 padding: 0 4px; width: 4em;
-color: #aaaaaa;
 }
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+pre.numberSource { margin-left: 3em; padding-left: 4px; }
 div.sourceCode
 { }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-code span.al { color: #ff0000; font-weight: bold; } 
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
-code span.at { color: #7d9029; } 
-code span.bn { color: #40a070; } 
-code span.bu { color: #008000; } 
-code span.cf { color: #007020; font-weight: bold; } 
-code span.ch { color: #4070a0; } 
-code span.cn { color: #880000; } 
-code span.co { color: #60a0b0; font-style: italic; } 
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
-code span.do { color: #ba2121; font-style: italic; } 
-code span.dt { color: #902000; } 
-code span.dv { color: #40a070; } 
-code span.er { color: #ff0000; font-weight: bold; } 
-code span.ex { } 
-code span.fl { color: #40a070; } 
-code span.fu { color: #06287e; } 
-code span.im { color: #008000; font-weight: bold; } 
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
-code span.kw { color: #007020; font-weight: bold; } 
-code span.op { color: #666666; } 
-code span.ot { color: #007020; } 
-code span.pp { color: #bc7a00; } 
-code span.sc { color: #4070a0; } 
-code span.ss { color: #bb6688; } 
-code span.st { color: #4070a0; } 
-code span.va { color: #19177c; } 
-code span.vs { color: #4070a0; } 
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
-</style>
-<script>
-// apply pandoc div.sourceCode style to pre.sourceCode instead
-(function() {
-  var sheets = document.styleSheets;
-  for (var i = 0; i < sheets.length; i++) {
-    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
-    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
-    var j = 0;
-    while (j < rules.length) {
-      var rule = rules[j];
-      // check if there is a div.sourceCode rule
-      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
-        j++;
-        continue;
-      }
-      var style = rule.style.cssText;
-      // check if color or background-color is set
-      if (rule.style.color === '' && rule.style.backgroundColor === '') {
-        j++;
-        continue;
-      }
-      // replace div.sourceCode by a pre.sourceCode rule
-      sheets[i].deleteRule(j);
-      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
-    }
-  }
-})();
-</script>
-
-
-
-<style type="text/css">
 
 div.csl-bib-body { }
 div.csl-entry {
 clear: both;
 }
-.hanging div.csl-entry {
+.hanging-indent div.csl-entry {
 margin-left:2em;
 text-indent:-2em;
 }
@@ -165,8 +76,10 @@ padding-left:1em;
 }
 div.csl-indent {
 margin-left: 2em;
-}
-</style>
+}</style>
+
+
+
 
 <style type="text/css">body {
 background-color: #fff;
@@ -178,34 +91,6 @@ padding-right: 2em;
 font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 font-size: 14px;
 line-height: 1.35;
-}
-#TOC {
-clear: both;
-margin: 0 0 10px 10px;
-padding: 4px;
-width: 400px;
-border: 1px solid #CCCCCC;
-border-radius: 5px;
-background-color: #f6f6f6;
-font-size: 13px;
-line-height: 1.3;
-}
-#TOC .toctitle {
-font-weight: bold;
-font-size: 15px;
-margin-left: 5px;
-}
-#TOC ul {
-padding-left: 40px;
-margin-left: -1.5em;
-margin-top: 5px;
-margin-bottom: 5px;
-}
-#TOC ul ul {
-margin-left: -2em;
-}
-#TOC li {
-line-height: 16px;
 }
 table {
 margin: 1em auto;
@@ -335,650 +220,549 @@ a[href^="http:"] {
 text-decoration: underline; }
 a[href^="https:"] {
 text-decoration: underline; }
-
-code > span.kw { color: #555; font-weight: bold; } 
-code > span.dt { color: #902000; } 
-code > span.dv { color: #40a070; } 
-code > span.bn { color: #d14; } 
-code > span.fl { color: #d14; } 
-code > span.ch { color: #d14; } 
-code > span.st { color: #d14; } 
-code > span.co { color: #888888; font-style: italic; } 
-code > span.ot { color: #007020; } 
-code > span.al { color: #ff0000; font-weight: bold; } 
-code > span.fu { color: #900; font-weight: bold; } 
-code > span.er { color: #a61717; background-color: #e3d2d2; } 
 </style>
-
-
-
-
 </head>
 
 <body>
 
 
+<header id="title-block-header">
+<h1 class="title">Broad-sense heritability in plant breeding</h1>
+<p class="author">Maria Belen Kistner &amp; Flavio Lozano-Isla</p>
+
+</header>
 
 
-<h1 class="title toc-ignore">Broad-sense heritability in plant
-breeding</h1>
-<h4 class="author">Maria Belen Kistner &amp; Flavio Lozano-Isla</h4>
-
-
-
-<div id="broad-sense-heritability-h2" class="section level1">
-<h1>Broad-sense heritability (<span class="math inline">\(H^2\)</span>)</h1>
-<p>Broad-sense heritability (<span class="math inline">\(H^2\)</span>)
-is defined as the proportion of phenotypic variance that is attributable
-to an overall genetic variance for the genotype <span class="citation">(<a href="#ref-schmidt2019Estimating">Schmidt et al.,
-2019b</a>)</span>. There are usually additional interpretations
-associated with <span class="math inline">\(H^2\)</span>: <em>(i)</em>
-It is equivalent to the coefficient of determination of a linear
-regression of the unobservable genotypic value on the observed
-phenotype; <em>(ii)</em> It is also the squared correlation between
-predicted phenotypic value and genotypic value; and <em>(iii)</em> It
-represents the proportion of the selection differential (<span class="math inline">\(S\)</span>) that can be realized as the response
-to selection (<span class="math inline">\(R\)</span>) <span class="citation">(<a href="#ref-falconer2005Introduction">Falconer and
-Mackay, 2005</a>)</span>.</p>
-<p>There are two main reasons why heritability on an entry-mean basis is
-of interest in plant breeding <span class="citation">(<a href="#ref-schmidt2019Heritability">Schmidt et al.,
-2019a</a>)</span>:</p>
-<ol style="list-style-type: decimal">
-<li>It is plugged into the breeder’s Equation to predict the response to
-selection.</li>
-<li>It is a descriptive measure used to assess the usefulness and
-precision of results from cultivar evaluation trials.</li>
+<h1 id="broad-sense-heritability-h2">Broad-sense heritability (<span class="math inline"><em>H</em><sup>2</sup></span>)</h1>
+<p>Broad-sense heritability (<span class="math inline"><em>H</em><sup>2</sup></span>) is defined as the proportion of phenotypic variance that is attributable to an overall genetic variance for the genotype <span class="citation" data-cites="schmidt2019Estimating">(<a href="#ref-schmidt2019Estimating" role="doc-biblioref">Schmidt et al., 2019b</a>)</span>. There are usually additional interpretations associated with <span class="math inline"><em>H</em><sup>2</sup></span>: <em>(i)</em> It is equivalent to the coefficient of determination of a linear regression of the unobservable genotypic value on the observed phenotype; <em>(ii)</em> It is also the squared correlation between predicted phenotypic value and genotypic value; and <em>(iii)</em> It represents the proportion of the selection differential (<span class="math inline"><em>S</em></span>) that can be realized as the response to selection (<span class="math inline"><em>R</em></span>) <span class="citation" data-cites="falconer2005Introduction">(<a href="#ref-falconer2005Introduction" role="doc-biblioref">Falconer and Mackay, 2005</a>)</span>.</p>
+<p>There are two main reasons why heritability on an entry-mean basis is of interest in plant breeding <span class="citation" data-cites="schmidt2019Heritability">(<a href="#ref-schmidt2019Heritability" role="doc-biblioref">Schmidt et al., 2019a</a>)</span>:</p>
+<ol type="1">
+<li>It is plugged into the breeder’s Equation to predict the response to selection.</li>
+<li>It is a descriptive measure used to assess the usefulness and precision of results from cultivar evaluation trials.</li>
 </ol>
-<div id="breeders-equation" class="section level2">
-<h2>Breeder´s equation</h2>
-<p><span class="math display">\[\Delta G=H^2S\]</span> Where:</p>
+<h2 id="breeders-equation">Breeder´s equation</h2>
+<p><span class="math display"><em>Δ</em><em>G</em> = <em>H</em><sup>2</sup><em>S</em></span> Where:</p>
 <ul>
-<li><span class="math inline">\(\Delta G\)</span> is the genetic
-gain</li>
-<li><span class="math inline">\(S\)</span> is the mean phenotypic value
-of the selected genotypes, expressed as a deviation from the population
-mean.</li>
+<li><span class="math inline"><em>Δ</em><em>G</em></span> is the genetic gain</li>
+<li><span class="math inline"><em>S</em></span> is the mean phenotypic value of the selected genotypes, expressed as a deviation from the population mean.</li>
 </ul>
-</div>
-</div>
-<div id="usual-problems" class="section level1">
-<h1>Usual Problems</h1>
-<p>In practice, most trials are conducted in a multienvironment trial
-(MET) presente unbalanced data as not all cultivars are tested at each
-environment or simply when plot data is lost or when the number of
-replicates at each location varies between genotypes <span class="citation">(<a href="#ref-schmidt2019Estimating">Schmidt et al.,
-2019b</a>)</span>. However, the standard method for estimating
-heritability implicitly assumes balanced data, independent genotype
-effects, and homogeneous variances.</p>
-</div>
-<div id="how-calculate-the-heritability" class="section level1">
-<h1>How calculate the Heritability?</h1>
-<p>According <span class="citation">Schmidt et al. (<a href="#ref-schmidt2019Heritability">2019a</a>)</span>, the variance
-components could be calculated in two ways:</p>
-<div id="two-stages-approach" class="section level2">
-<h2>1) Two stages approach</h2>
-<p>For the two stage approach, in the first stage each experiment is
-analyzed individually according their experiment design (Lattice, CRBD,
-etc) <span class="citation">(<a href="#ref-zystro2018Alternative">Zystro
-et al., 2018</a>)</span>. And for the second stage environments are
-denotes a year-by-location interaction. This approach assumes a single
-variance for genotype-by-environment interactions (GxE), even when
-multiple locations were tested across multiple years <span class="citation">(<a href="#ref-buntaran2020Cross">Buntaran et al.,
-2020</a>)</span>.</p>
-<div id="model" class="section level3">
-<h3>Model</h3>
-<p><span class="math display">\[y_{ikt}=\mu\ +\
-G_i+E_t+GxE_{it}+\varepsilon_{ikt}\]</span></p>
-</div>
-<div id="phenotypic-variance" class="section level3">
-<h3>Phenotypic variance</h3>
-<p><span class="math display">\[\sigma_p^2=\sigma_g^2+\frac{\sigma_{g\cdot
-e}^2}{n_e}+\frac{\sigma_{\varepsilon}^2}{n_e\cdot n_r}\]</span></p>
-</div>
-</div>
-<div id="one-stage-approach" class="section level2">
-<h2>2) One stage approach</h2>
-<p>For the one stage approach only one model is used for the MET
-analysis. The environmental effects are included via separate year, and
-location main interaction effects.</p>
-<p><span class="math display">\[y_{ikt}=\mu+G_i+Y_m+E_q+YxE_{mq}+GxY_{im}+GxE_{iq}+GxYxE_{imq}+\varepsilon_{ikmq}\]</span></p>
-<div id="phenotypic-variance-1" class="section level3">
-<h3>Phenotypic variance</h3>
-<p><span class="math display">\[\sigma_p^2=\sigma_g^2+\frac{\sigma_{g\cdot
-e}^2}{n_e}+\frac{\sigma_{g\cdot y}^2}{n_y}+\frac{\sigma_{g\cdot y\cdot
-e}^2}{n_y\cdot n_e}+\ \frac{\sigma_{\epsilon}^2}{n_e\cdot n_y\cdot
-n_r}\]</span></p>
-</div>
-</div>
-</div>
-<div id="differentes-heritability-calculations" class="section level1">
-<h1>Differentes heritability calculations</h1>
-<table>
+<h1 id="usual-problems">Usual Problems</h1>
+<p>In practice, most trials are conducted in a multienvironment trial (MET) presente unbalanced data as not all cultivars are tested at each environment or simply when plot data is lost or when the number of replicates at each location varies between genotypes <span class="citation" data-cites="schmidt2019Estimating">(<a href="#ref-schmidt2019Estimating" role="doc-biblioref">Schmidt et al., 2019b</a>)</span>. However, the standard method for estimating heritability implicitly assumes balanced data, independent genotype effects, and homogeneous variances.</p>
+<h1 id="how-calculate-the-heritability">How calculate the Heritability?</h1>
+<p>According <span class="citation" data-cites="schmidt2019Heritability">Schmidt et al. (<a href="#ref-schmidt2019Heritability" role="doc-biblioref">2019a</a>)</span>, the variance components could be calculated in two ways:</p>
+<h2 id="two-stages-approach">1) Two stages approach</h2>
+<p>For the two stage approach, in the first stage each experiment is analyzed individually according their experiment design (Lattice, CRBD, etc) <span class="citation" data-cites="zystro2018Alternative">(<a href="#ref-zystro2018Alternative" role="doc-biblioref">Zystro et al., 2018</a>)</span>. And for the second stage environments are denotes a year-by-location interaction. This approach assumes a single variance for genotype-by-environment interactions (GxE), even when multiple locations were tested across multiple years <span class="citation" data-cites="buntaran2020Cross">(<a href="#ref-buntaran2020Cross" role="doc-biblioref">Buntaran et al., 2020</a>)</span>.</p>
+<h3 id="model">Model</h3>
+<p><span class="math display"><em>y</em><sub><em>i</em><em>k</em><em>t</em></sub> = <em>μ</em> + <em>G</em><sub><em>i</em></sub> + <em>E</em><sub><em>t</em></sub> + <em>G</em><em>x</em><em>E</em><sub><em>i</em><em>t</em></sub> + <em>ε</em><sub><em>i</em><em>k</em><em>t</em></sub></span></p>
+<h3 id="phenotypic-variance">Phenotypic variance</h3>
+<p><span class="math display">$$\sigma_p^2=\sigma_g^2+\frac{\sigma_{g\cdot e}^2}{n_e}+\frac{\sigma_{\varepsilon}^2}{n_e\cdot n_r}$$</span></p>
+<h2 id="one-stage-approach">2) One stage approach</h2>
+<p>For the one stage approach only one model is used for the MET analysis. The environmental effects are included via separate year, and location main interaction effects.</p>
+<p><span class="math display"><em>y</em><sub><em>i</em><em>k</em><em>t</em></sub> = <em>μ</em> + <em>G</em><sub><em>i</em></sub> + <em>Y</em><sub><em>m</em></sub> + <em>E</em><sub><em>q</em></sub> + <em>Y</em><em>x</em><em>E</em><sub><em>m</em><em>q</em></sub> + <em>G</em><em>x</em><em>Y</em><sub><em>i</em><em>m</em></sub> + <em>G</em><em>x</em><em>E</em><sub><em>i</em><em>q</em></sub> + <em>G</em><em>x</em><em>Y</em><em>x</em><em>E</em><sub><em>i</em><em>m</em><em>q</em></sub> + <em>ε</em><sub><em>i</em><em>k</em><em>m</em><em>q</em></sub></span></p>
+<h3 id="phenotypic-variance-1">Phenotypic variance</h3>
+<p><span class="math display">$$\sigma_p^2=\sigma_g^2+\frac{\sigma_{g\cdot e}^2}{n_e}+\frac{\sigma_{g\cdot y}^2}{n_y}+\frac{\sigma_{g\cdot y\cdot e}^2}{n_y\cdot n_e}+\ \frac{\sigma_{\epsilon}^2}{n_e\cdot n_y\cdot n_r}$$</span></p>
+<h1 id="differentes-heritability-calculations">Differentes heritability calculations</h1>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<table class="caption-top">
 <caption>Differentes heritability calculation</caption>
 <colgroup>
-<col width="25%" />
-<col width="35%" />
-<col width="39%" />
+<col style="width: 25%">
+<col style="width: 35%">
+<col style="width: 39%">
 </colgroup>
 <thead>
 <tr class="header">
-<th align="left">Standart</th>
-<th align="left">Cullis</th>
-<th align="left">Piepho</th>
+<th style="text-align: left;">Standart</th>
+<th style="text-align: left;">Cullis</th>
+<th style="text-align: left;">Piepho</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left"><span class="math inline">\(H^2=\frac{\sigma_g^2}{\sigma_p^2}=\frac{\Delta
-G}{S}\)</span></td>
-<td align="left"><span class="math inline">\(H_{Cullis}^2=1-\frac{\overline{V}_{\Delta..}^{^{BLUP}}}{2\cdot\sigma_g^2}\)</span></td>
-<td align="left"><span class="math inline">\(H_{Piepho}^2=\frac{\sigma_g^2}{\sigma_g^2+\frac{\overline{V}_{\Delta..}^{BLUE}}{2}}\)</span></td>
+<td style="text-align: left;"><span class="math inline">$H^2=\frac{\sigma_g^2}{\sigma_p^2}=\frac{\Delta G}{S}$</span></td>
+<td style="text-align: left;"><span class="math inline">$H_{Cullis}^2=1-\frac{\overline{V}_{\Delta..}^{^{BLUP}}}{2\cdot\sigma_g^2}$</span></td>
+<td style="text-align: left;"><span class="math inline">$H_{Piepho}^2=\frac{\sigma_g^2}{\sigma_g^2+\frac{\overline{V}_{\Delta..}^{BLUE}}{2}}$</span></td>
 </tr>
 </tbody>
 </table>
 </div>
-<div id="heritability-function-in-the-package" class="section level1">
-<h1>Heritability function in the package</h1>
-<p>For calculate the standard heritability in MET experiments the number
-of location and replication should be include manually in the function
-<code>H2cal()</code>. In the case of difference number of replication in
-each experiments, take the maximum value (often done in practice) <span class="citation">(<a href="#ref-schmidt2019Estimating">Schmidt et al.,
-2019b</a>)</span>.</p>
-<p>For remove the outliers the function implemented is the Method 4 used
-for <span class="citation">Bernal-Vasquez et al. (<a href="#ref-bernal-vasquez2016Outliera">2016</a>)</span>: Bonferroni-Holm
-using re-scaled MAD for standardizing residuals (BH-MADR).</p>
-<div id="load-packages" class="section level2">
-<h2>Load packages</h2>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(inti)</span></code></pre></div>
 </div>
-<div id="h2cal-function" class="section level2">
-<h2>H2cal function</h2>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>dt <span class="ot">&lt;-</span> inti<span class="sc">::</span>potato</span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>hr <span class="ot">&lt;-</span> <span class="fu">H2cal</span>(<span class="at">data =</span> dt</span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>          , <span class="at">trait =</span> <span class="st">&quot;stemdw&quot;</span></span>
-<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>          , <span class="at">gen.name =</span> <span class="st">&quot;geno&quot;</span></span>
-<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>          , <span class="at">rep.n =</span> <span class="dv">5</span></span>
-<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>          , <span class="at">fixed.model =</span> <span class="sc">~</span> <span class="dv">0</span> <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>bloque) <span class="sc">+</span> geno</span>
-<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>          , <span class="at">random.model =</span> <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>bloque) <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>geno)</span>
-<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>          , <span class="at">emmeans =</span> <span class="cn">TRUE</span></span>
-<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>          , <span class="at">plot_diag =</span> <span class="cn">FALSE</span></span>
-<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>          , <span class="at">outliers.rm =</span> <span class="cn">TRUE</span></span>
-<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>          )</span></code></pre></div>
+<h1 id="heritability-function-in-the-package">Heritability function in the package</h1>
+<p>For calculate the standard heritability in MET experiments the number of location and replication should be include manually in the function <code>H2cal()</code>. In the case of difference number of replication in each experiments, take the maximum value (often done in practice) <span class="citation" data-cites="schmidt2019Estimating">(<a href="#ref-schmidt2019Estimating" role="doc-biblioref">Schmidt et al., 2019b</a>)</span>.</p>
+<p>For remove the outliers the function implemented is the Method 4 used for <span class="citation" data-cites="bernal-vasquez2016Outliera">Bernal-Vasquez et al. (<a href="#ref-bernal-vasquez2016Outliera" role="doc-biblioref">2016</a>)</span>: Bonferroni-Holm using re-scaled MAD for standardizing residuals (BH-MADR).</p>
+<h2 id="load-packages">Load packages</h2>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(inti)</span></code></pre></div>
 </div>
-<div id="model-information" class="section level2">
-<h2>Model information</h2>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>hr<span class="sc">$</span>model <span class="sc">%&gt;%</span> <span class="fu">summary</span>()</span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="do">## Linear mixed model fit by REML [&#39;lmerMod&#39;]</span></span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="do">## Formula: stemdw ~ 1 + (1 | bloque) + (1 | geno)</span></span>
-<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="do">##    Data: dt.rm</span></span>
-<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="do">## Weights: weights</span></span>
-<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="do">## REML criterion at convergence: 796.1</span></span>
-<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="do">## Scaled residuals: </span></span>
-<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="do">##      Min       1Q   Median       3Q      Max </span></span>
-<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="do">## -2.38440 -0.64247 -0.08589  0.57452  2.84508 </span></span>
-<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a><span class="do">## Random effects:</span></span>
-<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a><span class="do">##  Groups   Name        Variance Std.Dev.</span></span>
-<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a><span class="do">##  geno     (Intercept) 19.960   4.4677  </span></span>
-<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a><span class="do">##  bloque   (Intercept)  0.110   0.3316  </span></span>
-<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a><span class="do">##  Residual              9.411   3.0677  </span></span>
-<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a><span class="do">## Number of obs: 148, groups:  geno, 15; bloque, 5</span></span>
-<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a><span class="do">## Fixed effects:</span></span>
-<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a><span class="do">##             Estimate Std. Error t value</span></span>
-<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a><span class="do">## (Intercept)    12.51       1.19   10.51</span></span></code></pre></div>
+<h2 id="h2cal-function">H2cal function</h2>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>dt <span class="ot">&lt;-</span> inti<span class="sc">::</span>potato</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>hr <span class="ot">&lt;-</span> <span class="fu">H2cal</span>(<span class="at">data =</span> dt</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>          , <span class="at">trait =</span> <span class="st">&quot;stemdw&quot;</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>          , <span class="at">gen.name =</span> <span class="st">&quot;geno&quot;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>          , <span class="at">rep.n =</span> <span class="dv">5</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>          , <span class="at">fixed.model =</span> <span class="sc">~</span> <span class="dv">0</span> <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>bloque) <span class="sc">+</span> geno</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>          , <span class="at">random.model =</span> <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>bloque) <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>geno)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>          , <span class="at">emmeans =</span> <span class="cn">TRUE</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>          , <span class="at">plot_diag =</span> <span class="cn">FALSE</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>          , <span class="at">outliers.rm =</span> <span class="cn">TRUE</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>          )</span></code></pre></div>
 </div>
-<div id="variance-components" class="section level2">
-<h2>Variance components</h2>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>hr<span class="sc">$</span>tabsmr <span class="sc">%&gt;%</span> <span class="fu">kable</span>(<span class="at">caption =</span> <span class="st">&quot;Variance component table&quot;</span>)</span></code></pre></div>
-<table style="width:100%;">
+<h2 id="model-information">Model information</h2>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>hr<span class="sc">$</span>model <span class="sc">%&gt;%</span> <span class="fu">summary</span>()</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Linear mixed model fit by REML [&#39;lmerMod&#39;]</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Formula: stemdw ~ 1 + (1 | bloque) + (1 | geno)</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Data: dt.rm</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Weights: weights</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; REML criterion at convergence: 796.1</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Scaled residuals: </span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      Min       1Q   Median       3Q      Max </span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -2.38440 -0.64247 -0.08589  0.57452  2.84508 </span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Random effects:</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  Groups   Name        Variance Std.Dev.</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  geno     (Intercept) 19.960   4.4677  </span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  bloque   (Intercept)  0.110   0.3316  </span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  Residual              9.411   3.0677  </span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Number of obs: 148, groups:  geno, 15; bloque, 5</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Fixed effects:</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;             Estimate Std. Error t value</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; (Intercept)    12.51       1.19   10.51</span></span></code></pre></div>
+</div>
+<h2 id="variance-components">Variance components</h2>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>hr<span class="sc">$</span>tabsmr <span class="sc">%&gt;%</span> <span class="fu">kable</span>(<span class="at">caption =</span> <span class="st">&quot;Variance component table&quot;</span>)</span></code></pre></div>
+<div class="cell-output-display">
+<table class="caption-top" style="width:100%;">
 <caption>Variance component table</caption>
 <colgroup>
-<col width="5%" />
-<col width="3%" />
-<col width="3%" />
-<col width="3%" />
-<col width="3%" />
-<col width="7%" />
-<col width="7%" />
-<col width="4%" />
-<col width="5%" />
-<col width="7%" />
-<col width="7%" />
-<col width="7%" />
-<col width="11%" />
-<col width="7%" />
-<col width="7%" />
-<col width="7%" />
+<col style="width: 5%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 4%">
+<col style="width: 5%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 11%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
 </colgroup>
 <thead>
 <tr class="header">
-<th align="left">trait</th>
-<th align="right">rep</th>
-<th align="right">geno</th>
-<th align="right">env</th>
-<th align="right">year</th>
-<th align="right">mean</th>
-<th align="right">std</th>
-<th align="right">min</th>
-<th align="right">max</th>
-<th align="right">V.g</th>
-<th align="right">V.e</th>
-<th align="right">V.p</th>
-<th align="right">repeatability</th>
-<th align="right">H2.s</th>
-<th align="right">H2.p</th>
-<th align="right">H2.c</th>
+<th style="text-align: left;">trait</th>
+<th style="text-align: right;">rep</th>
+<th style="text-align: right;">geno</th>
+<th style="text-align: right;">env</th>
+<th style="text-align: right;">year</th>
+<th style="text-align: right;">mean</th>
+<th style="text-align: right;">std</th>
+<th style="text-align: right;">min</th>
+<th style="text-align: right;">max</th>
+<th style="text-align: right;">V.g</th>
+<th style="text-align: right;">V.e</th>
+<th style="text-align: right;">V.p</th>
+<th style="text-align: right;">repeatability</th>
+<th style="text-align: right;">H2.s</th>
+<th style="text-align: right;">H2.p</th>
+<th style="text-align: right;">H2.c</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">stemdw</td>
-<td align="right">5</td>
-<td align="right">15</td>
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">12.59867</td>
-<td align="right">4.749994</td>
-<td align="right">2.818</td>
-<td align="right">22.302</td>
-<td align="right">19.96002</td>
-<td align="right">9.410932</td>
-<td align="right">21.84221</td>
-<td align="right">0.913828</td>
-<td align="right">0.913828</td>
-<td align="right">0.9502395</td>
-<td align="right">0.9533473</td>
+<td style="text-align: left;">stemdw</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">12.59867</td>
+<td style="text-align: right;">4.749994</td>
+<td style="text-align: right;">2.818</td>
+<td style="text-align: right;">22.302</td>
+<td style="text-align: right;">19.96002</td>
+<td style="text-align: right;">9.410932</td>
+<td style="text-align: right;">21.84221</td>
+<td style="text-align: right;">0.913828</td>
+<td style="text-align: right;">0.913828</td>
+<td style="text-align: right;">0.9502395</td>
+<td style="text-align: right;">0.9533473</td>
 </tr>
 </tbody>
 </table>
 </div>
-<div id="best-linear-unbiased-estimators-blues" class="section level2">
-<h2>Best Linear Unbiased Estimators (BLUEs)</h2>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>hr<span class="sc">$</span>blues <span class="sc">%&gt;%</span> <span class="fu">kable</span>(<span class="at">caption =</span> <span class="st">&quot;BLUEs&quot;</span>)</span></code></pre></div>
-<table>
+</div>
+<h2 id="best-linear-unbiased-estimators-blues">Best Linear Unbiased Estimators (BLUEs)</h2>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>hr<span class="sc">$</span>blues <span class="sc">%&gt;%</span> <span class="fu">kable</span>(<span class="at">caption =</span> <span class="st">&quot;BLUEs&quot;</span>)</span></code></pre></div>
+<div class="cell-output-display">
+<table class="caption-top">
 <caption>BLUEs</caption>
 <thead>
 <tr class="header">
-<th align="left">geno</th>
-<th align="right">stemdw</th>
-<th align="right">SE</th>
-<th align="right">df</th>
-<th align="right">lower.CL</th>
-<th align="right">upper.CL</th>
+<th style="text-align: left;">geno</th>
+<th style="text-align: right;">stemdw</th>
+<th style="text-align: right;">SE</th>
+<th style="text-align: right;">df</th>
+<th style="text-align: right;">lower.CL</th>
+<th style="text-align: right;">upper.CL</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">G01</td>
-<td align="right">15.73200</td>
-<td align="right">1.030325</td>
-<td align="right">119.7830</td>
-<td align="right">13.6919903</td>
-<td align="right">17.77201</td>
+<td style="text-align: left;">G01</td>
+<td style="text-align: right;">15.73200</td>
+<td style="text-align: right;">1.030325</td>
+<td style="text-align: right;">119.7830</td>
+<td style="text-align: right;">13.6919903</td>
+<td style="text-align: right;">17.77201</td>
 </tr>
 <tr class="even">
-<td align="left">G02</td>
-<td align="right">10.12100</td>
-<td align="right">1.030325</td>
-<td align="right">119.7830</td>
-<td align="right">8.0809903</td>
-<td align="right">12.16101</td>
+<td style="text-align: left;">G02</td>
+<td style="text-align: right;">10.12100</td>
+<td style="text-align: right;">1.030325</td>
+<td style="text-align: right;">119.7830</td>
+<td style="text-align: right;">8.0809903</td>
+<td style="text-align: right;">12.16101</td>
 </tr>
 <tr class="odd">
-<td align="left">G03</td>
-<td align="right">9.69500</td>
-<td align="right">1.030325</td>
-<td align="right">119.7830</td>
-<td align="right">7.6549903</td>
-<td align="right">11.73501</td>
+<td style="text-align: left;">G03</td>
+<td style="text-align: right;">9.69500</td>
+<td style="text-align: right;">1.030325</td>
+<td style="text-align: right;">119.7830</td>
+<td style="text-align: right;">7.6549903</td>
+<td style="text-align: right;">11.73501</td>
 </tr>
 <tr class="even">
-<td align="left">G04</td>
-<td align="right">15.17700</td>
-<td align="right">1.030325</td>
-<td align="right">119.7830</td>
-<td align="right">13.1369903</td>
-<td align="right">17.21701</td>
+<td style="text-align: left;">G04</td>
+<td style="text-align: right;">15.17700</td>
+<td style="text-align: right;">1.030325</td>
+<td style="text-align: right;">119.7830</td>
+<td style="text-align: right;">13.1369903</td>
+<td style="text-align: right;">17.21701</td>
 </tr>
 <tr class="odd">
-<td align="left">G05</td>
-<td align="right">12.87106</td>
-<td align="right">1.086433</td>
-<td align="right">122.5189</td>
-<td align="right">10.7204483</td>
-<td align="right">15.02167</td>
+<td style="text-align: left;">G05</td>
+<td style="text-align: right;">12.87106</td>
+<td style="text-align: right;">1.086433</td>
+<td style="text-align: right;">122.5189</td>
+<td style="text-align: right;">10.7204483</td>
+<td style="text-align: right;">15.02167</td>
 </tr>
 <tr class="even">
-<td align="left">G06</td>
-<td align="right">22.30200</td>
-<td align="right">1.030325</td>
-<td align="right">119.7830</td>
-<td align="right">20.2619903</td>
-<td align="right">24.34201</td>
+<td style="text-align: left;">G06</td>
+<td style="text-align: right;">22.30200</td>
+<td style="text-align: right;">1.030325</td>
+<td style="text-align: right;">119.7830</td>
+<td style="text-align: right;">20.2619903</td>
+<td style="text-align: right;">24.34201</td>
 </tr>
 <tr class="odd">
-<td align="left">G07</td>
-<td align="right">2.81800</td>
-<td align="right">1.030325</td>
-<td align="right">119.7830</td>
-<td align="right">0.7779903</td>
-<td align="right">4.85801</td>
+<td style="text-align: left;">G07</td>
+<td style="text-align: right;">2.81800</td>
+<td style="text-align: right;">1.030325</td>
+<td style="text-align: right;">119.7830</td>
+<td style="text-align: right;">0.7779903</td>
+<td style="text-align: right;">4.85801</td>
 </tr>
 <tr class="even">
-<td align="left">G08</td>
-<td align="right">10.42300</td>
-<td align="right">1.030325</td>
-<td align="right">119.7830</td>
-<td align="right">8.3829903</td>
-<td align="right">12.46301</td>
+<td style="text-align: left;">G08</td>
+<td style="text-align: right;">10.42300</td>
+<td style="text-align: right;">1.030325</td>
+<td style="text-align: right;">119.7830</td>
+<td style="text-align: right;">8.3829903</td>
+<td style="text-align: right;">12.46301</td>
 </tr>
 <tr class="odd">
-<td align="left">G09</td>
-<td align="right">15.66800</td>
-<td align="right">1.030325</td>
-<td align="right">119.7830</td>
-<td align="right">13.6279903</td>
-<td align="right">17.70801</td>
+<td style="text-align: left;">G09</td>
+<td style="text-align: right;">15.66800</td>
+<td style="text-align: right;">1.030325</td>
+<td style="text-align: right;">119.7830</td>
+<td style="text-align: right;">13.6279903</td>
+<td style="text-align: right;">17.70801</td>
 </tr>
 <tr class="even">
-<td align="left">G10</td>
-<td align="right">9.24200</td>
-<td align="right">1.030325</td>
-<td align="right">119.7830</td>
-<td align="right">7.2019903</td>
-<td align="right">11.28201</td>
+<td style="text-align: left;">G10</td>
+<td style="text-align: right;">9.24200</td>
+<td style="text-align: right;">1.030325</td>
+<td style="text-align: right;">119.7830</td>
+<td style="text-align: right;">7.2019903</td>
+<td style="text-align: right;">11.28201</td>
 </tr>
 <tr class="odd">
-<td align="left">G11</td>
-<td align="right">6.42500</td>
-<td align="right">1.030325</td>
-<td align="right">119.7830</td>
-<td align="right">4.3849903</td>
-<td align="right">8.46501</td>
+<td style="text-align: left;">G11</td>
+<td style="text-align: right;">6.42500</td>
+<td style="text-align: right;">1.030325</td>
+<td style="text-align: right;">119.7830</td>
+<td style="text-align: right;">4.3849903</td>
+<td style="text-align: right;">8.46501</td>
 </tr>
 <tr class="even">
-<td align="left">G12</td>
-<td align="right">16.11100</td>
-<td align="right">1.030325</td>
-<td align="right">119.7830</td>
-<td align="right">14.0709903</td>
-<td align="right">18.15101</td>
+<td style="text-align: left;">G12</td>
+<td style="text-align: right;">16.11100</td>
+<td style="text-align: right;">1.030325</td>
+<td style="text-align: right;">119.7830</td>
+<td style="text-align: right;">14.0709903</td>
+<td style="text-align: right;">18.15101</td>
 </tr>
 <tr class="odd">
-<td align="left">G13</td>
-<td align="right">14.62900</td>
-<td align="right">1.030325</td>
-<td align="right">119.7830</td>
-<td align="right">12.5889903</td>
-<td align="right">16.66901</td>
+<td style="text-align: left;">G13</td>
+<td style="text-align: right;">14.62900</td>
+<td style="text-align: right;">1.030325</td>
+<td style="text-align: right;">119.7830</td>
+<td style="text-align: right;">12.5889903</td>
+<td style="text-align: right;">16.66901</td>
 </tr>
 <tr class="even">
-<td align="left">G14</td>
-<td align="right">16.29700</td>
-<td align="right">1.030325</td>
-<td align="right">119.7830</td>
-<td align="right">14.2569903</td>
-<td align="right">18.33701</td>
+<td style="text-align: left;">G14</td>
+<td style="text-align: right;">16.29700</td>
+<td style="text-align: right;">1.030325</td>
+<td style="text-align: right;">119.7830</td>
+<td style="text-align: right;">14.2569903</td>
+<td style="text-align: right;">18.33701</td>
 </tr>
 <tr class="odd">
-<td align="left">G15</td>
-<td align="right">11.46900</td>
-<td align="right">1.030325</td>
-<td align="right">119.7830</td>
-<td align="right">9.4289903</td>
-<td align="right">13.50901</td>
+<td style="text-align: left;">G15</td>
+<td style="text-align: right;">11.46900</td>
+<td style="text-align: right;">1.030325</td>
+<td style="text-align: right;">119.7830</td>
+<td style="text-align: right;">9.4289903</td>
+<td style="text-align: right;">13.50901</td>
 </tr>
 </tbody>
 </table>
 </div>
-<div id="best-linear-unbiased-predictors-blups" class="section level2">
-<h2>Best Linear Unbiased Predictors (BLUPs)</h2>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>hr<span class="sc">$</span>blups <span class="sc">%&gt;%</span> <span class="fu">kable</span>(<span class="at">caption =</span> <span class="st">&quot;BLUPs&quot;</span>)</span></code></pre></div>
-<table>
+</div>
+<h2 id="best-linear-unbiased-predictors-blups">Best Linear Unbiased Predictors (BLUPs)</h2>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>hr<span class="sc">$</span>blups <span class="sc">%&gt;%</span> <span class="fu">kable</span>(<span class="at">caption =</span> <span class="st">&quot;BLUPs&quot;</span>)</span></code></pre></div>
+<div class="cell-output-display">
+<table class="caption-top">
 <caption>BLUPs</caption>
 <thead>
 <tr class="header">
-<th align="left">geno</th>
-<th align="right">stemdw</th>
+<th style="text-align: left;">geno</th>
+<th style="text-align: right;">stemdw</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">G01</td>
-<td align="right">15.587018</td>
+<td style="text-align: left;">G01</td>
+<td style="text-align: right;">15.587018</td>
 </tr>
 <tr class="even">
-<td align="left">G02</td>
-<td align="right">10.228658</td>
+<td style="text-align: left;">G02</td>
+<td style="text-align: right;">10.228658</td>
 </tr>
 <tr class="odd">
-<td align="left">G03</td>
-<td align="right">9.821839</td>
+<td style="text-align: left;">G03</td>
+<td style="text-align: right;">9.821839</td>
 </tr>
 <tr class="even">
-<td align="left">G04</td>
-<td align="right">15.057007</td>
+<td style="text-align: left;">G04</td>
+<td style="text-align: right;">15.057007</td>
 </tr>
 <tr class="odd">
-<td align="left">G05</td>
-<td align="right">12.843686</td>
+<td style="text-align: left;">G05</td>
+<td style="text-align: right;">12.843686</td>
 </tr>
 <tr class="even">
-<td align="left">G06</td>
-<td align="right">20.631268</td>
+<td style="text-align: left;">G06</td>
+<td style="text-align: right;">20.631268</td>
 </tr>
 <tr class="odd">
-<td align="left">G07</td>
-<td align="right">3.254483</td>
+<td style="text-align: left;">G07</td>
+<td style="text-align: right;">3.254483</td>
 </tr>
 <tr class="even">
-<td align="left">G08</td>
-<td align="right">10.517060</td>
+<td style="text-align: left;">G08</td>
+<td style="text-align: right;">10.517060</td>
 </tr>
 <tr class="odd">
-<td align="left">G09</td>
-<td align="right">15.525899</td>
+<td style="text-align: left;">G09</td>
+<td style="text-align: right;">15.525899</td>
 </tr>
 <tr class="even">
-<td align="left">G10</td>
-<td align="right">9.389236</td>
+<td style="text-align: left;">G10</td>
+<td style="text-align: right;">9.389236</td>
 </tr>
 <tr class="odd">
-<td align="left">G11</td>
-<td align="right">6.699074</td>
+<td style="text-align: left;">G11</td>
+<td style="text-align: right;">6.699074</td>
 </tr>
 <tr class="even">
-<td align="left">G12</td>
-<td align="right">15.948953</td>
+<td style="text-align: left;">G12</td>
+<td style="text-align: right;">15.948953</td>
 </tr>
 <tr class="odd">
-<td align="left">G13</td>
-<td align="right">14.533681</td>
+<td style="text-align: left;">G13</td>
+<td style="text-align: right;">14.533681</td>
 </tr>
 <tr class="even">
-<td align="left">G14</td>
-<td align="right">16.126578</td>
+<td style="text-align: left;">G14</td>
+<td style="text-align: right;">16.126578</td>
 </tr>
 <tr class="odd">
-<td align="left">G15</td>
-<td align="right">11.515963</td>
+<td style="text-align: left;">G15</td>
+<td style="text-align: right;">11.515963</td>
 </tr>
 </tbody>
 </table>
 </div>
-<div id="outliers" class="section level2">
-<h2>Outliers</h2>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>hr<span class="sc">$</span>outliers<span class="sc">$</span>fixed <span class="sc">%&gt;%</span> <span class="fu">kable</span>(<span class="at">caption =</span> <span class="st">&quot;Outliers fixed model&quot;</span>)</span></code></pre></div>
-<table>
+</div>
+<h2 id="outliers">Outliers</h2>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>hr<span class="sc">$</span>outliers<span class="sc">$</span>fixed <span class="sc">%&gt;%</span> <span class="fu">kable</span>(<span class="at">caption =</span> <span class="st">&quot;Outliers fixed model&quot;</span>)</span></code></pre></div>
+<div class="cell-output-display">
+<table class="caption-top">
 <caption>Outliers fixed model</caption>
 <colgroup>
-<col width="3%" />
-<col width="7%" />
-<col width="8%" />
-<col width="6%" />
-<col width="8%" />
-<col width="11%" />
-<col width="11%" />
-<col width="15%" />
-<col width="6%" />
-<col width="7%" />
-<col width="11%" />
+<col style="width: 3%">
+<col style="width: 7%">
+<col style="width: 8%">
+<col style="width: 6%">
+<col style="width: 8%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 15%">
+<col style="width: 6%">
+<col style="width: 7%">
+<col style="width: 11%">
 </colgroup>
 <thead>
 <tr class="header">
-<th align="left"></th>
-<th align="left">index</th>
-<th align="left">bloque</th>
-<th align="left">geno</th>
-<th align="right">stemdw</th>
-<th align="right">resi</th>
-<th align="right">res_MAD</th>
-<th align="right">rawp.BHStud</th>
-<th align="right">adjp</th>
-<th align="right">bholm</th>
-<th align="left">out_flag</th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">index</th>
+<th style="text-align: left;">bloque</th>
+<th style="text-align: left;">geno</th>
+<th style="text-align: right;">stemdw</th>
+<th style="text-align: right;">resi</th>
+<th style="text-align: right;">res_MAD</th>
+<th style="text-align: right;">rawp.BHStud</th>
+<th style="text-align: right;">adjp</th>
+<th style="text-align: right;">bholm</th>
+<th style="text-align: left;">out_flag</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">68</td>
-<td align="left">68</td>
-<td align="left">IV</td>
-<td align="left">G05</td>
-<td align="right">80.65</td>
-<td align="right">60.36709</td>
-<td align="right">18.84505</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="left">OUTLIER</td>
+<td style="text-align: left;">68</td>
+<td style="text-align: left;">68</td>
+<td style="text-align: left;">IV</td>
+<td style="text-align: left;">G05</td>
+<td style="text-align: right;">80.65</td>
+<td style="text-align: right;">60.36709</td>
+<td style="text-align: right;">18.84505</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">OUTLIER</td>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>hr<span class="sc">$</span>outliers<span class="sc">$</span>random <span class="sc">%&gt;%</span> <span class="fu">kable</span>(<span class="at">caption =</span> <span class="st">&quot;Outliers random model&quot;</span>)</span></code></pre></div>
-<table>
+</div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>hr<span class="sc">$</span>outliers<span class="sc">$</span>random <span class="sc">%&gt;%</span> <span class="fu">kable</span>(<span class="at">caption =</span> <span class="st">&quot;Outliers random model&quot;</span>)</span></code></pre></div>
+<div class="cell-output-display">
+<table class="caption-top">
 <caption>Outliers random model</caption>
 <colgroup>
-<col width="4%" />
-<col width="6%" />
-<col width="7%" />
-<col width="5%" />
-<col width="7%" />
-<col width="9%" />
-<col width="10%" />
-<col width="13%" />
-<col width="14%" />
-<col width="10%" />
-<col width="9%" />
+<col style="width: 4%">
+<col style="width: 6%">
+<col style="width: 7%">
+<col style="width: 5%">
+<col style="width: 7%">
+<col style="width: 9%">
+<col style="width: 10%">
+<col style="width: 13%">
+<col style="width: 14%">
+<col style="width: 10%">
+<col style="width: 9%">
 </colgroup>
 <thead>
 <tr class="header">
-<th align="left"></th>
-<th align="left">index</th>
-<th align="left">bloque</th>
-<th align="left">geno</th>
-<th align="right">stemdw</th>
-<th align="right">resi</th>
-<th align="right">res_MAD</th>
-<th align="right">rawp.BHStud</th>
-<th align="right">adjp</th>
-<th align="right">bholm</th>
-<th align="left">out_flag</th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">index</th>
+<th style="text-align: left;">bloque</th>
+<th style="text-align: left;">geno</th>
+<th style="text-align: right;">stemdw</th>
+<th style="text-align: right;">resi</th>
+<th style="text-align: right;">res_MAD</th>
+<th style="text-align: right;">rawp.BHStud</th>
+<th style="text-align: right;">adjp</th>
+<th style="text-align: right;">bholm</th>
+<th style="text-align: left;">out_flag</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">68</td>
-<td align="left">68</td>
-<td align="left">IV</td>
-<td align="left">G05</td>
-<td align="right">80.65</td>
-<td align="right">61.39925</td>
-<td align="right">18.886677</td>
-<td align="right">0.0000000</td>
-<td align="right">0.0000000000</td>
-<td align="right">0.0000000</td>
-<td align="left">OUTLIER</td>
+<td style="text-align: left;">68</td>
+<td style="text-align: left;">68</td>
+<td style="text-align: left;">IV</td>
+<td style="text-align: left;">G05</td>
+<td style="text-align: right;">80.65</td>
+<td style="text-align: right;">61.39925</td>
+<td style="text-align: right;">18.886677</td>
+<td style="text-align: right;">0.0000000</td>
+<td style="text-align: right;">0.0000000000</td>
+<td style="text-align: right;">0.0000000</td>
+<td style="text-align: left;">OUTLIER</td>
 </tr>
 <tr class="even">
-<td align="left">100</td>
-<td align="left">100</td>
-<td align="left">IV</td>
-<td align="left">G06</td>
-<td align="right">33.52</td>
-<td align="right">12.02340</td>
-<td align="right">3.698449</td>
-<td align="right">0.0002169</td>
-<td align="right">0.0002169207</td>
-<td align="right">0.0323212</td>
-<td align="left">OUTLIER</td>
+<td style="text-align: left;">100</td>
+<td style="text-align: left;">100</td>
+<td style="text-align: left;">IV</td>
+<td style="text-align: left;">G06</td>
+<td style="text-align: right;">33.52</td>
+<td style="text-align: right;">12.02340</td>
+<td style="text-align: right;">3.698449</td>
+<td style="text-align: right;">0.0002169</td>
+<td style="text-align: right;">0.0002169207</td>
+<td style="text-align: right;">0.0323212</td>
+<td style="text-align: left;">OUTLIER</td>
 </tr>
 </tbody>
 </table>
+</div>
+</div>
 <!-- # Comparison: H2cal and asreml -->
 <!-- > <https://inkaverse.com/articles/extra/stagewise.html> -->
-<div id="refs" class="references csl-bib-body hanging-indent">
-<div id="ref-bernal-vasquez2016Outliera" class="csl-entry">
-Bernal-Vasquez, A.-M., H.-F. Utz, and H.-P. Piepho. 2016. Outlier
-detection methods for generalized lattices: A case study on the
-transition from <span>ANOVA</span> to <span>REML</span>. Theoretical and
-Applied Genetics 129(4): 787–804. doi: <a href="https://doi.org/10.1007/s00122-016-2666-6">10.1007/s00122-016-2666-6</a>.
+<div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-bernal-vasquez2016Outliera" class="csl-entry" role="listitem">
+Bernal-Vasquez, A.-M., H.-F. Utz, and H.-P. Piepho. 2016. Outlier detection methods for generalized lattices: A case study on the transition from <span>ANOVA</span> to <span>REML</span>. Theoretical and Applied Genetics 129(4): 787–804. doi: <a href="https://doi.org/10.1007/s00122-016-2666-6">10.1007/s00122-016-2666-6</a>.
 </div>
-<div id="ref-bolker2021Mean" class="csl-entry">
-Bolker, B. 2021. Mean variance of a difference of <span>BLUEs</span> or
-<span>BLUPs</span> in lme4. Stack Overflow. <a href="https://stackoverflow.com/questions/38697477/mean-variance-of-a-difference-of-blues-or-blups-in-lme4">https://stackoverflow.com/questions/38697477/mean-variance-of-a-difference-of-blues-or-blups-in-lme4</a>
-(accessed 21 May 2021).
+<div id="ref-bolker2021Mean" class="csl-entry" role="listitem">
+Bolker, B. 2021. Mean variance of a difference of <span>BLUEs</span> or <span>BLUPs</span> in lme4. Stack Overflow. <a href="https://stackoverflow.com/questions/38697477/mean-variance-of-a-difference-of-blues-or-blups-in-lme4">https://stackoverflow.com/questions/38697477/mean-variance-of-a-difference-of-blues-or-blups-in-lme4</a> (accessed 21 May 2021).
 </div>
-<div id="ref-buntaran2020Cross" class="csl-entry">
-Buntaran, H., H.-P. Piepho, P. Schmidt, J. Rydén, M. Halling, et al.
-2020. Cross-validation of stagewise mixed-model analysis of
-<span>Swedish</span> variety trials with winter wheat and spring barley.
-Crop Science 60(5): 2221–2240. doi: <a href="https://doi.org/10.1002/csc2.20177">10.1002/csc2.20177</a>.
+<div id="ref-buntaran2020Cross" class="csl-entry" role="listitem">
+Buntaran, H., H.-P. Piepho, P. Schmidt, J. Rydén, M. Halling, et al. 2020. Cross-validation of stagewise mixed-model analysis of <span>Swedish</span> variety trials with winter wheat and spring barley. Crop Science 60(5): 2221–2240. doi: <a href="https://doi.org/10.1002/csc2.20177">10.1002/csc2.20177</a>.
 </div>
-<div id="ref-falconer2005Introduction" class="csl-entry">
-Falconer, D.S., and T.F. Mackay. 2005. Introduction to quantitative
-genetics (Pearson Prentice Hall, editor). Fourth.
+<div id="ref-falconer2005Introduction" class="csl-entry" role="listitem">
+Falconer, D.S., and T.F. Mackay. 2005. Introduction to quantitative genetics (Pearson Prentice Hall, editor). Fourth.
 </div>
-<div id="ref-schmidt2019Heritability" class="csl-entry">
-Schmidt, P., J. Hartung, J. Bennewitz, and H.-P. Piepho. 2019a.
-Heritability in <span>Plant Breeding</span> on a
-<span>Genotype</span>-<span>Difference Basis</span>. Genetics 212(4):
-991–1008. doi: <a href="https://doi.org/10.1534/genetics.119.302134">10.1534/genetics.119.302134</a>.
+<div id="ref-schmidt2019Heritability" class="csl-entry" role="listitem">
+Schmidt, P., J. Hartung, J. Bennewitz, and H.-P. Piepho. 2019a. Heritability in <span>Plant Breeding</span> on a <span>Genotype</span>-<span>Difference Basis</span>. Genetics 212(4): 991–1008. doi: <a href="https://doi.org/10.1534/genetics.119.302134">10.1534/genetics.119.302134</a>.
 </div>
-<div id="ref-schmidt2019Estimating" class="csl-entry">
-Schmidt, P., J. Hartung, J. Rath, and H.-P. Piepho. 2019b. Estimating
-<span>Broad</span>-<span>Sense Heritability</span> with <span>Unbalanced
-Data</span> from <span>Agricultural Cultivar Trials</span>. Crop Science
-59(2): 525–536. doi: <a href="https://doi.org/10.2135/cropsci2018.06.0376">10.2135/cropsci2018.06.0376</a>.
+<div id="ref-schmidt2019Estimating" class="csl-entry" role="listitem">
+Schmidt, P., J. Hartung, J. Rath, and H.-P. Piepho. 2019b. Estimating <span>Broad</span>-<span>Sense Heritability</span> with <span>Unbalanced Data</span> from <span>Agricultural Cultivar Trials</span>. Crop Science 59(2): 525–536. doi: <a href="https://doi.org/10.2135/cropsci2018.06.0376">10.2135/cropsci2018.06.0376</a>.
 </div>
-<div id="ref-zystro2018Alternative" class="csl-entry">
-Zystro, J., M. Colley, and J. Dawson. 2018. <a href="https://doi.org/10.1002/9781119521358.ch3">Alternative
-<span>Experimental Designs</span> for <span>Plant Breeding</span></a>.
-Plant <span>Breeding Reviews</span>. <span>John Wiley &amp; Sons,
-Ltd</span>. p. 87–117
-</div>
-</div>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="cf">if</span>(<span class="sc">!</span><span class="fu">file.exists</span>(<span class="st">&quot;files/pkgs.bib&quot;</span>)){<span class="fu">write_bib</span>(<span class="fu">c</span>(<span class="fu">.packages</span>()),<span class="st">&#39;files/pkgs.bib&#39;</span>)}</span></code></pre></div>
+<div id="ref-zystro2018Alternative" class="csl-entry" role="listitem">
+Zystro, J., M. Colley, and J. Dawson. 2018. <a href="https://doi.org/10.1002/9781119521358.ch3">Alternative <span>Experimental Designs</span> for <span>Plant Breeding</span></a>. Plant <span>Breeding Reviews</span>. <span>John Wiley &amp; Sons, Ltd</span>. p. 87–117
 </div>
 </div>
 
 
 
-<!-- code folding -->
 
 
-<!-- dynamically load mathjax for compatibility with self-contained -->
-<script>
-  (function () {
-    var script = document.createElement("script");
-    script.type = "text/javascript";
-    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
-    document.getElementsByTagName("head")[0].appendChild(script);
-  })();
-</script>
-
-</body>
-</html>
+</body></html>
